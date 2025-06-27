@@ -1,0 +1,485 @@
+// Complete Database Schema for Job Platform
+
+// System Users
+Table users {
+  user_id int [pk, increment]
+  email varchar(255) [unique, not null]
+  password_hash varchar(255) [not null]
+  phone varchar(20)
+  role enum('admin', 'company', 'job_seeker') [not null, default: 'job_seeker']
+  profile_picture_url varchar(500)
+  bio text
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  is_active boolean [default: true]
+  is_verified boolean [default: false]
+  deleted_at timestamp [null]
+  
+  indexes {
+    email [unique]
+    role
+    (is_active, is_verified)
+  }
+}
+
+// Job Seeker Profiles
+Table job_seeker_profiles {
+  profile_id int [pk, increment]
+  user_id int [not null, ref: > users.user_id]
+  first_name varchar(100) [not null]
+  last_name varchar(100) [not null]
+  cv_file_url varchar(500)
+  linkedin_url varchar(255)
+  github_url varchar(255)
+  portfolio_url varchar(255)
+  experience_years int [default: 0]
+  current_position varchar(255)
+  expected_salary decimal(10,2)
+  user_credit int [default: 5]
+  location varchar(255)
+//   skills_list json
+//   other_links json
+  updated_at timestamp [default: `now()`]
+  deleted_at timestamp [null]
+  
+  indexes {
+    user_id [unique]
+    location
+  }
+}
+
+// Admin Profiles
+Table admin_profiles {
+  admin_id int [pk, increment]
+  user_id int [not null, ref: > users.user_id]
+  first_name varchar(100) [not null]
+  last_name varchar(100) [not null]
+  updated_at timestamp [default: `now()`]
+  deleted_at timestamp [null]
+  
+  indexes {
+    user_id [unique]
+  }
+}
+
+// Company Profiles
+Table company_profiles {
+  company_id int [pk, increment]
+  user_id int [not null, ref: > users.user_id]
+  company_name varchar(255) [not null]
+  company_description text
+  social_links json
+  website_url varchar(255)
+  industry varchar(100)
+  location varchar(255)
+  company_size enum('startup', '1-10', '11-50', '51-200', '201-500', '500+')
+  founding_year int
+  status enum('pending', 'approved', 'rejected') [default: 'pending']
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  deleted_at timestamp [null]
+  
+  indexes {
+    user_id [unique]
+    status
+    industry
+    company_size
+  }
+}
+
+// Company Approval Workflow
+// Table company_approvals {
+//   id int [pk, increment]
+//   company_id int [not null, ref: > company_profiles.company_id]
+//   approved_by int [not null, ref: > users.user_id]
+//   previous_status enum('pending', 'approved', 'rejected') [not null]
+//   new_status enum('pending', 'approved', 'rejected') [not null]
+//   approval_date timestamp [default: `now()`]
+//   rejection_reason text
+//   admin_notes text
+//   created_at timestamp [default: `now()`]
+  
+//   indexes {
+//     company_id
+//     approved_by
+//     new_status
+//     approval_date
+//   }
+// }
+
+// Skills System
+Table skills {
+  id int [pk, increment]
+  name varchar(255) [unique, not null]
+  description text
+  is_active boolean [default: true]
+  created_at timestamp [default: `now()`]
+  deleted_at timestamp [null]
+  
+  indexes {
+    name [unique]
+    is_active
+  }
+}
+
+Table user_skills {
+  id int [pk, increment]
+  user_id int [not null, ref: > users.user_id]
+  skill_id int [not null, ref: > skills.id]
+  // proficiency_level enum('beginner', 'intermediate', 'advanced', 'expert') [default: 'beginner']
+  // years_experience int [default: 0]
+  is_active boolean [default: true]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  deleted_at timestamp [null]
+  
+  indexes {
+    (user_id, skill_id) [unique]
+    user_id
+    skill_id
+    // proficiency_level
+  }
+}
+
+// Practice System Categories
+Table categories {
+  id int [pk, increment]
+  name varchar(50) [not null, unique]
+  description text
+  is_active boolean [default: true]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  deleted_at timestamp [null]
+  
+  indexes {
+    name
+    is_active
+  }
+}
+
+// Practice Tracks
+Table tracks {
+  id int [pk, increment]
+  name varchar(255) [not null]
+  description text
+  category_id int [not null, ref: > categories.id]
+  is_premium boolean [default: false]
+  price decimal(10,2) [default: 0.00]
+  track_total_score decimal(10,2) [not null]
+  is_active boolean [default: true]
+  created_by int [not null, ref: > users.user_id]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  deleted_at timestamp [null]
+  
+  indexes {
+    category_id
+    is_premium
+    is_active
+    created_by
+  }
+}
+
+// Track Questions
+Table track_questions {
+  id int [pk, increment]
+  track_id int [not null, ref: > tracks.id]
+  question_text text [not null]
+  question_type enum('multiple_choice_single', 'multiple_choice_multiple', 'code_output', 'written', 'fill_in_the_blank', 'true_false', 'code_debugging') [not null]
+  question_level enum('fresh_grad', 'junior', 'senior', 'team_lead') [not null]
+  difficulty_level enum('easy', 'medium', 'hard') [not null]
+  points decimal(5,2) [not null]
+  explanation text
+  code_snippet text
+  expected_output text
+  is_active boolean [default: true]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  deleted_at timestamp [null]
+  
+  indexes {
+    track_id
+    question_type
+    difficulty_level
+    question_level
+    is_active
+  }
+}
+
+// Track Question Options
+Table track_question_options {
+  id int [pk, increment]
+  question_id int [not null, ref: > track_questions.id]
+  option_text text [not null]
+  is_correct boolean [default: false]
+  created_at timestamp [default: `now()`]
+  deleted_at timestamp [null]
+  
+  indexes {
+    question_id
+    is_correct
+  }
+}
+
+// Practice Attempts & Results
+Table track_attempts {
+  id int [pk, increment]
+  user_id int [not null, ref: > users.user_id]
+  track_id int [not null, ref: > tracks.id]
+  start_time timestamp [default: `now()`]
+  end_time timestamp [null]
+  total_score decimal(10,2) [default: 0.00]
+  progress_percentage int [default: 0]
+  status enum('in_progress', 'completed', 'abandoned') [default: 'in_progress']
+  solved_questions_count int [default: 0]
+  time_taken_seconds int [default: 0]
+  
+  indexes {
+    user_id
+    track_id
+    status
+    (user_id, track_id) [unique]
+    (user_id, status, start_time)
+  }
+}
+
+Table track_practice_answers {
+  id int [pk, increment]
+  attempt_id int [not null, ref: > track_attempts.id]
+  question_id int [not null, ref: > track_questions.id]
+  selected_options json // For multiple choice (array of option IDs)
+  text_answer text // For written/fill-in-the-blank questions
+  is_correct boolean [default: false]
+  points_earned decimal(5,2) [default: 0.00]
+  answered_at timestamp [default: `now()`]
+  
+  indexes {
+    attempt_id
+    question_id
+    (attempt_id, question_id) [unique]
+  }
+}
+
+// Company Exam System
+Table company_exams {
+  id int [pk, increment]
+  company_id int [not null, ref: > company_profiles.company_id]
+  title varchar(255) [not null]
+  description text
+  instructions text
+  duration_minutes int [not null]
+  max_score decimal(10,2) [not null]
+  passing_score decimal(10,2) [not null]
+  max_attempts int [default: 1]
+  start_date timestamp
+  end_date timestamp
+  is_active boolean [default: true]
+  show_results_immediately boolean [default: false]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  deleted_at timestamp [null]
+  
+  indexes {
+    company_id
+    is_active
+    (start_date, end_date)
+  }
+}
+
+Table company_exam_questions {
+  id int [pk, increment]
+  exam_id int [not null, ref: > company_exams.id]
+  question_text text [not null]
+  question_type enum('multiple_choice_single', 'multiple_choice_multiple', 'code_output', 'written', 'fill_in_the_blank', 'true_false', 'code_debugging') [not null]
+  points decimal(5,2) [not null]
+  explanation text
+  code_snippet text
+  expected_output text
+  is_required boolean [default: false]
+  created_at timestamp [default: `now()`]
+  deleted_at timestamp [null]
+  
+  indexes {
+    exam_id
+    question_type
+  }
+}
+
+Table company_exam_question_options {
+  id int [pk, increment]
+  question_id int [not null, ref: > company_exam_questions.id]
+  option_text text [not null]
+  is_correct boolean [default: false]
+  created_at timestamp [default: `now()`]
+  deleted_at timestamp [null]
+  
+  indexes {
+    question_id
+    is_correct
+  }
+}
+
+Table company_exam_attempts {
+  id int [pk, increment]
+  user_id int [not null, ref: > users.user_id]
+  exam_id int [not null, ref: > company_exams.id]
+  attempt_number int [default: 1]
+  start_time timestamp [default: `now()`]
+  end_time timestamp
+  total_score decimal(10,2) [default: 0.00]
+  percentage_score decimal(5,2) [default: 0.00]
+  status enum('in_progress', 'completed', 'abandoned', 'expired') [default: 'in_progress']
+  time_taken_seconds int
+  passed boolean [default: false]
+  
+  indexes {
+    user_id
+    exam_id
+    status
+    (user_id, exam_id, attempt_number) [unique]
+  }
+}
+
+Table company_exam_answers {
+  id int [pk, increment]
+  attempt_id int [not null, ref: > company_exam_attempts.id]
+  question_id int [not null, ref: > company_exam_questions.id]
+  selected_options json
+  text_answer text
+  is_correct boolean [default: false]
+  points_earned decimal(5,2) [default: 0.00]
+  answered_at timestamp [default: `now()`]
+  
+  indexes {
+    attempt_id
+    question_id
+    (attempt_id, question_id) [unique]
+  }
+}
+
+// Task Management
+Table tasks {
+  id int [pk, increment]
+  company_id int [not null, ref: > company_profiles.company_id]
+  title varchar(255) [not null]
+  description text [not null]
+  requirements text
+  deliverables text
+  deadline timestamp [not null]
+  estimated_hours int
+  skills_required json
+  is_active boolean [default: true]
+  featured boolean [default: false]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  deleted_at timestamp [null]
+  
+  indexes {
+    company_id
+    is_active
+    deadline
+    featured
+  }
+}
+
+Table task_submissions {
+  id int [pk, increment]
+  task_id int [not null, ref: > tasks.id]
+  user_id int [not null, ref: > users.user_id]
+  submission_notes text
+  submission_link varchar(500) [not null] // github or google drive link
+  demo_link varchar(500) 
+  submission_files json // Array of file URLs
+  submitted_at timestamp [default: `now()`]
+  
+  indexes {
+    task_id
+    user_id
+    (task_id, user_id) [unique]
+  }
+}
+
+// Badge System
+Table badges {
+  id int [pk, increment]
+  name varchar(255) [not null]
+  description text [not null]
+  icon_url varchar(500)
+  criteria json [not null]
+  points_required int [default: 0]
+  track_id int [ref: > tracks.id]
+  // rarity enum('common', 'uncommon', 'rare', 'epic', 'legendary') [default: 'common']
+  is_active boolean [default: true]
+  created_at timestamp [default: `now()`]
+  deleted_at timestamp [null]
+  
+  indexes {
+    track_id
+    is_active
+    // rarity
+  }
+}
+
+Table user_badges {
+  id int [pk, increment]
+  user_id int [not null, ref: > users.user_id]
+  badge_id int [not null, ref: > badges.id]
+  earned_at timestamp [default: `now()`]
+  practice_attempt_id int [ref: > track_attempts.id]
+  notes text
+  
+  indexes {
+    user_id
+    badge_id
+    (user_id, badge_id) [unique]
+    earned_at
+  }
+}
+
+// Notification System
+Table notifications {
+  id int [pk, increment]
+  user_id int [not null, ref: > users.user_id]
+  title varchar(255) [not null]
+  message text [not null]
+  // type enum('exam_reminder', 'result_available', 'badge_earned', 'payment_success', 'task_deadline', 'submission_reviewed', 'company_approved', 'skill_recommendation') [not null]
+  is_read boolean [default: false]
+  action_url varchar(500)
+  created_at timestamp [default: `now()`]
+  read_at timestamp
+  deleted_at timestamp [null]
+  
+  indexes {
+    user_id
+    is_read
+    // type
+    (user_id, is_read, created_at)
+    created_at
+  }
+}
+
+// Payment System
+Table payments {
+  id int [pk, increment]
+  user_id int [not null, ref: > users.user_id]
+  amount decimal(10,2) [not null, check: `amount > 0`]
+  currency varchar(3) [default: 'USD']
+  payment_method enum('credit_card', 'paypal', 'stripe', 'bank_transfer', 'wallet') [not null]
+  payment_status enum('pending', 'completed', 'failed', 'refunded', 'cancelled') [default: 'pending']
+  transaction_id varchar(255) [unique]
+  payment_token varchar(255) // For secure payment processing
+  payment_gateway_response json
+  refund_reason text
+  refunded_amount decimal(10,2) [default: 0.00]
+  refunded_at timestamp [null]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+  
+  indexes {
+    user_id
+    payment_status
+    transaction_id [unique]
+    created_at
+    payment_method
+  }
+}
