@@ -10,6 +10,7 @@ namespace Fit4Job.Models
     public class PracticeCategory
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required]

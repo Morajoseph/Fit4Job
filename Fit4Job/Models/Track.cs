@@ -11,7 +11,9 @@ namespace Fit4Job.Models
 
     public class Track
     {
+       
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required]
