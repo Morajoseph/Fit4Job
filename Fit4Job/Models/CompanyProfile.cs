@@ -1,76 +1,89 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Fit4Job.Models
+﻿namespace Fit4Job.Models
 {
+    [Table("company_profiles")]
+    [Index(nameof(UserId), IsUnique = true, Name = "IX_CompanyProfiles_UserId")]
+    [Index(nameof(Status), Name = "IX_CompanyProfiles_Status")]
+    [Index(nameof(Industry), Name = "IX_CompanyProfiles_Industry")]
+    [Index(nameof(CompanySize), Name = "IX_CompanyProfiles_CompanySize")]
     public class CompanyProfile
     {
         [Key]
-        public int CompanyId { get; set; }
-
-        [Display(Name = "Company Name")]
-        [Required(ErrorMessage = "Company first name is required.")]
-        [StringLength(200, MinimumLength = 3, ErrorMessage = "Company Name must be between 3 and 200 characters.")]
-        public string CompanyName { get; set; }
-
-        public string? CompanyDescription { get; set; }
-
-
-
-        //  i can not find json data type here !!!!!!!!!!!!!!! 
-        public string SocialLinks { get; set; }
-
-        public string WebsiteUrl { get; set; }
-
-        public string? Industry { get; set; }
-        
-        public string Location { get; set; }
-
-        public enum CompanySize
-        {
-            startup,
-            _1_10,
-            _11_50,
-            _51_200,
-            _201_500,
-            _500plus
-        }
-
-        public CompanySize? Company_Size { get; set; }
-
-
-        public int FoundingYear { get; set; }
-
-        public enum CompanyStatus
-        {
-            pending,
-            approved,
-            rejected
-        }
+        [Display(Name = "Company ID")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
         [Required]
-        public CompanyStatus Status  { get; set; } = CompanyStatus.pending;
+        [Display(Name = "User ID")]
+        public int UserId { get; set; }
 
+        [Required]
+        [StringLength(255)]
+        [Display(Name = "Company Name")]
+        public string CompanyName { get; set; } = string.Empty;
+
+        [Column(TypeName = "text")]
+        [Display(Name = "Company Description")]
+        public string? CompanyDescription { get; set; }
+
+        [Url]
+        [StringLength(255)]
+        [Display(Name = "LinkedIn URL")]
+        public string? LinkedinUrl { get; set; }
+
+
+        [Url]
+        [StringLength(255)]
+        [Display(Name = "Website URL")]
+        public string? WebsiteUrl { get; set; }
+
+        [StringLength(100)]
+        [Display(Name = "Industry")]
+        public string? Industry { get; set; }
+
+
+        [Display(Name = "Company Size")]
+        public CompanySize? CompanySize { get; set; }
+
+        [Range(1800, 3000)]
+        [Display(Name = "Founding Year")]
+        public int? FoundingYear { get; set; }
+
+        [Required]
+        [Display(Name = "Status")]
+        public CompanyStatus Status { get; set; } = CompanyStatus.Pending;
 
         [Required]
         [DataType(DataType.DateTime)]
         [Display(Name = "Created At")]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Required]
         [DataType(DataType.DateTime)]
         [Display(Name = "Updated At")]
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-       
+
         [DataType(DataType.DateTime)]
         [Display(Name = "Deleted At")]
         public DateTime? DeletedAt { get; set; }
 
+ 
+        // Helper properties
+        [NotMapped]
+        public bool IsActive => DeletedAt == null;
 
-        [ForeignKey("User")]
-        public int UserId { get; set; }
-       public ApplicationUser User { get; set; }
+        [NotMapped]
+        public bool IsApproved => Status == CompanyStatus.Approved;
+
+        [NotMapped]
+        public bool IsPending => Status == CompanyStatus.Pending;
+
+        [NotMapped]
+        [Display(Name = "Company Age")]
+        public int? CompanyAge => FoundingYear.HasValue ? DateTime.UtcNow.Year - FoundingYear.Value : null;
+
+        // Navigation property
+        [ForeignKey("UserId")]
+        public virtual ApplicationUser User { get; set; } = null!;
     }
 }

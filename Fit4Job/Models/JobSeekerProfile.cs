@@ -1,60 +1,93 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Fit4Job.Models
+﻿namespace Fit4Job.Models
 {
+    [Table("job_seeker_profiles")]
     public class JobSeekerProfile
     {
         [Key]
-        public  int ProfileId { get; set; }
-
-        [Display(Name = "First Name")]
-        [Required(ErrorMessage = "User first name is required.")]
-        [StringLength(20, MinimumLength = 3, ErrorMessage = "First Name must be between 3 and 20 characters.")]
-        public string FirstName { get; set; }
-
-        [Display(Name = "Last Name")]
-        [Required(ErrorMessage = "User last name is required.")]
-        [StringLength(20, MinimumLength = 3, ErrorMessage = "Last Name must be between 3 and 20 characters.")]
-        public string LastName { get; set; }
-
-
-        public string CvUrl { get; set; }
-
-        public string LinkedinUrl { get; set; }
-
-        public string GithubUrl { get; set; }
-        
-        public string? PortfolioUrl { get; set; }
-
-        public int ExperienceYears { get; set; } = 0;
-
-        public string CurrentPosition { get; set; }
+        [Display(Name = "Job Seeker Profile ID")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
         [Required]
-        public double ExpectedSalary { get; set; }
+        [Display(Name = "User ID")]
+        public int UserId { get; set; }
 
+        [Required]
+        [StringLength(100)]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(100)]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; } = string.Empty;
+
+        [StringLength(500)]
+        [Display(Name = "CV File URL")]
+        public string? CvFileUrl { get; set; }
+
+        [Url]
+        [StringLength(255)]
+        [Display(Name = "LinkedIn URL")]
+        public string? LinkedinUrl { get; set; }
+
+        [Url]
+        [StringLength(255)]
+        [Display(Name = "GitHub URL")]
+        public string? GithubUrl { get; set; }
+
+        [Url]
+        [StringLength(255)]
+        [Display(Name = "Portfolio URL")]
+        public string? PortfolioUrl { get; set; }
+
+        [Range(0, 50)]
+        [Display(Name = "Years of Experience")]
+        public int ExperienceYears { get; set; } = 0;
+
+        [StringLength(255)]
+        [Display(Name = "Current Position")]
+        public string? CurrentPosition { get; set; }
+
+        [Column(TypeName = "decimal(10,2)")]
+        [Display(Name = "Expected Salary")]
+        [Range(0, 999999999.99)]
+        public decimal? ExpectedSalary { get; set; }
+
+        [Display(Name = "User Credit")]
+        [Range(0, int.MaxValue)]
         public int UserCredit { get; set; } = 5;
-        public string Location {  get; set; }
+
+        [StringLength(255)]
+        [Display(Name = "Location")]
+        public string? Location { get; set; }
 
 
         [Required]
         [DataType(DataType.DateTime)]
         [Display(Name = "Updated At")]
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
 
-       
         [DataType(DataType.DateTime)]
         [Display(Name = "Deleted At")]
-        public DateTime? DeletedAt { get; set; } 
+        public DateTime? DeletedAt { get; set; }
+
+        // Computed property
+
+        // for full name 
+        [NotMapped]
+        [Display(Name = "Full Name")]
+        public string FullName => $"{FirstName} {LastName}";
+
+        // Helper property to check if profile is active
+        [NotMapped]
+        public bool IsActive => DeletedAt == null;
 
 
-        [ForeignKey("User")]
-        public int UserId { get; set; }
-
-        public ApplicationUser User { get; set; }
-
-
+        // Navigation property
+        [ForeignKey("UserId")]
+        public virtual ApplicationUser User { get; set; } = null!;
     }
 }

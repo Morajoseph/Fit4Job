@@ -1,39 +1,49 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Fit4Job.Models
+﻿namespace Fit4Job.Models
 {
+    [Table("admin_profiles")]
+    [Index(nameof(UserId), IsUnique = true, Name = "IX_AdminProfiles_UserId")]
     public class AdminProfile
     {
         [Key]
-        public int  AdminId { get; set; }
+        [Display(Name = "Admin ID")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
+        [Required]
+        [Display(Name = "User ID")]
+        public int UserId { get; set; }
+
+        [Required]
+        [StringLength(100)]
         [Display(Name = "First Name")]
-        [Required(ErrorMessage = "User first name is required.")]
-        [StringLength(20, MinimumLength = 3, ErrorMessage = "First Name must be between 3 and 20 characters.")]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = string.Empty;
 
+        [Required]
+        [StringLength(100)]
         [Display(Name = "Last Name")]
-        [Required(ErrorMessage = "User last name is required.")]
-        [StringLength(20, MinimumLength = 3, ErrorMessage = "Last Name must be between 3 and 20 characters.")]
-        public string LastName { get; set; }
-
+        public string LastName { get; set; } = string.Empty;
 
         [Required]
         [DataType(DataType.DateTime)]
         [Display(Name = "Updated At")]
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        
         [DataType(DataType.DateTime)]
         [Display(Name = "Deleted At")]
         public DateTime? DeletedAt { get; set; }
 
+        // Navigation property
+        [ForeignKey("UserId")]
+        public virtual ApplicationUser User { get; set; } = null!;
 
+        // Computed property
+        // for full name
+        [NotMapped]
+        [Display(Name = "Full Name")]
+        public string FullName => $"{FirstName} {LastName}";
 
-        [ForeignKey("User")]
-        public int UserId { get; set; }
-
-        public ApplicationUser User { get; set; }
+        // Helper property to check if profile is active
+        [NotMapped]
+        public bool IsActive => DeletedAt == null;
     }
 }
