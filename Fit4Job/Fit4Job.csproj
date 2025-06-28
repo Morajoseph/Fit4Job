@@ -12,6 +12,13 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="Data\" />
+    <Folder Include="DTOs\" />
+    <Folder Include="GenericRepositories\" />
+    <Folder Include="Models\" />
+    <Folder Include="Repositories\Implementations\" />
+    <Folder Include="Repositories\Interfaces\" />
+    <Folder Include="UoW\" />
   </ItemGroup>
 
 </Project>
