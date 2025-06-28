@@ -390,10 +390,8 @@ Table badges {
   name varchar(255) [not null]
   description text [not null]
   icon_url varchar(500)
-  criteria json [not null]
   points_required int [default: 0]
   track_id int [ref: > tracks.id]
-  // rarity enum('common', 'uncommon', 'rare', 'epic', 'legendary') [default: 'common']
   is_active boolean [default: true]
   created_at timestamp [default: `now()`]
   deleted_at timestamp [null]
