@@ -44,12 +44,13 @@
         [Display(Name = "Deleted At")]
         public DateTime? DeletedAt { get; set; }
 
-        [Display(Name = "Read At")]
 
+        [Display(Name = "Read At")]
         [DataType(DataType.DateTime)]
         public DateTime? ReadAt { get; set; }
 
-        // Navigation
+
+        // Navigation properties
         [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; }
     }

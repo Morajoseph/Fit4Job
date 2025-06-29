@@ -118,10 +118,9 @@
 
 
         // Navigation properties
-        [ForeignKey("CompanyId")]
         [Display(Name = "Company")]
+        [ForeignKey("CompanyId")]
         public virtual CompanyProfile Company { get; set; } = null!;
-
         public virtual ICollection<CompanyTaskSubmission>? Submissions { get; set; }
 
         // Helper methods

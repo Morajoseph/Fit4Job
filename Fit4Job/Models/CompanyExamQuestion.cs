@@ -83,8 +83,8 @@
 
         // Navigation properties
         [ForeignKey("ExamId")]
-        [Display(Name = "Exam")]
         public virtual CompanyExam Exam { get; set; } = null!;
+        
         public virtual ICollection<CompanyExamQuestionOption>? Options { get; set; }
 
         public virtual ICollection<CompanyExamQuestionAnswer>? Answers { get; set; }

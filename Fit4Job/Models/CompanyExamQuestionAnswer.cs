@@ -85,13 +85,13 @@
 
 
         // Navigation properties
-        [ForeignKey("AttemptId")]
         [Display(Name = "Attempt")]
+        [ForeignKey("AttemptId")]
         public virtual CompanyExamAttempt Attempt { get; set; } = null!;
 
 
-        [ForeignKey("QuestionId")]
         [Display(Name = "Question")]
+        [ForeignKey("QuestionId")]
         public virtual CompanyExamQuestion Question { get; set; } = null!;
 
         // Helper methods

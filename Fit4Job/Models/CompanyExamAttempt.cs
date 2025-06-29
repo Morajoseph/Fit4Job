@@ -19,10 +19,11 @@
         [Display(Name = "Exam ID")]
         public int ExamId { get; set; }
 
-        [Required]
-        [Range(1, int.MaxValue)]
-        [Display(Name = "Attempt Number")]
-        public int AttemptNumber { get; set; } = 1;
+
+        //[Required]
+        //[Range(1, int.MaxValue)]
+        //[Display(Name = "Attempt Number")]
+        //public int AttemptNumber { get; set; } = 1;
 
 
         [Required]
@@ -68,12 +69,12 @@
 
 
         // Navigation properties
-        [ForeignKey("UserId")]
         [Display(Name = "User")]
+        [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; } = null!;
 
-        [ForeignKey("ExamId")]
         [Display(Name = "Exam")]
+        [ForeignKey("ExamId")]
         public virtual CompanyExam Exam { get; set; } = null!;
 
         public virtual ICollection<CompanyExamQuestionAnswer>? Answers { get; set; }

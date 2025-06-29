@@ -33,6 +33,5 @@
 
         // Navigation properties
         public virtual ICollection<UserSkill> UserSkills { get; set; }
-
     }
 }

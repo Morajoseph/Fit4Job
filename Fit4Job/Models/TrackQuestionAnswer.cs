@@ -77,12 +77,12 @@
                                    SelectedOptions.Any() ? "Multiple Choice" : "No Answer";
 
         // Navigation properties
-        [ForeignKey("AttemptId")]
         [Display(Name = "Attempt")]
+        [ForeignKey("AttemptId")]
         public virtual TrackAttempt Attempt { get; set; } = null!;
 
-        [ForeignKey("QuestionId")]
         [Display(Name = "Question")]
+        [ForeignKey("QuestionId")]
         public virtual TrackQuestion Question { get; set; } = null!;
     }
 }

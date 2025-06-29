@@ -88,7 +88,5 @@
         // Navigation property
         [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; } = null!;
-
-        public virtual ICollection<CompanyTaskSubmission>? TaskSubmissions { get; set; }
     }
 }

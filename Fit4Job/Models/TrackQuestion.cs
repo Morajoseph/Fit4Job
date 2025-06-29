@@ -89,10 +89,9 @@
 
 
         // Navigation property
-        [ForeignKey("TrackId")]
         [Display(Name = "Track")]
+        [ForeignKey("TrackId")]
         public virtual Track Track { get; set; } = null!;
-
         public virtual ICollection<TrackQuestionOption>? Options { get; set; }
         public virtual ICollection<TrackQuestionAnswer>? Answers { get; set; }
 

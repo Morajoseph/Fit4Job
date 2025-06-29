@@ -1,9 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
-
-namespace Fit4Job.Models
+﻿namespace Fit4Job.Models
 {
     [Table("payments")]
     [Index(nameof(UserId), Name = "IX_Payment_UserId")]
@@ -18,23 +13,24 @@ namespace Fit4Job.Models
 
         [Required]
         [Display(Name = "User ID")]
-        [ForeignKey("User")]
         public int UserId { get; set; }
-        public ApplicationUser User { get; set; }
+
 
         [Required]
         [Column(TypeName = "decimal(10,2)")]
-       
         [Range(0.01, double.MaxValue, ErrorMessage = "Amount must be greater than 0")]
         public decimal Amount { get; set; }
+
 
         [StringLength(3)]
         [Display(Name = "Currency")]
         public string Currency { get; set; } = "USD";
 
+
         [Required]
         [Display(Name = "Payment Method")]
         public PaymentMethod PaymentMethod { get; set; }
+
 
         [Required]
         [Display(Name = "Payment Status")]
@@ -44,21 +40,26 @@ namespace Fit4Job.Models
         [Display(Name = "Transaction ID")]
         public string? TransactionId { get; set; }
 
+
         [StringLength(255)]
         [Display(Name = "Payment Token")]
         public string? PaymentToken { get; set; }
+
 
         [Column(TypeName = "json")]
         [Display(Name = "Payment Gateway Response")]
         public string? PaymentGatewayResponse { get; set; }
 
+
         [Column(TypeName = "text")]
         [Display(Name = "Refund Reason")]
         public string? RefundReason { get; set; }
 
+
         [Column(TypeName = "decimal(10,2)")]
         [Display(Name = "Refunded Amount")]
         public decimal RefundedAmount { get; set; } = 0;
+
 
         [DataType(DataType.DateTime)]
         [Display(Name = "Refunded At")]
@@ -77,13 +78,16 @@ namespace Fit4Job.Models
         // Helper property
         [NotMapped]
         public bool IsRefunded => RefundedAt != null && RefundedAmount > 0;
-    
 
-    public  PaymentMethod  Payment_Method { get; set; }
+
+        public PaymentMethod Payment_Method { get; set; }
 
 
         public PaymentStatus paymentStatus { get; set; } = PaymentStatus.pending;
 
+        // Navigation properties
+        [ForeignKey("UserId")]
+        public ApplicationUser User { get; set; } = null!;
 
     }
 }

@@ -42,8 +42,8 @@
         public bool IsActive => DeletedAt == null;
 
         // Navigation property
-        [ForeignKey("QuestionId")]
         [Display(Name = "Question")]
+        [ForeignKey("QuestionId")]
         public virtual CompanyExamQuestion Question { get; set; } = null!;
     }
 }

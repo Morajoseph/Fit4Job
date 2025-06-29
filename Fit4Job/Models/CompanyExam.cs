@@ -1,10 +1,8 @@
-﻿using System.ComponentModel.Design;
-
-namespace Fit4Job.Models
+﻿namespace Fit4Job.Models
 {
     [Table("company_exams")]
-    [Index(nameof(CompanyId), Name = "IX_CompanyExams_CompanyId")]
     [Index(nameof(IsActive), Name = "IX_CompanyExams_IsActive")]
+    [Index(nameof(CompanyId), Name = "IX_CompanyExams_CompanyId")]
     [Index(nameof(StartDate), nameof(EndDate), Name = "IX_CompanyExams_StartDate_EndDate")]
     public class CompanyExam
     {
@@ -12,30 +10,33 @@ namespace Fit4Job.Models
         [Display(Name = "Exam ID")]
         public int Id { get; set; }
 
+
         [Required]
         [Display(Name = "Company ID")]
         public int CompanyId { get; set; }
 
 
-        [Required]
-        [StringLength(255)]
+        [Required(ErrorMessage = "Title is required")]
         [Display(Name = "Title")]
-        public string Title { get; set; } = string.Empty;
+        [StringLength(256, MinimumLength = 5, ErrorMessage = "Title must be between 5 and 256 characters")]
+        public string Title { get; set; } = null!;
 
 
-        [Column(TypeName = "text")]
         [Display(Name = "Description")]
+        [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters")]
+        [Column(TypeName = "varchar(500)")]
         public string? Description { get; set; }
 
 
-        [Column(TypeName = "text")]
         [Display(Name = "Instructions")]
+        [StringLength(2048, ErrorMessage = "Instructions cannot exceed 2048 characters")]
+        [Column(TypeName = "varchar(2048)")]
         public string? Instructions { get; set; }
 
 
-        [Required]
+        [Required(ErrorMessage = "Duration is required")]
         [Display(Name = "Duration (Minutes)")]
-        [Range(1, int.MaxValue, ErrorMessage = "Duration must be at least 1 minute")]
+        [Range(1, 600, ErrorMessage = "Duration must be between 1 and 600 minutes (10 hours)")]
         public int DurationMinutes { get; set; }
 
 
@@ -53,10 +54,10 @@ namespace Fit4Job.Models
         public decimal PassingScore { get; set; }
 
 
-        [Required]
-        [Display(Name = "Max Attempts")]
-        [Range(1, int.MaxValue, ErrorMessage = "Max attempts must be at least 1")]
-        public int MaxAttempts { get; set; } = 1;
+        //[Required]
+        //[Display(Name = "Max Attempts")]
+        //[Range(1, int.MaxValue, ErrorMessage = "Max attempts must be at least 1")]
+        //public int MaxAttempts { get; set; } = 1;
 
 
         [DataType(DataType.DateTime)]
@@ -130,9 +131,7 @@ namespace Fit4Job.Models
 
         // Navigation properties
         [ForeignKey("CompanyId")]
-        [Display(Name = "Company")]
         public virtual CompanyProfile Company { get; set; } = null!;
-
         public virtual ICollection<CompanyExamAttempt>? Attempts { get; set; }
         public virtual ICollection<CompanyExamQuestion>? Questions { get; set; }
     }

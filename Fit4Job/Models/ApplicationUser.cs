@@ -47,8 +47,14 @@
         public virtual JobSeekerProfile? JobSeekerProfile { get; set; }
 
 
+        public virtual ICollection<CompanyTaskSubmission>?CompanyTaskSubmissions { get; set; }
+        public virtual ICollection<Track>? CreatedTracks { get; set; }
+        public virtual ICollection<Payment>? Payments { get; set; }
         public virtual ICollection<UserSkill>? UserSkills { get; set; }
         public virtual ICollection<TrackAttempt>? TrackAttempts { get; set; }
+        public virtual ICollection<Notification>? Notifications { get; set; }
         public virtual ICollection<CompanyExamAttempt>? CompanyExamAttempts { get; set; }
+        public virtual ICollection<CompanyTaskSubmission>? TaskSubmissions { get; set; }
+        public virtual ICollection <UserBadge>? UserBadges { get; set; }
     }
 }

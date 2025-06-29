@@ -78,12 +78,11 @@
         [ForeignKey("CreatorId")]
         public virtual ApplicationUser Creator { get; set; } = null!;
 
-
-        [ForeignKey("CategoryId")]
         [Display(Name = "Track Category")]
+        [ForeignKey("CategoryId")]
         public virtual TrackCategory Category { get; set; } = null!;
 
-
+        public virtual ICollection<Badge>? Badges { get; set; }
         public virtual ICollection<TrackAttempt>? TrackAttempts { get; set; }
         public virtual ICollection<TrackQuestion>? TrackQuestions { get; set; }
     }

@@ -18,6 +18,7 @@
         [Required]
         public int BadgeId { get; set; }
 
+
         [Required]
         public int TrackAttemptId { get; set; }
 
@@ -29,16 +30,16 @@
         [Display(Name = "Earned At")]
         public DateTime EarnedAt { get; set; } = DateTime.UtcNow;
 
-        // Navigation
+        // Navigation properties
         [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; } = null!;
+
 
         [ForeignKey("BadgeId")]
         public virtual Badge Badge { get; set; } = null!;
 
-        [ForeignKey("TrackAttemptId")]
-        public virtual TrackAttempt PracticeAttempt { get; set; } = null!;
 
-        public virtual ICollection<Badge>? UserBadges { get; set; }
+        [ForeignKey("TrackAttemptId")]
+        public virtual TrackAttempt TrackAttempt { get; set; } = null!;
     }
 }

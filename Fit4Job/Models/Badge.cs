@@ -58,7 +58,7 @@
 
         // Navigation property
         [ForeignKey("TrackId")]
-        public virtual Track? Track { get; set; }
+        public virtual Track Track { get; set; } = null!;
 
         public virtual ICollection<UserBadge>? UserBadges { get; set; }
     }

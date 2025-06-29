@@ -70,12 +70,13 @@
 
 
         // Navigation properties
-        [ForeignKey("TaskId")]
         [Display(Name = "Task")]
+        [ForeignKey("TaskId")]
         public virtual CompanyTask Task { get; set; } = null!;
 
-        [ForeignKey("UserId")]
+
         [Display(Name = "User")]
+        [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; } = null!;
 
         // Helper methods

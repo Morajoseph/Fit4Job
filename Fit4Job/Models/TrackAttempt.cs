@@ -66,16 +66,19 @@
         public bool IsInProgress => Status == AttemptStatus.InProgress;
 
         // Navigation properties
-        [ForeignKey("UserId")]
         [Display(Name = "User")]
+        [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; } = null!;
 
-        [ForeignKey("TrackId")]
+
         [Display(Name = "Track")]
+        [ForeignKey("TrackId")]
         public virtual Track Track { get; set; } = null!;
 
 
+        public virtual ICollection<Badge>? Badges { get; set; }
+        
+        
         public virtual ICollection<TrackQuestionAnswer>? Answers { get; set; }
-
     }
 }

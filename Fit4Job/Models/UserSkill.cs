@@ -11,7 +11,7 @@
         [Required]
         public int UserId { get; set; }
 
-        [Key]
+
         [Required]
         public int SkillId { get; set; }
 

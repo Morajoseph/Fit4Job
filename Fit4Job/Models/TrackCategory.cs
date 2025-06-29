@@ -43,6 +43,5 @@
 
         // Navigation properties
         public virtual ICollection<Track>? Tracks { get; set; }
-
     }
 }
