@@ -49,5 +49,6 @@
 
         public virtual ICollection<UserSkill>? UserSkills { get; set; }
         public virtual ICollection<TrackAttempt>? TrackAttempts { get; set; }
+        public virtual ICollection<CompanyExamAttempt>? CompanyExamAttempts { get; set; }
     }
 }

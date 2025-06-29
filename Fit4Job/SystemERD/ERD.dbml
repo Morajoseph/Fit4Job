@@ -247,7 +247,7 @@ Table company_exams {
   description text
   instructions text
   duration_minutes int [not null]
-  max_score decimal(10,2) [not null]
+  total_score decimal(10,2) [not null]
   passing_score decimal(10,2) [not null]
   max_attempts int [default: 1]
   start_date timestamp
@@ -311,7 +311,6 @@ Table company_exam_attempts {
   total_score decimal(10,2) [default: 0.00]
   percentage_score decimal(5,2) [default: 0.00]
   status enum('in_progress', 'completed', 'abandoned', 'expired') [default: 'in_progress']
-  time_taken_seconds int
   passed boolean [default: false]
   
   indexes {
@@ -323,7 +322,7 @@ Table company_exam_attempts {
 }
 
 // Company Exam Answers
-Table company_exam_answers {
+Table Company_Exam_Question_Answer {
   id int [pk, increment]
   attempt_id int [not null, ref: > company_exam_attempts.id]
   question_id int [not null, ref: > company_exam_questions.id]
