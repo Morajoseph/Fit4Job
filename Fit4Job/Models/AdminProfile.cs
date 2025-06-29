@@ -6,7 +6,6 @@
     {
         [Key]
         [Display(Name = "Admin ID")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required]
@@ -23,6 +22,7 @@
         [Display(Name = "Last Name")]
         public string LastName { get; set; } = string.Empty;
 
+
         [Required]
         [DataType(DataType.DateTime)]
         [Display(Name = "Updated At")]
@@ -32,18 +32,17 @@
         [Display(Name = "Deleted At")]
         public DateTime? DeletedAt { get; set; }
 
-        // Navigation property
-        [ForeignKey("UserId")]
-        public virtual ApplicationUser User { get; set; } = null!;
-
         // Computed property
-        // for full name
         [NotMapped]
         [Display(Name = "Full Name")]
         public string FullName => $"{FirstName} {LastName}";
 
-        // Helper property to check if profile is active
         [NotMapped]
         public bool IsActive => DeletedAt == null;
+
+        // Navigation property
+        [ForeignKey("UserId")]
+        public virtual ApplicationUser User { get; set; } = null!;
+
     }
 }

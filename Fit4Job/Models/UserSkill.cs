@@ -1,18 +1,18 @@
 ﻿namespace Fit4Job.Models
 {
     [Table("user_skills")]
-    [Index(nameof(UserId), nameof(SkillId), IsUnique = true, Name = "IX_UserSkills_UserId_SkillId")]
     [Index(nameof(DeletedAt), Name = "IX_UserSkills_DeletedAt")]
+    [Index(nameof(UserId), nameof(SkillId), IsUnique = true, Name = "IX_UserSkills_UserId_SkillId")]
     public class UserSkill
     {
         [Key]
+        public int Id { get; set; }
+
         [Required]
-        [Column(Order = 0)]
         public int UserId { get; set; }
 
         [Key]
         [Required]
-        [Column(Order = 1)]
         public int SkillId { get; set; }
 
 

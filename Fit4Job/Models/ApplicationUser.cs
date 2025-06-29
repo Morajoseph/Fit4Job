@@ -12,6 +12,7 @@
 
 
         [Required]
+        [EnumDataType(typeof(UserRole))]
         [Column(TypeName = "varchar(20)")]
         public UserRole Role { get; set; }
 
@@ -33,10 +34,12 @@
         public DateTime? DeletedAt { get; set; }
 
 
-        public bool IsActive { get; set; } = true;
+        public bool IsVerified { get; set; } = false; // For Future Update to add verfication for users
 
 
-        public bool IsVerified { get; set; } = false;
+        // Computed properties
+        [NotMapped]
+        public bool IsActive => DeletedAt == null;
 
         // Navigation properties
         public virtual AdminProfile? AdminProfile { get; set; }

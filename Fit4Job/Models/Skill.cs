@@ -7,7 +7,6 @@
     {
         [Key]
         [Display(Name = "Skill ID")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required]
@@ -26,7 +25,6 @@
         [Required]
         [DataType(DataType.DateTime)]
         [Display(Name = "Created At")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [DataType(DataType.DateTime)]
@@ -34,7 +32,7 @@
         public DateTime? DeletedAt { get; set; }
 
         // Navigation properties
-
+        public virtual ICollection<UserSkill> UserSkills { get; set; }
 
     }
 }

@@ -50,7 +50,7 @@
 
         [Required]
         [Display(Name = "Status")]
-        public CompanyStatus Status { get; set; } = CompanyStatus.Pending;
+        public CompanyStatus Status { get; set; } = CompanyStatus.Pending; 
 
         [Required]
         [DataType(DataType.DateTime)]

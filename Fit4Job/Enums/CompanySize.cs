@@ -2,22 +2,19 @@
 {
     public enum CompanySize
     {
-        [Display(Name = "Startup")]
+        [Display(Name = "Startup : 1-10")]
         Startup,
 
-        [Display(Name = "1-10 employees")]
-        OneToTen,
+        [Display(Name = "Small : 11-50")]
+        Small,
 
-        [Display(Name = "11-50 employees")]
-        ElevenToFifty,
+        [Display(Name = "Medium : 51-200")]
+        Medium,
 
-        [Display(Name = "51-200 employees")]
-        FiftyOneToTwoHundred,
+        [Display(Name = "Large : 201-1000")]
+        Large,
 
-        [Display(Name = "201-500 employees")]
-        TwoHundredOneToFiveHundred,
-
-        [Display(Name = "500+ employees")]
-        FiveHundredPlus
+        [Display(Name = "Enterprise : 1000+")]
+        Enterprise
     }
 }

@@ -1,11 +1,11 @@
 ﻿namespace Fit4Job.Models
 {
     [Table("job_seeker_profiles")]
+    [Index(nameof(UserId), IsUnique = true, Name = "IX_JobSeekerProfiles_UserId")]
     public class JobSeekerProfile
     {
         [Key]
         [Display(Name = "Job Seeker Profile ID")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required]
@@ -49,13 +49,14 @@
         [Display(Name = "Current Position")]
         public string? CurrentPosition { get; set; }
 
-        [Column(TypeName = "decimal(10,2)")]
-        [Display(Name = "Expected Salary")]
         [Range(0, 999999999.99)]
+        [Display(Name = "Expected Salary")]
+        [Column(TypeName = "decimal(10,2)")]
         public decimal? ExpectedSalary { get; set; }
 
-        [Display(Name = "User Credit")]
+
         [Range(0, int.MaxValue)]
+        [Display(Name = "User Credit")]
         public int UserCredit { get; set; } = 5;
 
         [StringLength(255)]
@@ -66,7 +67,6 @@
         [Required]
         [DataType(DataType.DateTime)]
         [Display(Name = "Updated At")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
 
@@ -76,12 +76,11 @@
 
         // Computed property
 
-        // for full name 
         [NotMapped]
         [Display(Name = "Full Name")]
         public string FullName => $"{FirstName} {LastName}";
 
-        // Helper property to check if profile is active
+
         [NotMapped]
         public bool IsActive => DeletedAt == null;
 
