@@ -24,6 +24,7 @@ namespace Fit4Job.Models
 
         [Required]
         [Column(TypeName = "decimal(10,2)")]
+       
         [Range(0.01, double.MaxValue, ErrorMessage = "Amount must be greater than 0")]
         public decimal Amount { get; set; }
 
@@ -57,7 +58,7 @@ namespace Fit4Job.Models
 
         [Column(TypeName = "decimal(10,2)")]
         [Display(Name = "Refunded Amount")]
-        public decimal RefundedAmount { get; set; } = 0.00m;
+        public decimal RefundedAmount { get; set; } = 0;
 
         [DataType(DataType.DateTime)]
         [Display(Name = "Refunded At")]

@@ -38,5 +38,7 @@
 
         //[ForeignKey("PracticeAttemptId")]
         //public virtual TrackAttempt? PracticeAttempt { get; set; }
+
+        public virtual ICollection<Badge>? UserBadges { get; set; }
     }
 }

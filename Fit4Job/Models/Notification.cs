@@ -5,8 +5,7 @@
     [Index(nameof(UserId), Name = "IX_Notifications_UserId")]
     [Index(nameof(IsRead), Name = "IX_Notifications_IsRead")]
     [Index(nameof(CreatedAt), Name = "IX_Notifications_CreatedAt")]
-    [Index(nameof(UserId), nameof(IsRead), nameof(CreatedAt), Name = "IX_Notifications_UserId_IsRead_CreatedAt")]
-    public class Notification:BaseEntity
+    public class Notification
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -17,11 +16,11 @@
 
         [Required]
         [StringLength(255)]
-        public string Title { get; set; } = string.Empty;
+        public string Title { get; set; }
 
         [Required]
         [Column(TypeName = "text")]
-        public string Message { get; set; } = string.Empty;
+        public string Message { get; set; }
 
         [Url]
         [Display(Name = "Action URL")]
@@ -31,12 +30,22 @@
         [Display(Name = "Is Read")]
         public bool IsRead { get; set; } = false;
 
-     public DateTime? ReadAt { get; set; }
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        [Display(Name = "Created At")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+
+        [DataType(DataType.DateTime)]
+        [Display(Name = "Deleted At")]
+        public DateTime? DeletedAt { get; set; }
+        public DateTime? ReadAt { get; set; }
 
 
         // Navigation
         [ForeignKey("UserId")]
-        public virtual ApplicationUser User { get; set; } = null!;
+        public virtual ApplicationUser User { get; set; } 
 
     }
 }
