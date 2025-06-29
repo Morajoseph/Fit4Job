@@ -351,7 +351,6 @@ Table tasks {
   estimated_hours int
   skills_required json
   is_active boolean [default: true]
-  featured boolean [default: false]
   created_at timestamp [default: `now()`]
   updated_at timestamp [default: `now()`]
   deleted_at timestamp [null]
@@ -372,7 +371,6 @@ Table task_submissions {
   submission_notes text
   submission_link varchar(500) [not null] // github or google drive link
   demo_link varchar(500) 
-  submission_files json // Array of file URLs
   submitted_at timestamp [default: `now()`]
   
   indexes {

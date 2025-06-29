@@ -86,6 +86,7 @@
         [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; } = null!;
 
+        public virtual ICollection<CompanyTask>? Tasks { get; set; }
         public virtual ICollection<CompanyExam>? CompanyExams { get; set; }
     }
 }
