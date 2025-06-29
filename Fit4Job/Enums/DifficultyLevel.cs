@@ -2,8 +2,13 @@
 {
     public enum DifficultyLevel
     {
-        easy,
-        medium,
-        hard
+        [Display(Name = "Easy")]
+        Easy,
+
+        [Display(Name = "Medium")]
+        Medium,
+
+        [Display(Name = "Hard")]
+        Hard
     }
 }

@@ -2,9 +2,16 @@
 {
     public enum QuestionLevel
     {
-        fresh_grad,
-        junior,
-        senior,
-        team_lead
+        [Display(Name = "Fresh Graduate")]
+        FreshGraduate,
+
+        [Display(Name = "Junior")]
+        Junior,
+
+        [Display(Name = "Senior")]
+        Senior,
+
+        [Display(Name = "Team Lead")]
+        TeamLead
     }
 }

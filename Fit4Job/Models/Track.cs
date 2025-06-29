@@ -1,41 +1,56 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-
-namespace Fit4Job.Models
+﻿namespace Fit4Job.Models
 {
-
-    [Table("Tracks")]
-    [Index(nameof(CategoryId))]
-    [Index(nameof(IsPremium))]
-    [Index(nameof(IsActive))]
-    [Index(nameof(CreatedBy))]
-
+    [Table("tracks")]
+    [Index(nameof(IsActive), Name = "IX_Tracks_IsActive")]
+    [Index(nameof(IsPremium), Name = "IX_Tracks_IsPremium")]
+    [Index(nameof(CategoryId), Name = "IX_Tracks_CategoryId")]
     public class Track
     {
-       
+
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Display(Name = "Track ID")]
         public int Id { get; set; }
+
+
+        [Required]
+        [Display(Name = "Track Category ID")]
+        public int CategoryId { get; set; }
+
+
+        [Required]
+        [Display(Name = "Created By")]
+        public int CreatorId { get; set; }
+
 
         [Required]
         [StringLength(50)]
         [Display(Name = "Track Name")]
         public string Name { get; set; }
 
+
         [Column(TypeName = "text")]
         [Display(Name = "Track Description")]
         public string? Description { get; set; }
 
-        public bool IsPremium { get; set; }=false;
+        [Required]
+        [Display(Name = "Is Premium")]
+        public bool IsPremium { get; set; } = false;
 
+        [Required]
+        [Range(0, 99999999.99)]
+        [Display(Name = "Price")]
         [Column(TypeName = "decimal(10,2)")]
         public decimal? Price { get; set; } = 0;
 
+        [Required]
+        [Display(Name = "Track Questions")]
+        public int TrackQuestionsCount { get; set; } = 0;
 
         [Required]
+        [Range(0, 99999999.99)]
         [Column(TypeName = "decimal(10,2)")]
         [Display(Name = "Track Total Score")]
         public decimal TrackTotalScore { get; set; }
-
 
 
         [Required]
@@ -54,18 +69,22 @@ namespace Fit4Job.Models
         public DateTime? DeletedAt { get; set; }
 
 
-        // Navigation property
-        [ForeignKey("UserId")]
-        public virtual ApplicationUser CreatedBy { get; set; } = null!;
-
-
-        [ForeignKey("Category")]
-        public int CategoryId { get; set; }
-        public PracticeCategory Category { get; set; }
-
-        // Helper properties
+        // Computed property
         [NotMapped]
         public bool IsActive => DeletedAt == null;
 
+
+        // Navigation property
+        [ForeignKey("CreatorId")]
+        public virtual ApplicationUser Creator { get; set; } = null!;
+
+
+        [ForeignKey("CategoryId")]
+        [Display(Name = "Track Category")]
+        public virtual TrackCategory Category { get; set; } = null!;
+
+
+        public virtual ICollection<TrackAttempt>? TrackAttempts { get; set; }
+        public virtual ICollection<TrackQuestion>? TrackQuestions { get; set; }
     }
 }

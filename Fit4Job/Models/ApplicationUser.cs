@@ -45,7 +45,9 @@
         public virtual AdminProfile? AdminProfile { get; set; }
         public virtual CompanyProfile? CompanyProfile { get; set; }
         public virtual JobSeekerProfile? JobSeekerProfile { get; set; }
-        public virtual ICollection<UserSkill>? UserSkills { get; set; }
 
+
+        public virtual ICollection<UserSkill>? UserSkills { get; set; }
+        public virtual ICollection<TrackAttempt>? TrackAttempts { get; set; }
     }
 }

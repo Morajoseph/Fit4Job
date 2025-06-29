@@ -2,12 +2,23 @@
 {
     public enum QuestionType
     {
-        multiple_choice_single,
-        multiple_choice_multiple,
-        code_output,
-        written,
-        fill_in_the_blank,
-        true_false,
-        code_debugging
+        [Display(Name = "Multiple Choice (Single)")]
+        MultipleChoiceSingle,
+
+        [Display(Name = "Multiple Choice (Multiple)")]
+        MultipleChoiceMultiple,
+
+        [Display(Name = "Code Output")]
+        CodeOutput,
+
+        [Display(Name = "Written")]
+        Written,
+
+        [Display(Name = "Fill in the Blank")]
+        FillInTheBlank,
+
+        [Display(Name = "True/False")]
+        TrueFalse,
+
     }
 }
