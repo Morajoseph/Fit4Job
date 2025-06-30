@@ -6,17 +6,22 @@
     public class UserSkill
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+      
         public int Id { get; set; }
 
-        [Required]
+
+        [Required(ErrorMessage = "User ID is required")]
+        [Display(Name = "User ID")]
         public int UserId { get; set; }
 
 
-        [Required]
+        [Required(ErrorMessage = "Skill ID is required")]
+        [Display(Name = "Skill ID")]
         public int SkillId { get; set; }
 
 
-        [Required]
+        [Required(ErrorMessage = "Created At timestamp is required")]
         [DataType(DataType.DateTime)]
         [Display(Name = "Created At")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

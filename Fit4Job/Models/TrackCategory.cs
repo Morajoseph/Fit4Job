@@ -6,6 +6,7 @@
     {
         [Key]
         [Display(Name = "Track Category ID")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
 
@@ -15,8 +16,11 @@
         public string Name { get; set; } = string.Empty;
 
 
+
+        [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters")]
         [Column(TypeName = "text")]
-        [Display(Name = "Track Description")]
+        [Display(Name = "Category Description")]
+      
         public string? Description { get; set; }
 
 

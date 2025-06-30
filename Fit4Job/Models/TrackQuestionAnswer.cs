@@ -8,10 +8,12 @@
     {
         [Key]
         [Display(Name = "Answer ID")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Attempt ID is required")]
         [Display(Name = "Attempt ID")]
+        
         public int AttemptId { get; set; }
 
         [Required]
@@ -24,6 +26,8 @@
 
         [Column(TypeName = "text")]
         [Display(Name = "Text Answer")]
+        [MaxLength(5000, ErrorMessage = "Text answer cannot exceed 5000 characters")]
+
         public string? TextAnswer { get; set; }
 
         [Required]

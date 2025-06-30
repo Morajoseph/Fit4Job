@@ -7,15 +7,19 @@
     {
         [Key]
         [Display(Name = "Skill ID")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Skill name is required")]
         [StringLength(255)]
         [Display(Name = "Skill Name")]
         public string Name { get; set; } = string.Empty;
 
+      
+        [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters")]
         [Column(TypeName = "text")]
         [Display(Name = "Description")]
+        [DataType(DataType.MultilineText)]
         public string? Description { get; set; }
 
         [Required]
@@ -32,6 +36,7 @@
         public DateTime? DeletedAt { get; set; }
 
         // Navigation properties
+        [Display(Name = "User Skills")]
         public virtual ICollection<UserSkill> UserSkills { get; set; }
     }
 }
