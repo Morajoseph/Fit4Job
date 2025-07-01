@@ -19,7 +19,7 @@ namespace Fit4Job
             /*********************** Database & User Identity ***********************/
             builder.Services.AddDbContext<Fit4JobDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("LocalConnectionString"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("GlobalConnectionString"));
             });
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
