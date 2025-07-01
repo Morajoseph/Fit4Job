@@ -2,7 +2,6 @@
 {
     [Table("badges")]
     [Index(nameof(TrackId), Name = "IX_Badges_TrackId")]
-    [Index(nameof(IsActive), Name = "IX_Badges_IsActive")]
     public class Badge
     {
 
