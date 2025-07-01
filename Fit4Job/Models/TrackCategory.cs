@@ -11,16 +11,16 @@
 
 
         [Required]
-        [StringLength(50)]
+        [StringLength(100)]
         [Display(Name = "Track Name")]
+        [Column(TypeName = "nvarchar(100)")]
         public string Name { get; set; } = string.Empty;
 
 
 
         [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters")]
-        [Column(TypeName = "text")]
+        [Column(TypeName = "nvarchar(1000)")]
         [Display(Name = "Category Description")]
-      
         public string? Description { get; set; }
 
 

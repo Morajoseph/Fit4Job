@@ -54,15 +54,15 @@
         public string? PaymentToken { get; set; }
 
 
-        [StringLength(4000, ErrorMessage = "Payment gateway response cannot exceed 4000 characters")]
+        [StringLength(2000, ErrorMessage = "Payment gateway response cannot exceed 2,000 characters")]
         [Display(Name = "Payment Gateway Response")]
-        [Column(TypeName = "varchar(max)")]
+        [Column(TypeName = "varchar(2000)")]
         public string? PaymentGatewayResponse { get; set; }
 
 
         [StringLength(1000, ErrorMessage = "Refund reason cannot exceed 1000 characters")]
         [Display(Name = "Refund Reason")]
-        [Column(TypeName = "varchar(1000)")]
+        [Column(TypeName = "nvarchar(1000)")]
         public string? RefundReason { get; set; }
 
 

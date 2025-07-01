@@ -7,7 +7,6 @@
     {
         [Key]
         [Display(Name = "Option ID")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
 
@@ -16,7 +15,7 @@
         public int QuestionId { get; set; }
 
         [Required(ErrorMessage = "Option text is required")]
-        [Column(TypeName = "text")]
+        [Column(TypeName = "nvarchar(2000)")]
         [Display(Name = "Option Text")]
         [StringLength(2000, MinimumLength = 1, ErrorMessage = "Option text must be between 1 and 2000 characters")]
 

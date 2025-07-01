@@ -26,7 +26,7 @@
         public string? SelectedOptionsJson { get; set; }
 
 
-        [Column(TypeName = "text")]
+        [Column(TypeName = "nvarchar(2000)")]
         [Display(Name = "Text Answer")]
         public string? TextAnswer { get; set; }
 

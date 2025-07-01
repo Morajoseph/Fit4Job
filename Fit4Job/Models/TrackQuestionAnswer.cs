@@ -8,15 +8,15 @@
     {
         [Key]
         [Display(Name = "Answer ID")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+
 
         [Required(ErrorMessage = "Attempt ID is required")]
         [Display(Name = "Attempt ID")]
-        
         public int AttemptId { get; set; }
 
-        [Required]
+
+        [Required(ErrorMessage = "Question ID is required")]
         [Display(Name = "Question ID")]
         public int QuestionId { get; set; }
 
@@ -24,23 +24,24 @@
         [Display(Name = "Selected Options")]
         public string? SelectedOptionsJson { get; set; }
 
-        [Column(TypeName = "text")]
+        [Column(TypeName = "nvarchar(2000)")]
         [Display(Name = "Text Answer")]
-        [MaxLength(5000, ErrorMessage = "Text answer cannot exceed 5000 characters")]
-
+        [MaxLength(2000, ErrorMessage = "Text answer cannot exceed 2,000 characters")]
         public string? TextAnswer { get; set; }
 
-        [Required]
+
+        [Required(ErrorMessage = "Is Correct is required")]
         [Display(Name = "Is Correct")]
         public bool IsCorrect { get; set; } = false;
 
-        [Required]
-        [Range(0, 999.99)]
+
+        [Required(ErrorMessage = "Points Earned is required")]
+        [Range(0, 9999.99)]
         [Display(Name = "Points Earned")]
         [Column(TypeName = "decimal(5,2)")]
         public decimal PointsEarned { get; set; } = 0.00m;
 
-        [Required]
+
         [DataType(DataType.DateTime)]
         [Display(Name = "Answered At")]
         public DateTime AnsweredAt { get; set; } = DateTime.UtcNow;

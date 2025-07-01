@@ -18,8 +18,8 @@
 
 
         [Required(ErrorMessage = "Question text is required")]
-        [StringLength(5000, MinimumLength = 5, ErrorMessage = "Question text must be between 5 and 5000 characters")]
-        [Column(TypeName = "text")]
+        [StringLength(2000, MinimumLength = 5, ErrorMessage = "Question text must be between 5 and 2,000 characters")]
+        [Column(TypeName = "nvarchar(2000)")]
         [Display(Name = "Question Text")]
         public string QuestionText { get; set; }
 
@@ -54,18 +54,17 @@
         [StringLength(2000, ErrorMessage = "Explanation cannot exceed 2000 characters")]
         [Column(TypeName = "text")]
         [Display(Name = "Explanation")]
-
         public string? Explanation { get; set; }
 
 
-        [StringLength(10000, ErrorMessage = "Code snippet cannot exceed 10000 characters")]
-        [Column(TypeName = "text")]
+        [StringLength(2000, ErrorMessage = "Code snippet cannot exceed 2,000 characters")]
+        [Column(TypeName = "nvarchar(2000)")]
         [Display(Name = "Code Snippet")]
         public string? CodeSnippet { get; set; }
 
 
-        [StringLength(2000, ErrorMessage = "Expected output cannot exceed 2000 characters")]
-        [Column(TypeName = "text")]
+        [StringLength(2000, ErrorMessage = "Expected output cannot exceed 2,000 characters")]
+        [Column(TypeName = "nvarchar(2000)")]
         [Display(Name = "Expected Output")]
         public string? ExpectedOutput { get; set; }
 
@@ -97,6 +96,5 @@
         public virtual Track Track { get; set; } = null!;
         public virtual ICollection<TrackQuestionOption>? Options { get; set; }
         public virtual ICollection<TrackQuestionAnswer>? Answers { get; set; }
-
     }
 }

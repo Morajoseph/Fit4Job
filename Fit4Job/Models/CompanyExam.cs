@@ -17,19 +17,19 @@
         [Required(ErrorMessage = "Title is required")]
         [Display(Name = "Title")]
         [StringLength(256, MinimumLength = 5, ErrorMessage = "Title must be between 5 and 256 characters")]
-        [Column(TypeName = "varchar(256)")]
+        [Column(TypeName = "nvarchar(256)")]
         public string Title { get; set; } = null!;
 
 
         [Display(Name = "Description")]
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters")]
-        [Column(TypeName = "varchar(500)")]
+        [Column(TypeName = "nvarchar(500)")]
         public string? Description { get; set; }
 
 
         [Display(Name = "Instructions")]
-        [StringLength(2048, ErrorMessage = "Instructions cannot exceed 2048 characters")]
-        [Column(TypeName = "varchar(2048)")]
+        [StringLength(2000, ErrorMessage = "Instructions cannot exceed 2000 characters")]
+        [Column(TypeName = "nvarchar(2000)")]
         public string? Instructions { get; set; }
 
 

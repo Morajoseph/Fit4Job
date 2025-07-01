@@ -17,14 +17,14 @@
 
         [Required(ErrorMessage = "Badge name is required")]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "Badge name must be between 2 and 50 characters")]
-        [Column(TypeName = "varchar(50)")]
+        [Column(TypeName = "nvarchar(50)")]
         [Display(Name = "Badge Name")]
         public string Name { get; set; }
 
 
-        [StringLength(1000)]
+        [StringLength(500, MinimumLength = 1, ErrorMessage = "Description must be between 1 and 500 characters")]
         [Display(Name = "Description")]
-        [Column(TypeName = "text")]
+        [Column(TypeName = "nvarchar(500)")]
         public string? Description { get; set; }
 
 

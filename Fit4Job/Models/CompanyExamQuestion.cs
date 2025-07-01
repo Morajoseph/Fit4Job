@@ -16,9 +16,9 @@
 
 
         [Required(ErrorMessage = "Question text is required")]
-        [Column(TypeName = "nvarchar(max)")]
+        [Column(TypeName = "nvarchar(2000)")]
         [Display(Name = "Question Text", Description = "The main question content")]
-        [StringLength(10000, MinimumLength = 10, ErrorMessage = "Question text must be between 10 and 10,000 characters")]
+        [StringLength(4000, MinimumLength = 10, ErrorMessage = "Question text must be between 10 and 2,000 characters")]
         [DataType(DataType.MultilineText)]
         public string QuestionText { get; set; } = string.Empty;
 
@@ -37,23 +37,23 @@
         public decimal Points { get; set; }
 
 
-        [Column(TypeName = "nvarchar(5000)")]
+        [Column(TypeName = "nvarchar(2000)")]
         [Display(Name = "Explanation", Description = "Optional explanation for the correct answer")]
-        [StringLength(5000, ErrorMessage = "Explanation cannot exceed 5,000 characters")]
+        [StringLength(2000, ErrorMessage = "Explanation cannot exceed 2,000 characters")]
         [DataType(DataType.MultilineText)]
         public string? Explanation { get; set; }
 
 
-        [Column(TypeName = "nvarchar(max)")]
+        [Column(TypeName = "nvarchar(2000)")]
         [Display(Name = "Code Snippet", Description = "Code example for programming questions")]
-        [StringLength(10000, ErrorMessage = "Code snippet cannot exceed 10,000 characters")]
+        [StringLength(2000, ErrorMessage = "Code snippet cannot exceed 2,000 characters")]
         [DataType(DataType.MultilineText)]
         public string? CodeSnippet { get; set; }
 
 
-        [Column(TypeName = "nvarchar(5000)")]
+        [Column(TypeName = "nvarchar(2000)")]
         [Display(Name = "Expected Output", Description = "Expected output for code execution questions")]
-        [StringLength(5000, ErrorMessage = "Expected output cannot exceed 5,000 characters")]
+        [StringLength(2000, ErrorMessage = "Expected output cannot exceed 2,000 characters")]
         [DataType(DataType.MultilineText)]
         public string? ExpectedOutput { get; set; }
 

@@ -27,14 +27,15 @@
 
 
         [Required(ErrorMessage = "Track name is required")]
-        [StringLength(50)]
+        [StringLength(256)]
         [Display(Name = "Track Name")]
+        [Column(TypeName = "nvarchar(256)")]
         public string Name { get; set; }   
 
 
 
         [StringLength(2000, ErrorMessage = "Description cannot exceed 2000 characters")]
-        [Column(TypeName = "text")]
+        [Column(TypeName = "nvarchar(2000)")]
         [Display(Name = "Track Description")]
         [DataType(DataType.MultilineText)]
         public string? Description { get; set; }

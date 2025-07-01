@@ -16,20 +16,21 @@
         [Required(ErrorMessage = "Title is required")]
         [StringLength(255, MinimumLength = 1, ErrorMessage = "Title must be between 1 and 255 characters")]
         [Display(Name = "Title")]
+        [Column(TypeName = "nvarchar(255)")]
         public string Title { get; set; }
 
 
         [Required(ErrorMessage = "Message is required")]
         [StringLength(1000, MinimumLength = 1, ErrorMessage = "Message must be between 1 and 1000 characters")]
         [Display(Name = "Message")]
-        [Column(TypeName = "varchar(1000)")]
+        [Column(TypeName = "nvarchar(1000)")]
         public string Message { get; set; }
 
 
         [Url(ErrorMessage = "Please enter a valid URL")]
         [StringLength(500, ErrorMessage = "Action URL cannot exceed 500 characters")]
         [Display(Name = "Action URL")]
-        [Column(TypeName = "varchar(500)")]
+        [Column(TypeName = "nvarchar(500)")]
         public string? ActionUrl { get; set; }
 
 

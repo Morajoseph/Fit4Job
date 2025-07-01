@@ -81,10 +81,8 @@
         [ForeignKey("TrackId")]
         public virtual Track Track { get; set; } = null!;
 
-
         public virtual ICollection<Badge>? Badges { get; set; }
-        
-        
+
         public virtual ICollection<TrackQuestionAnswer>? Answers { get; set; }
     }
 }

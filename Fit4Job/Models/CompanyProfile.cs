@@ -17,11 +17,12 @@
         [Required(ErrorMessage = "Company name is required")]
         [StringLength(255, MinimumLength = 2, ErrorMessage = "Company name must be between 2 and 255 characters")]
         [Display(Name = "Company Name", Description = "Official name of the company")]
+        [Column(TypeName = "nvarchar(255)")]
         public string CompanyName { get; set; } = string.Empty;
 
-        [Column(TypeName = "nvarchar(5000)")]
+        [Column(TypeName = "nvarchar(2000)")]
         [Display(Name = "Company Description", Description = "Detailed description of the company and its services")]
-        [StringLength(5000, ErrorMessage = "Company description cannot exceed 5,000 characters")]
+        [StringLength(2000, ErrorMessage = "Company description cannot exceed 2,000 characters")]
         [DataType(DataType.MultilineText)]
         public string? CompanyDescription { get; set; }
 

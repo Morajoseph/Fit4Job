@@ -21,9 +21,9 @@
         public int UserId { get; set; }
 
 
-        [Column(TypeName = "varchar(max)")]
+        [Column(TypeName = "nvarchar(max)")]
         [Display(Name = "Submission Notes")]
-        [StringLength(8000, ErrorMessage = "Submission notes cannot exceed 8000 characters")]
+        [StringLength(4000, ErrorMessage = "Submission notes cannot exceed 4,000 characters")]
         public string? SubmissionNotes { get; set; }
 
 
@@ -32,7 +32,6 @@
         [StringLength(500, ErrorMessage = "Submission link cannot exceed 500 characters")]
         [Display(Name = "Submission Link")]
         [Column(TypeName = "nvarchar(500)")]
-
         public string SubmissionLink { get; set; } = string.Empty;
 
 

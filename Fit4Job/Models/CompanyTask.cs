@@ -19,27 +19,28 @@
         [Required(ErrorMessage = "Task title is required")]
         [StringLength(255, MinimumLength = 5, ErrorMessage = "Task title must be between 5 and 255 characters")]
         [Display(Name = "Title", Description = "Title or name of the task")]
+        [Column(TypeName = "nvarchar(255)")]
         public string Title { get; set; } = string.Empty;
 
 
         [Required(ErrorMessage = "Task description is required")]
         [Column(TypeName = "nvarchar(max)")]
         [Display(Name = "Description", Description = "Detailed description of the task")]
-        [StringLength(10000, MinimumLength = 20, ErrorMessage = "Task description must be between 20 and 10,000 characters")]
+        [StringLength(4000, MinimumLength = 20, ErrorMessage = "Task description must be between 20 and 4,000 characters")]
         [DataType(DataType.MultilineText)]
         public string Description { get; set; } = string.Empty;
 
 
         [Column(TypeName = "nvarchar(max)")]
         [Display(Name = "Requirements", Description = "Specific requirements and qualifications needed")]
-        [StringLength(5000, ErrorMessage = "Requirements cannot exceed 5,000 characters")]
+        [StringLength(4000, ErrorMessage = "Requirements cannot exceed 4,000 characters")]
         [DataType(DataType.MultilineText)]
         public string? Requirements { get; set; }
 
 
-        [Column(TypeName = "nvarchar(5000)")]
+        [Column(TypeName = "nvarchar(max)")]
         [Display(Name = "Deliverables", Description = "Expected deliverables and outcomes")]
-        [StringLength(5000, ErrorMessage = "Deliverables cannot exceed 5,000 characters")]
+        [StringLength(4000, ErrorMessage = "Deliverables cannot exceed 4,000 characters")]
         [DataType(DataType.MultilineText)]
         public string? Deliverables { get; set; }
 
@@ -89,12 +90,12 @@
         [Display(Name = "Is Expired")]
         public bool IsExpired => DateTime.UtcNow > Deadline;
 
-        
+
         [NotMapped]
         [Display(Name = "Days Until Deadline")]
         public int DaysUntilDeadline => (Deadline.Date - DateTime.UtcNow.Date).Days;
 
-        
+
         [NotMapped]
         [Display(Name = "Time Remaining")]
         public TimeSpan? TimeRemaining => IsExpired ? null : Deadline - DateTime.UtcNow;

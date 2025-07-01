@@ -28,26 +28,26 @@
 
         [StringLength(500, ErrorMessage = "CV file URL cannot exceed 500 characters")]
         [Display(Name = "CV File URL")]
-        [Column(TypeName = "varchar(500)")]
+        [Column(TypeName = "nvarchar(500)")]
         public string? CvFileUrl { get; set; }
 
 
         [Url(ErrorMessage = "Please enter a valid LinkedIn URL")]
         [StringLength(255, ErrorMessage = "LinkedIn URL cannot exceed 255 characters")]
         [Display(Name = "LinkedIn URL")]
-        [Column(TypeName = "varchar(255)")]
+        [Column(TypeName = "nvarchar(255)")]
         public string? LinkedinUrl { get; set; }
 
         [Url(ErrorMessage = "Please enter a valid GitHub URL")]
         [StringLength(255, ErrorMessage = "GitHub URL cannot exceed 255 characters")]
         [Display(Name = "GitHub URL")]
-        [Column(TypeName = "varchar(255)")]
+        [Column(TypeName = "nvarchar(255)")]
         public string? GithubUrl { get; set; }
 
         [Url(ErrorMessage = "Please enter a valid Portfolio URL")]
         [StringLength(255, ErrorMessage = "Portfolio URL cannot exceed 255 characters")]
         [Display(Name = "Portfolio URL")]
-        [Column(TypeName = "varchar(255)")]
+        [Column(TypeName = "nvarchar(255)")]
         public string? PortfolioUrl { get; set; }
 
         [Range(0, 50)]
@@ -56,7 +56,7 @@
 
         [StringLength(255, ErrorMessage = "Current position cannot exceed 255 characters")]
         [Display(Name = "Current Position")]
-        [Column(TypeName = "varchar(255)")]
+        [Column(TypeName = "nvarchar(255)")]
         public string? CurrentPosition { get; set; }
 
 
@@ -73,7 +73,7 @@
         
         [StringLength(255, ErrorMessage = "Location cannot exceed 255 characters")]
         [Display(Name = "Location")]
-        [Column(TypeName = "varchar(255)")]
+        [Column(TypeName = "nvarchar(255)")]
         public string? Location { get; set; }
 
 

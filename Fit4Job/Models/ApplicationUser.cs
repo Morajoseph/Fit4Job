@@ -4,13 +4,13 @@
     {
         [Url(ErrorMessage = "Please enter a valid URL")]
         [StringLength(500, ErrorMessage = "Profile picture URL cannot exceed 500 characters")]
-        [Column(TypeName = "varchar(500)")]
+        [Column(TypeName = "nvarchar(2000)")]
         [Display(Name = "Profile Picture URL")]
         public string? ProfilePictureURL { get; set; }
 
 
         [StringLength(2000, ErrorMessage = "Bio cannot exceed 2000 characters")]
-        [Column(TypeName = "text")]
+        [Column(TypeName = "nvarchar(2000)")]
         [Display(Name = "Bio")]
         public string? Bio { get; set; }
 

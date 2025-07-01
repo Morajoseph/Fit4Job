@@ -5,8 +5,6 @@
     public class UserSkill
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-
         public int Id { get; set; }
 
 
