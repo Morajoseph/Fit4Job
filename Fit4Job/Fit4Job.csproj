@@ -10,22 +10,18 @@
     <Compile Remove="Data\**" />
     <Compile Remove="DTOs\**" />
     <Compile Remove="GenericRepositories\**" />
-    <Compile Remove="Repositories\**" />
     <Compile Remove="UoW\**" />
     <Content Remove="Data\**" />
     <Content Remove="DTOs\**" />
     <Content Remove="GenericRepositories\**" />
-    <Content Remove="Repositories\**" />
     <Content Remove="UoW\**" />
     <EmbeddedResource Remove="Data\**" />
     <EmbeddedResource Remove="DTOs\**" />
     <EmbeddedResource Remove="GenericRepositories\**" />
-    <EmbeddedResource Remove="Repositories\**" />
     <EmbeddedResource Remove="UoW\**" />
     <None Remove="Data\**" />
     <None Remove="DTOs\**" />
     <None Remove="GenericRepositories\**" />
-    <None Remove="Repositories\**" />
     <None Remove="UoW\**" />
   </ItemGroup>
 
@@ -47,6 +43,8 @@
   <ItemGroup>
     <Folder Include="Controllers\" />
     <Folder Include="Migrations\" />
+    <Folder Include="Repositories\Implementations\" />
+    <Folder Include="Repositories\Interfaces\" />
   </ItemGroup>
 
 </Project>

@@ -5,6 +5,7 @@ global using Fit4Job.DataContext;
 
 global using Microsoft.AspNetCore.Identity;
 global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Storage;
 global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 
