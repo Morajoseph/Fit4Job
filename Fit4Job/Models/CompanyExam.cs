@@ -11,14 +11,14 @@
         public int Id { get; set; }
 
 
-        [Required]
+        [Required(ErrorMessage = "Company ID is required")]
         [Display(Name = "Company ID")]
         public int CompanyId { get; set; }
-
 
         [Required(ErrorMessage = "Title is required")]
         [Display(Name = "Title")]
         [StringLength(256, MinimumLength = 5, ErrorMessage = "Title must be between 5 and 256 characters")]
+        [Column(TypeName = "varchar(256)")]
         public string Title { get; set; } = null!;
 
 
@@ -37,27 +37,22 @@
         [Required(ErrorMessage = "Duration is required")]
         [Display(Name = "Duration (Minutes)")]
         [Range(1, 600, ErrorMessage = "Duration must be between 1 and 600 minutes (10 hours)")]
+        [Column(TypeName = "int")]
         public int DurationMinutes { get; set; }
 
 
-        [Required]
-        [Range(0, 99999999.99)]
-        [Display(Name = "Max Score")]
+        [Required(ErrorMessage = "Total score is required")]
+        [Range(0, 99999999.99, ErrorMessage = "Total score must be a positive value")]
+        [Display(Name = "Total Score")]
         [Column(TypeName = "decimal(10,2)")]
         public decimal TotalScore { get; set; }
 
 
-        [Required]
-        [Range(0, 99999999.99)]
+        [Required(ErrorMessage = "Passing score is required")]
+        [Range(0, 99999999.99, ErrorMessage = "Passing score must be a positive value")]
         [Display(Name = "Passing Score")]
         [Column(TypeName = "decimal(10,2)")]
         public decimal PassingScore { get; set; }
-
-
-        //[Required]
-        //[Display(Name = "Max Attempts")]
-        //[Range(1, int.MaxValue, ErrorMessage = "Max attempts must be at least 1")]
-        //public int MaxAttempts { get; set; } = 1;
 
 
         [DataType(DataType.DateTime)]
@@ -70,28 +65,31 @@
         public DateTime? EndDate { get; set; }
 
 
-        [Required]
+        [Required(ErrorMessage = "Active status is required")]
         [Display(Name = "Is Active")]
+        [Column(TypeName = "bit")]
         public bool IsActive { get; set; } = true;
 
 
-        [Required]
+        [Required(ErrorMessage = "Show results immediately setting is required")]
         [Display(Name = "Show Results Immediately")]
+        [Column(TypeName = "bit")]
         public bool ShowResultsImmediately { get; set; } = false;
 
 
-        [Required]
+        [Required(ErrorMessage = "Created date is required")]
         [DataType(DataType.DateTime)]
         [Display(Name = "Created At")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        [Required]
+        [Required(ErrorMessage = "Updated date is required")]
         [DataType(DataType.DateTime)]
         [Display(Name = "Updated At")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
 
         [DataType(DataType.DateTime)]
+        [Column(TypeName = "timestamp")]
         [Display(Name = "Deleted At")]
         public DateTime? DeletedAt { get; set; }
 

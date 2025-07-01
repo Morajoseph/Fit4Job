@@ -2,18 +2,23 @@
 {
     public class ApplicationUser : IdentityUser<int>
     {
-        [StringLength(500)]
+        [Url(ErrorMessage = "Please enter a valid URL")]
+        [StringLength(500, ErrorMessage = "Profile picture URL cannot exceed 500 characters")]
+        [Column(TypeName = "varchar(500)")]
         [Display(Name = "Profile Picture URL")]
         public string? ProfilePictureURL { get; set; }
 
 
+        [StringLength(2000, ErrorMessage = "Bio cannot exceed 2000 characters")]
         [Column(TypeName = "text")]
+        [Display(Name = "Bio")]
         public string? Bio { get; set; }
 
 
-        [Required]
-        [EnumDataType(typeof(UserRole))]
+        [Required(ErrorMessage = "User role is required")]
+        [EnumDataType(typeof(UserRole), ErrorMessage = "Please select a valid user role")]
         [Column(TypeName = "varchar(20)")]
+        [Display(Name = "Role")]
         public UserRole Role { get; set; }
 
 
@@ -34,6 +39,7 @@
         public DateTime? DeletedAt { get; set; }
 
 
+        [Display(Name = "Is Verified")]
         public bool IsVerified { get; set; } = false; // For Future Update to add verfication for users
 
 
@@ -41,20 +47,18 @@
         [NotMapped]
         public bool IsActive => DeletedAt == null;
 
+
         // Navigation properties
         public virtual AdminProfile? AdminProfile { get; set; }
         public virtual CompanyProfile? CompanyProfile { get; set; }
         public virtual JobSeekerProfile? JobSeekerProfile { get; set; }
-
-
-        public virtual ICollection<CompanyTaskSubmission>?CompanyTaskSubmissions { get; set; }
+        public virtual ICollection<CompanyTaskSubmission>? CompanyTaskSubmissions { get; set; }
         public virtual ICollection<Track>? CreatedTracks { get; set; }
         public virtual ICollection<Payment>? Payments { get; set; }
         public virtual ICollection<UserSkill>? UserSkills { get; set; }
         public virtual ICollection<TrackAttempt>? TrackAttempts { get; set; }
         public virtual ICollection<Notification>? Notifications { get; set; }
         public virtual ICollection<CompanyExamAttempt>? CompanyExamAttempts { get; set; }
-        public virtual ICollection<CompanyTaskSubmission>? TaskSubmissions { get; set; }
-        public virtual ICollection <UserBadge>? UserBadges { get; set; }
+        public virtual ICollection<UserBadge>? UserBadges { get; set; }
     }
 }

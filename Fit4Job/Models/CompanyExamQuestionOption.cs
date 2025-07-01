@@ -11,23 +11,25 @@
         public int Id { get; set; }
 
 
-        [Required]
-        [Display(Name = "Question ID")]
+        [Required(ErrorMessage = "Question ID is required")]
+        [Display(Name = "Question ID", Description = "Reference to the parent question")]
+        [Range(1, int.MaxValue, ErrorMessage = "Question ID must be a positive number")]
         public int QuestionId { get; set; }
 
 
-        [Required]
-        [Column(TypeName = "text")]
-        [Display(Name = "Option Text")]
+        [Required(ErrorMessage = "Option text is required")]
+        [Column(TypeName = "nvarchar(2000)")]
+        [Display(Name = "Option Text", Description = "The text content of this answer option")]
+        [StringLength(2000, MinimumLength = 1, ErrorMessage = "Option text must be between 1 and 2,000 characters")]
+        [DataType(DataType.MultilineText)]
         public string OptionText { get; set; } = string.Empty;
 
 
-        [Required]
-        [Display(Name = "Is Correct")]
+        [Required(ErrorMessage = "Is Correct is required")]
+        [Display(Name = "Is Correct", Description = "Whether this option is the correct answer")]
         public bool IsCorrect { get; set; } = false;
 
 
-        [Required]
         [DataType(DataType.DateTime)]
         [Display(Name = "Created At")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -42,7 +44,6 @@
         public bool IsActive => DeletedAt == null;
 
         // Navigation property
-        [Display(Name = "Question")]
         [ForeignKey("QuestionId")]
         public virtual CompanyExamQuestion Question { get; set; } = null!;
     }

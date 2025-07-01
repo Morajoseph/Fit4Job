@@ -11,12 +11,12 @@
         public int Id { get; set; }
 
 
-        [Required]
+        [Required(ErrorMessage = "Attempt ID is required")]
         [Display(Name = "Attempt ID")]
         public int AttemptId { get; set; }
 
 
-        [Required]
+        [Required(ErrorMessage = "Question ID is required")]
         [Display(Name = "Question ID")]
         public int QuestionId { get; set; }
 
@@ -31,19 +31,19 @@
         public string? TextAnswer { get; set; }
 
 
-        [Required]
+        [Required(ErrorMessage = "Is Correct is required")]
         [Display(Name = "Is Correct")]
         public bool IsCorrect { get; set; } = false;
 
 
-        [Required]
+        [Required(ErrorMessage = "Points Earned is required")]
         [Range(0, 999.99)]
         [Display(Name = "Points Earned")]
         [Column(TypeName = "decimal(5,2)")]
         public decimal PointsEarned { get; set; } = 0.00m;
 
 
-        [Required]
+        [Required(ErrorMessage = "Answered At is required")]
         [DataType(DataType.DateTime)]
         [Display(Name = "Answered At")]
         public DateTime AnsweredAt { get; set; } = DateTime.UtcNow;
@@ -94,40 +94,5 @@
         [ForeignKey("QuestionId")]
         public virtual CompanyExamQuestion Question { get; set; } = null!;
 
-        // Helper methods
-        //public bool IsOptionSelected(int optionId)
-        //{
-        //    return SelectedOptions.Contains(optionId);
-        //}
-
-        //public void SelectOption(int optionId)
-        //{
-        //    var options = SelectedOptions;
-        //    if (!options.Contains(optionId))
-        //    {
-        //        options.Add(optionId);
-        //        SelectedOptions = options;
-        //    }
-        //}
-
-        //public void UnselectOption(int optionId)
-        //{
-        //    var options = SelectedOptions;
-        //    if (options.Contains(optionId))
-        //    {
-        //        options.Remove(optionId);
-        //        SelectedOptions = options;
-        //    }
-        //}
-
-        //public void ClearSelections()
-        //{
-        //    SelectedOptions = new List<int>();
-        //}
-
-        //public void SetSingleSelection(int optionId)
-        //{
-        //    SelectedOptions = new List<int> { optionId };
-        //}
     }
 }

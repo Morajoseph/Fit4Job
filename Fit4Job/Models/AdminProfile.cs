@@ -8,18 +8,21 @@
         [Display(Name = "Admin ID")]
         public int Id { get; set; }
 
-        [Required]
+
+        [Required(ErrorMessage = "User ID is required")]
         [Display(Name = "User ID")]
         public int UserId { get; set; }
 
-        [Required]
-        [StringLength(100)]
-        [Display(Name = "First Name")]
+
+        [Required(ErrorMessage = "First name is required")]
+        [StringLength(20, MinimumLength = 2, ErrorMessage = "First name must be between 2 and 20 characters")]
+        [Display(Name = "First Name", Description = "Administrator's first name")]
         public string FirstName { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(100)]
-        [Display(Name = "Last Name")]
+
+        [Required(ErrorMessage = "Last name is required")]
+        [StringLength(20, MinimumLength = 2, ErrorMessage = "Last name must be between 2 and 20 characters")]
+        [Display(Name = "Last Name", Description = "Administrator's last name")]
         public string LastName { get; set; } = string.Empty;
 
 
@@ -27,6 +30,7 @@
         [DataType(DataType.DateTime)]
         [Display(Name = "Updated At")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
 
         [DataType(DataType.DateTime)]
         [Display(Name = "Deleted At")]
@@ -43,6 +47,5 @@
         // Navigation property
         [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; } = null!;
-
     }
 }

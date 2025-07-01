@@ -10,23 +10,28 @@
         public int Id { get; set; }
 
 
-        [Required]
+        [Required(ErrorMessage = "User ID is required")]
+        [Display(Name = "User ID")]
         public int UserId { get; set; }
 
 
-        [Required]
-        [StringLength(255)]
+        [Required(ErrorMessage = "Title is required")]
+        [StringLength(255, MinimumLength = 1, ErrorMessage = "Title must be between 1 and 255 characters")]
+        [Display(Name = "Title")]
         public string Title { get; set; }
 
 
-        [Required]
-        [Column(TypeName = "text")]
+        [Required(ErrorMessage = "Message is required")]
+        [StringLength(1000, MinimumLength = 1, ErrorMessage = "Message must be between 1 and 1000 characters")]
+        [Display(Name = "Message")]
+        [Column(TypeName = "varchar(1000)")]
         public string Message { get; set; }
 
 
-        [Url]
+        [Url(ErrorMessage = "Please enter a valid URL")]
+        [StringLength(500, ErrorMessage = "Action URL cannot exceed 500 characters")]
         [Display(Name = "Action URL")]
-        [StringLength(500)]
+        [Column(TypeName = "varchar(500)")]
         public string? ActionUrl { get; set; }
 
 
@@ -52,6 +57,6 @@
 
         // Navigation properties
         [ForeignKey("UserId")]
-        public virtual ApplicationUser User { get; set; }
+        public virtual ApplicationUser User { get; set; } = null!;
     }
 }

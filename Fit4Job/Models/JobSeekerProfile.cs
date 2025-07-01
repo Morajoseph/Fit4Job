@@ -8,59 +8,72 @@
         [Display(Name = "Job Seeker Profile ID")]
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "User ID is required")]
         [Display(Name = "User ID")]
         public int UserId { get; set; }
 
-        [Required]
-        [StringLength(100)]
+        [Required(ErrorMessage = "First name is required")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "First name must be between 2 and 100 characters")]
         [Display(Name = "First Name")]
+        [Column(TypeName = "varchar(100)")]
         public string FirstName { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(100)]
+
+        [Required(ErrorMessage = "Last name is required")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Last name must be between 2 and 100 characters")]
         [Display(Name = "Last Name")]
+        [Column(TypeName = "varchar(100)")]
         public string LastName { get; set; } = string.Empty;
 
-        [StringLength(500)]
+
+        [StringLength(500, ErrorMessage = "CV file URL cannot exceed 500 characters")]
         [Display(Name = "CV File URL")]
+        [Column(TypeName = "varchar(500)")]
         public string? CvFileUrl { get; set; }
 
-        [Url]
-        [StringLength(255)]
+
+        [Url(ErrorMessage = "Please enter a valid LinkedIn URL")]
+        [StringLength(255, ErrorMessage = "LinkedIn URL cannot exceed 255 characters")]
         [Display(Name = "LinkedIn URL")]
+        [Column(TypeName = "varchar(255)")]
         public string? LinkedinUrl { get; set; }
 
-        [Url]
-        [StringLength(255)]
+        [Url(ErrorMessage = "Please enter a valid GitHub URL")]
+        [StringLength(255, ErrorMessage = "GitHub URL cannot exceed 255 characters")]
         [Display(Name = "GitHub URL")]
+        [Column(TypeName = "varchar(255)")]
         public string? GithubUrl { get; set; }
 
-        [Url]
-        [StringLength(255)]
+        [Url(ErrorMessage = "Please enter a valid Portfolio URL")]
+        [StringLength(255, ErrorMessage = "Portfolio URL cannot exceed 255 characters")]
         [Display(Name = "Portfolio URL")]
+        [Column(TypeName = "varchar(255)")]
         public string? PortfolioUrl { get; set; }
 
         [Range(0, 50)]
         [Display(Name = "Years of Experience")]
         public int ExperienceYears { get; set; } = 0;
 
-        [StringLength(255)]
+        [StringLength(255, ErrorMessage = "Current position cannot exceed 255 characters")]
         [Display(Name = "Current Position")]
+        [Column(TypeName = "varchar(255)")]
         public string? CurrentPosition { get; set; }
 
-        [Range(0, 999999999.99)]
-        [Display(Name = "Expected Salary")]
-        [Column(TypeName = "decimal(10,2)")]
-        public decimal? ExpectedSalary { get; set; }
+
+        [Range(0, 999999999.99, ErrorMessage = "Expected salary must be between 0 and 999,999,999.99")]
+        [Display(Name = "Expected Salary In USD")]
+        [Column(TypeName = "decimal(12,2)")]
+        public decimal? ExpectedSalary { get; set; } // at USD 
 
 
-        [Range(0, int.MaxValue)]
+        [Range(0, int.MaxValue, ErrorMessage = "User credit must be a positive number")]
         [Display(Name = "User Credit")]
         public int UserCredit { get; set; } = 5;
-
-        [StringLength(255)]
+        
+        
+        [StringLength(255, ErrorMessage = "Location cannot exceed 255 characters")]
         [Display(Name = "Location")]
+        [Column(TypeName = "varchar(255)")]
         public string? Location { get; set; }
 
 

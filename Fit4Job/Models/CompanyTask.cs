@@ -10,46 +10,54 @@
         [Display(Name = "Task ID")]
         public int Id { get; set; }
 
-        [Required]
-        [Display(Name = "Company ID")]
+
+        [Required(ErrorMessage = "Company ID is required")]
+        [Display(Name = "Company ID", Description = "Reference to the company that created this task")]
+        [Range(1, int.MaxValue, ErrorMessage = "Company ID must be a positive number")]
         public int CompanyId { get; set; }
 
-        [Required]
-        [StringLength(255)]
-        [Display(Name = "Title")]
+
+        [Required(ErrorMessage = "Task title is required")]
+        [StringLength(255, MinimumLength = 5, ErrorMessage = "Task title must be between 5 and 255 characters")]
+        [Display(Name = "Title", Description = "Title or name of the task")]
         public string Title { get; set; } = string.Empty;
 
-        [Required]
-        [Column(TypeName = "text")]
-        [Display(Name = "Description")]
+
+        [Required(ErrorMessage = "Task description is required")]
+        [Column(TypeName = "nvarchar(max)")]
+        [Display(Name = "Description", Description = "Detailed description of the task")]
+        [StringLength(10000, MinimumLength = 20, ErrorMessage = "Task description must be between 20 and 10,000 characters")]
+        [DataType(DataType.MultilineText)]
         public string Description { get; set; } = string.Empty;
 
-        [Column(TypeName = "text")]
-        [Display(Name = "Requirements")]
+
+        [Column(TypeName = "nvarchar(max)")]
+        [Display(Name = "Requirements", Description = "Specific requirements and qualifications needed")]
+        [StringLength(5000, ErrorMessage = "Requirements cannot exceed 5,000 characters")]
+        [DataType(DataType.MultilineText)]
         public string? Requirements { get; set; }
 
-        [Column(TypeName = "text")]
-        [Display(Name = "Deliverables")]
+
+        [Column(TypeName = "nvarchar(5000)")]
+        [Display(Name = "Deliverables", Description = "Expected deliverables and outcomes")]
+        [StringLength(5000, ErrorMessage = "Deliverables cannot exceed 5,000 characters")]
+        [DataType(DataType.MultilineText)]
         public string? Deliverables { get; set; }
 
-        [Required]
+
+        [Required(ErrorMessage = "Deadline is required")]
         [DataType(DataType.DateTime)]
         [Display(Name = "Deadline")]
         public DateTime Deadline { get; set; }
 
 
-        [Display(Name = "Estimated Hours")]
-        [Range(1, int.MaxValue, ErrorMessage = "Estimated hours must be at least 1")]
+        [Display(Name = "Estimated Hours", Description = "Estimated time required to complete the task")]
+        [Range(1, 10000, ErrorMessage = "Estimated hours must be between 1 and 10,000")]
         public int? EstimatedHours { get; set; }
 
 
-        [Column(TypeName = "json")]
-        [Display(Name = "Skills Required")]
-        public string? SkillsRequiredJson { get; set; }
-
-
         [Required]
-        [Display(Name = "Is Active")]
+        [Display(Name = "Is Active", Description = "Whether the task is currently active and accepting submissions")]
         public bool IsActive { get; set; } = true;
 
 
@@ -69,30 +77,6 @@
         [Display(Name = "Deleted At")]
         public DateTime? DeletedAt { get; set; }
 
-        // Computed properties for working with skills
-        [NotMapped]
-        [Display(Name = "Skills Required")]
-        public List<string> SkillsRequired
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(SkillsRequiredJson))
-                    return new List<string>();
-
-                try
-                {
-                    return JsonSerializer.Deserialize<List<string>>(SkillsRequiredJson) ?? new List<string>();
-                }
-                catch
-                {
-                    return new List<string>();
-                }
-            }
-            set
-            {
-                SkillsRequiredJson = value?.Count > 0 ? JsonSerializer.Serialize(value) : null;
-            }
-        }
 
         // Computed properties
         [NotMapped]
@@ -118,47 +102,8 @@
 
 
         // Navigation properties
-        [Display(Name = "Company")]
         [ForeignKey("CompanyId")]
         public virtual CompanyProfile Company { get; set; } = null!;
         public virtual ICollection<CompanyTaskSubmission>? Submissions { get; set; }
-
-        // Helper methods
-        //public bool RequiresSkill(string skill)
-        //{
-        //    return SkillsRequired.Any(s => s.Equals(skill, StringComparison.OrdinalIgnoreCase));
-        //}
-
-        //public void AddSkill(string skill)
-        //{
-        //    if (!string.IsNullOrWhiteSpace(skill))
-        //    {
-        //        var skills = SkillsRequired;
-        //        if (!skills.Contains(skill, StringComparer.OrdinalIgnoreCase))
-        //        {
-        //            skills.Add(skill.Trim());
-        //            SkillsRequired = skills;
-        //        }
-        //    }
-        //}
-
-        //public void RemoveSkill(string skill)
-        //{
-        //    if (!string.IsNullOrWhiteSpace(skill))
-        //    {
-        //        var skills = SkillsRequired;
-        //        var skillToRemove = skills.FirstOrDefault(s => s.Equals(skill, StringComparison.OrdinalIgnoreCase));
-        //        if (skillToRemove != null)
-        //        {
-        //            skills.Remove(skillToRemove);
-        //            SkillsRequired = skills;
-        //        }
-        //    }
-        //}
-
-        //public void ClearSkills()
-        //{
-        //    SkillsRequired = new List<string>();
-        //}
     }
 }

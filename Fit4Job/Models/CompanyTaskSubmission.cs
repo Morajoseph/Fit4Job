@@ -11,31 +11,35 @@
         public int Id { get; set; }
 
 
-        [Required]
+        [Required(ErrorMessage = "Task ID is required")]
         [Display(Name = "Task ID")]
         public int TaskId { get; set; }
 
 
-        [Required]
+        [Required(ErrorMessage = "User ID is required")]
         [Display(Name = "User ID")]
         public int UserId { get; set; }
 
 
-        [Column(TypeName = "text")]
+        [Column(TypeName = "varchar(max)")]
         [Display(Name = "Submission Notes")]
+        [StringLength(8000, ErrorMessage = "Submission notes cannot exceed 8000 characters")]
         public string? SubmissionNotes { get; set; }
 
 
-        [Url]
-        [Required]
-        [StringLength(500)]
+        [Url(ErrorMessage = "Please enter a valid URL")]
+        [Required(ErrorMessage = "Submission link is required")]
+        [StringLength(500, ErrorMessage = "Submission link cannot exceed 500 characters")]
         [Display(Name = "Submission Link")]
+        [Column(TypeName = "nvarchar(500)")]
+
         public string SubmissionLink { get; set; } = string.Empty;
 
 
-        [Url]
-        [StringLength(500)]
+        [Url(ErrorMessage = "Please enter a valid URL")]
+        [StringLength(500, ErrorMessage = "Demo link cannot exceed 500 characters")]
         [Display(Name = "Demo Link")]
+        [Column(TypeName = "nvarchar(500)")]
         public string? DemoLink { get; set; }
 
 
@@ -70,26 +74,11 @@
 
 
         // Navigation properties
-        [Display(Name = "Task")]
         [ForeignKey("TaskId")]
         public virtual CompanyTask Task { get; set; } = null!;
 
 
-        [Display(Name = "User")]
         [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; } = null!;
-
-        // Helper methods
-
-        //public bool IsValidSubmissionLink()
-        //{
-        //    return Uri.IsWellFormedUriString(SubmissionLink, UriKind.Absolute);
-        //}
-
-        //public bool IsValidDemoLink()
-        //{
-        //    return string.IsNullOrWhiteSpace(DemoLink) ||
-        //           Uri.IsWellFormedUriString(DemoLink, UriKind.Absolute);
-        //}
     }
 }
