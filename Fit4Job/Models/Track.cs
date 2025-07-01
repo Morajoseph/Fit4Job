@@ -9,28 +9,37 @@
 
         [Key]
         [Display(Name = "Track ID")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
 
-        [Required]
+
+        [Required(ErrorMessage = "Track Category is required")]
         [Display(Name = "Track Category ID")]
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a valid category")]
         public int CategoryId { get; set; }
 
 
-        [Required]
+
+        [Required(ErrorMessage = "Creator is required")]
         [Display(Name = "Created By")]
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a valid creator")]
         public int CreatorId { get; set; }
 
 
-        [Required]
+        [Required(ErrorMessage = "Track name is required")]
         [StringLength(50)]
         [Display(Name = "Track Name")]
-        public string Name { get; set; }
+        public string Name { get; set; }   
 
 
+
+        [StringLength(2000, ErrorMessage = "Description cannot exceed 2000 characters")]
         [Column(TypeName = "text")]
         [Display(Name = "Track Description")]
+        [DataType(DataType.MultilineText)]
         public string? Description { get; set; }
+
 
         [Required]
         [Display(Name = "Is Premium")]
@@ -46,6 +55,7 @@
         [Display(Name = "Track Questions")]
         public int TrackQuestionsCount { get; set; } = 0;
 
+      
         [Required]
         [Range(0, 99999999.99)]
         [Column(TypeName = "decimal(10,2)")]
