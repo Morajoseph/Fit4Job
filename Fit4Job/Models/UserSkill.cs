@@ -1,13 +1,12 @@
 ﻿namespace Fit4Job.Models
 {
     [Table("user_skills")]
-    [Index(nameof(DeletedAt), Name = "IX_UserSkills_DeletedAt")]
     [Index(nameof(UserId), nameof(SkillId), IsUnique = true, Name = "IX_UserSkills_UserId_SkillId")]
     public class UserSkill
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-      
+
         public int Id { get; set; }
 
 
@@ -41,6 +40,5 @@
 
         [ForeignKey("SkillId")]
         public virtual Skill Skill { get; set; } = null!;
-
     }
 }

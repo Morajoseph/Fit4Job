@@ -1,7 +1,6 @@
 ﻿namespace Fit4Job.Models
 {
     [Table("company_exams")]
-    [Index(nameof(IsActive), Name = "IX_CompanyExams_IsActive")]
     [Index(nameof(CompanyId), Name = "IX_CompanyExams_CompanyId")]
     [Index(nameof(StartDate), nameof(EndDate), Name = "IX_CompanyExams_StartDate_EndDate")]
     public class CompanyExam

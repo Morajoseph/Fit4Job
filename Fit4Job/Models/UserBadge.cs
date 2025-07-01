@@ -3,7 +3,6 @@
     [Table("user_badges")]
     [Index(nameof(UserId), Name = "IX_UserBadges_UserId")]
     [Index(nameof(BadgeId), Name = "IX_UserBadges_BadgeId")]
-    [Index(nameof(EarnedAt), Name = "IX_UserBadges_EarnedAt")]
     [Index(nameof(UserId), nameof(BadgeId), IsUnique = true, Name = "IX_UserBadges_UserId_BadgeId_Unique")]
     public class UserBadge
     {

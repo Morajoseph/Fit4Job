@@ -2,10 +2,7 @@
 {
     [Table("track_questions")]
     [Index(nameof(TrackId), Name = "IX_TrackQuestions_TrackId")]
-    [Index(nameof(IsActive), Name = "IX_TrackQuestions_IsActive")]
     [Index(nameof(QuestionType), Name = "IX_TrackQuestions_QuestionType")]
-    [Index(nameof(QuestionLevel), Name = "IX_TrackQuestions_QuestionLevel")]
-    [Index(nameof(DifficultyLevel), Name = "IX_TrackQuestions_DifficultyLevel")]
     public class TrackQuestion
     {
         [Key]

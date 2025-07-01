@@ -1,7 +1,6 @@
 ﻿namespace Fit4Job.Models
 {
     [Table("tracks")]
-    [Index(nameof(IsActive), Name = "IX_Tracks_IsActive")]
     [Index(nameof(IsPremium), Name = "IX_Tracks_IsPremium")]
     [Index(nameof(CategoryId), Name = "IX_Tracks_CategoryId")]
     public class Track

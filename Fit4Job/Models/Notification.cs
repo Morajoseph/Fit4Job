@@ -2,8 +2,6 @@
 {
     [Table("notifications")]
     [Index(nameof(UserId), Name = "IX_Notifications_UserId")]
-    [Index(nameof(IsRead), Name = "IX_Notifications_IsRead")]
-    [Index(nameof(CreatedAt), Name = "IX_Notifications_CreatedAt")]
     public class Notification
     {
         [Key]

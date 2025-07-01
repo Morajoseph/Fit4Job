@@ -3,7 +3,6 @@
     [Table("company_exam_questions")]
     [Index(nameof(ExamId), Name = "IX_CompanyExamQuestions_ExamId")]
     [Index(nameof(QuestionType), Name = "IX_CompanyExamQuestions_QuestionType")]
-    [Index(nameof(IsActive), Name = "IX_CompanyExamQuestions_IsActive")]
     public class CompanyExamQuestion
     {
         [Key]

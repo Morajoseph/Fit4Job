@@ -2,7 +2,6 @@
 {
     [Table("company_tasks")]
     [Index(nameof(CompanyId), Name = "IX_CompanyTasks_CompanyId")]
-    [Index(nameof(IsActive), Name = "IX_CompanyTasks_IsActive")]
     [Index(nameof(Deadline), Name = "IX_CompanyTasks_Deadline")]
     public class CompanyTask
     {

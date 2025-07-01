@@ -2,7 +2,6 @@
 {
     [Table("skills")]
     [Index(nameof(Name), IsUnique = true, Name = "IX_Skills_Name")]
-    [Index(nameof(IsActive), Name = "IX_Skills_IsActive")]
     public class Skill
     {
         [Key]
