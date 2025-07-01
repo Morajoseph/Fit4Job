@@ -20,7 +20,7 @@
         [Display(Name = "Question ID")]
         public int QuestionId { get; set; }
 
-        [Column(TypeName = "json")]
+        [Column(TypeName = "nvarchar(max)")]
         [Display(Name = "Selected Options")]
         public string? SelectedOptionsJson { get; set; }
 
