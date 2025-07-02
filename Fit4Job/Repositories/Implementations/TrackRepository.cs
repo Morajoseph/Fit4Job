@@ -1,5 +1,4 @@
-﻿using Fit4Job.Repositories.Generic;
-using Fit4Job.Repositories.Interfaces;
+﻿
 
 namespace Fit4Job.Repositories.Implementations
 {
