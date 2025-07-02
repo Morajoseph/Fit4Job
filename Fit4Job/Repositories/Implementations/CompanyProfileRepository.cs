@@ -1,11 +1,10 @@
-﻿
-
-namespace Fit4Job.Repositories.Implementations
+﻿namespace Fit4Job.Repositories.Implementations
 {
     public class CompanyProfileRepository : GenericRepository<CompanyProfile>, ICompanyProfileRepository
     {
         public CompanyProfileRepository(Fit4JobDbContext context) : base(context)
         {
+
         }
 
         public async Task<CompanyProfile?> GetCompanyByUserIdAsync(int userId)
@@ -15,7 +14,8 @@ namespace Fit4Job.Repositories.Implementations
 
         public async Task<IEnumerable<CompanyProfile>> GetCompaniesByStatusAsync(CompanyStatus status)
         {
-            return await _context.CompanyProfiles.Where(c => c.Status == status)
+            return await _context.CompanyProfiles
+                .Where(c => c.Status == status)
                 .OrderBy(c => c.CompanyName)
                 .ToListAsync();
         }
@@ -23,7 +23,7 @@ namespace Fit4Job.Repositories.Implementations
         public async Task<IEnumerable<CompanyProfile>> SearchCompaniesByNameAsync(string name)
         {
             return await _context.CompanyProfiles
-.Where(c => c.CompanyName.Contains(name))
+                .Where(c => c.CompanyName.Contains(name))
                 .OrderBy(c => c.CompanyName)
                 .ToListAsync();
         }
@@ -35,6 +35,5 @@ namespace Fit4Job.Repositories.Implementations
                 .OrderBy(c => c.CompanyName)
                 .ToListAsync();
         }
-    
     }
 }

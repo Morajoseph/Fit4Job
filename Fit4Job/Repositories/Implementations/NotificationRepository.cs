@@ -1,5 +1,4 @@
-﻿
-namespace Fit4Job.Repositories.Implementations
+﻿namespace Fit4Job.Repositories.Implementations
 {
     public class NotificationRepository : GenericRepository<Notification>, INotificationRepository
     {

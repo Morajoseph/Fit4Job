@@ -1,13 +1,14 @@
-﻿
-namespace Fit4Job.Repositories.Implementations
+﻿namespace Fit4Job.Repositories.Implementations
 {
     public class JobSeekerProfileRepository : GenericRepository<JobSeekerProfile>, IJobSeekerProfileRepository
     {
         public JobSeekerProfileRepository(Fit4JobDbContext context) : base(context)
-        { }
+        {
+
+        }
 
 
-              public async Task<JobSeekerProfile?> GetProfileByUserIdAsync(int userId)
+        public async Task<JobSeekerProfile?> GetProfileByUserIdAsync(int userId)
         {
             return await _context.JobSeekerProfiles
                 .FirstOrDefaultAsync(p => p.UserId == userId);
@@ -33,7 +34,7 @@ namespace Fit4Job.Repositories.Implementations
         {
             return await _context.JobSeekerProfiles
                 .Where(p => _context.UserSkills
-                    .Any(us => us.UserId == p.UserId && us.SkillId == skillId))
+                .Any(us => us.UserId == p.UserId && us.SkillId == skillId))
                 .OrderBy(p => p.FirstName)
                 .ToListAsync();
         }
@@ -45,7 +46,5 @@ namespace Fit4Job.Repositories.Implementations
                 .Take(topN)
                 .ToListAsync();
         }
-
-        
     }
 }
