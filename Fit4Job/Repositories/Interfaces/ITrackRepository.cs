@@ -1,8 +1,6 @@
-﻿
-
-namespace Fit4Job.Repositories.Interfaces
+﻿namespace Fit4Job.Repositories.Interfaces
 {
-    public interface ITrackRepository:IGenericRepository<Track>
+    public interface ITrackRepository : IGenericRepository<Track>
     {
         Task<Track> GetTrackByNameAsync(string trackName);
         Task<IEnumerable<Track>> GetAllTracksByCategoryIdAsync(int categoryId);
@@ -10,6 +8,5 @@ namespace Fit4Job.Repositories.Interfaces
         Task<IEnumerable<Track>> GetPremiumTracksAsync();
         Task<IEnumerable<Track>> GetActiveTracksAsync();
         Task<Track> GetTrackWithQuestionsAsync(int trackId);
-
     }
 }

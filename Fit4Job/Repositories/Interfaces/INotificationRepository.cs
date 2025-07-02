@@ -1,7 +1,6 @@
-﻿
-namespace Fit4Job.Repositories.Interfaces
+﻿namespace Fit4Job.Repositories.Interfaces
 {
-    public interface INotificationRepository:IGenericRepository<Notification>
+    public interface INotificationRepository : IGenericRepository<Notification>
     {
         Task<IEnumerable<Notification>> GetNotificationsByUserIdAsync(int userId);
         Task<IEnumerable<Notification>> GetUnreadNotificationsByUserIdAsync(int userId);
