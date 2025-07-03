@@ -6,5 +6,21 @@
         {
 
         }
+
+        public async Task<IEnumerable<TrackCategory>> SearchByNameAsync(string keyword)
+        {
+            return await _context.TrackCategories
+                .Where(tc => tc.Name.Contains(keyword) && tc.DeletedAt == null)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<TrackCategory>> GetActiveCategoriesAsync()
+        {
+            return await _context.TrackCategories
+                .Where(tc => tc.DeletedAt == null)
+                .ToListAsync();
+        }
+
+
     }
 }
