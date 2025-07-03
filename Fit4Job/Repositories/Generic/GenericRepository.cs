@@ -12,7 +12,7 @@
             _context = context;
             _dbSet = _context.Set<TModel>();
         }
-        public async Task AddAsync(TModel entity)
+        public virtual async Task AddAsync(TModel entity)
         {
             await _dbSet.AddAsync(entity);
         }
@@ -22,12 +22,12 @@
             return await _context.Database.BeginTransactionAsync();
         }
 
-        public void Delete(TModel entity)
+        public virtual void Delete(TModel entity)
         {
             _dbSet.Remove(entity);
         }
 
-        public async Task<bool> DeleteById(int id)
+        public virtual async Task<bool> DeleteById(int id)
         {
             var entity = await GetByIdAsync(id);
             if (entity != null)
@@ -38,12 +38,12 @@
             return false;
         }
 
-        public async Task<IEnumerable<TModel>> GetAllAsync()
+        public virtual async Task<IEnumerable<TModel>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
         }
 
-        public async Task<TModel?> GetByIdAsync(int id)
+        public virtual async Task<TModel?> GetByIdAsync(int id)
         {
             return await _dbSet.FindAsync(id);
         }
@@ -53,7 +53,7 @@
             await _context.SaveChangesAsync();
         }
 
-        public void Update(TModel entity)
+        public virtual void Update(TModel entity)
         {
             _dbSet.Update(entity);
         }
