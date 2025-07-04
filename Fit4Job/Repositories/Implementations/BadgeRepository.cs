@@ -15,28 +15,6 @@
                 .ToListAsync();
         }
 
-        public async Task<Badge?> GetByNameAsync(string name)
-        {
-            return await _context.Badges
-                .FirstOrDefaultAsync(b => b.Name == name && b.DeletedAt == null);
-        }
-
-        public async Task<Badge?> GetBadgeWithTrackAsync(int badgeId)
-        {
-            return await _context.Badges
-                .Include(b => b.Track)
-                .FirstOrDefaultAsync(b => b.Id == badgeId && b.DeletedAt == null);
-        }
-
-        public async Task<IEnumerable<Badge>> GetBadgesByTrackNameAsync(string trackName)
-        {
-            return await _context.Badges
-                .Include(b => b.Track)
-                .Where(b => b.Track.Name == trackName && b.DeletedAt == null)
-                .OrderBy(b => b.PointsRequired)
-                .ToListAsync();
-        }
-
         public async Task<bool> SoftDeleteAsync(int badgeId)
         {
             var badge = await GetByIdAsync(badgeId);
