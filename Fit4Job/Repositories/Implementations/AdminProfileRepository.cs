@@ -8,42 +8,20 @@
         }
         public async Task<AdminProfile?> GetByUserIdAsync(int userId)
         {
-            return await _context.Set<AdminProfile>()
+            return await _context.AdminProfiles
                 .FirstOrDefaultAsync(ap => ap.UserId == userId);
-        }
-
-        public async Task<IEnumerable<AdminProfile>> GetActiveAdminsAsync()
-        {
-            return await _context.Set<AdminProfile>()
-                .Where(ap => ap.DeletedAt == null)
-                .OrderBy(ap => ap.FirstName)
-                .ThenBy(ap => ap.LastName)
-                .ToListAsync();
-        }
-
-        public async Task<AdminProfile?> GetAdminWithUserDetailsAsync(int adminId)
-        {
-            return await _context.Set<AdminProfile>()
-                .Include(ap => ap.User)
-                .FirstOrDefaultAsync(ap => ap.Id == adminId);
         }
 
         public async Task<AdminProfile?> GetAdminWithUserDetailsByUserIdAsync(int userId)
         {
-            return await _context.Set<AdminProfile>()
+            return await _context.AdminProfiles
                 .Include(ap => ap.User)
                 .FirstOrDefaultAsync(ap => ap.UserId == userId);
         }
 
-        public async Task<bool> ExistsByUserIdAsync(int userId)
-        {
-            return await _context.Set<AdminProfile>()
-                .AnyAsync(ap => ap.UserId == userId);
-        }
-
         public async Task<bool> IsActiveAdminAsync(int userId)
         {
-            return await _context.Set<AdminProfile>()
+            return await _context.AdminProfiles
                 .AnyAsync(ap => ap.UserId == userId && ap.DeletedAt == null);
         }
 
