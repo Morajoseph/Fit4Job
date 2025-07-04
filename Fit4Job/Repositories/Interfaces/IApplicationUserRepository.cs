@@ -5,7 +5,6 @@
         Task<ApplicationUser?> GetByEmailAsync(string email);
         Task<ApplicationUser?> GetByUserNameAsync(string userName);
         Task<ApplicationUser?> GetUserWithProfileAsync(int userId);
-        Task<ApplicationUser?> GetUserWithAllRelatedDataAsync(int userId);
         Task<bool> SoftDeleteAsync(int userId);
         Task<bool> RestoreAsync(int userId);
     }

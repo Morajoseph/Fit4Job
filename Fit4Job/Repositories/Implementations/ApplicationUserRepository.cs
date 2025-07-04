@@ -28,25 +28,6 @@
                 .FirstOrDefaultAsync(u => u.Id == userId && u.DeletedAt == null);
         }
 
-
-        public async Task<ApplicationUser?> GetUserWithAllRelatedDataAsync(int userId)
-        {
-            return await _context.Users
-                .Include(u => u.AdminProfile)
-                .Include(u => u.CompanyProfile)
-                .Include(u => u.JobSeekerProfile)
-                .Include(u => u.UserSkills)
-                .Include(u => u.UserBadges)
-                .Include(u => u.Notifications)
-                .Include(u => u.TrackAttempts)
-                .Include(u => u.CompanyTaskSubmissions)
-                .Include(u => u.CreatedTracks)
-                .Include(u => u.Payments)
-                .Include(u => u.CompanyExamAttempts)
-                .FirstOrDefaultAsync(u => u.Id == userId && u.DeletedAt == null);
-        }
-
-
         public async Task<bool> SoftDeleteAsync(int userId)
         {
             var user = await GetByIdAsync(userId);
@@ -74,7 +55,6 @@
             }
             return false;
         }
-
 
         // Override the base GetByIdAsync to exclude soft-deleted users
         public override async Task<ApplicationUser?> GetByIdAsync(int id)
