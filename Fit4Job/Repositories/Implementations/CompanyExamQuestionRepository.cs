@@ -23,14 +23,6 @@
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<CompanyExamQuestion>> GetByExamIdAndTypeAsync(int examId, QuestionType questionType)
-        {
-            return await _context.CompanyExamQuestions
-                .Where(q => q.ExamId == examId && q.QuestionType == questionType && q.DeletedAt == null)
-                .OrderBy(q => q.Id)
-                .ToListAsync();
-        }
-
         public async Task<IEnumerable<CompanyExamQuestion>> GetQuestionsWithOptionsAsync(int examId)
         {
             return await _context.CompanyExamQuestions
@@ -40,36 +32,11 @@
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<CompanyExamQuestion>> GetQuestionsWithAnswersAsync(int examId)
-        {
-            return await _context.CompanyExamQuestions
-                .Where(q => q.ExamId == examId && q.DeletedAt == null)
-                .Include(q => q.Answers)
-                .OrderBy(q => q.Id)
-                .ToListAsync();
-        }
-
-        public async Task<CompanyExamQuestion?> GetCompleteQuestionAsync(int questionId)
-        {
-            return await _context.CompanyExamQuestions
-                .Where(q => q.Id == questionId && q.DeletedAt == null)
-                .Include(q => q.Options)
-                .Include(q => q.Answers)
-                .Include(q => q.Exam)
-                .FirstOrDefaultAsync();
-        }
-
         public async Task<decimal> GetTotalPointsByExamIdAsync(int examId)
         {
             return await _context.CompanyExamQuestions
                 .Where(q => q.ExamId == examId && q.DeletedAt == null)
                 .SumAsync(q => q.Points);
-        }
-
-        public async Task<int> CountQuestionsByExamIdAsync(int examId)
-        {
-            return await _context.CompanyExamQuestions
-                .CountAsync(q => q.ExamId == examId && q.DeletedAt == null);
         }
 
         public async Task<bool> SoftDeleteAsync(int questionId)
