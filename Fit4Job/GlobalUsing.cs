@@ -3,6 +3,7 @@ global using Fit4Job.Models;
 global using Fit4Job.DataContext;
 global using Fit4Job.Repositories.Generic;
 global using Fit4Job.Repositories.Interfaces;
+global using Fit4Job.Repositories.Implementations;
 
 
 global using Microsoft.AspNetCore.Identity;

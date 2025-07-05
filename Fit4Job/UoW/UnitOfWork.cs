@@ -1,6 +1,4 @@
-﻿using Fit4Job.Repositories.Implementations;
-
-namespace Fit4Job.UoW
+﻿namespace Fit4Job.UoW
 {
     public class UnitOfWork : IUnitOfWork
     {
