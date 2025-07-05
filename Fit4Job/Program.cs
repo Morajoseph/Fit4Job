@@ -7,17 +7,20 @@ namespace Fit4Job
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+
+            /******************************* Swagger & OpenAPI ******************************/
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            /********************************************************************************/
 
 
 
             /*************************** Database & User Identity ***************************/
-           
+
             builder.Services.AddDbContext<Fit4JobDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("GlobalConnectionString"));
@@ -36,16 +39,30 @@ namespace Fit4Job
 
 
             /********************************************************************************/
-            
-            
-            
+
+
+
+
+            /************************* Add JWT-Bearer  Authentication ***********************/
+
+
+
+
+
+            /********************************************************************************/
+
+
+
             /********************** Cross-Origin Resource Sharing (CORS) ********************/
 
 
 
 
             /********************************************************************************/
-            
+
+
+
+            /****************************** Application  Build ******************************/
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
