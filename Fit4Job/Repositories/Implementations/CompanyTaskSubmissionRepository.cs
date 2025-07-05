@@ -29,7 +29,7 @@
                 .FirstOrDefaultAsync(s => s.TaskId == taskId && s.UserId == userId);
         }
 
-        public async Task<IEnumerable<CompanyTaskSubmission>> GetRecentSubmissionsForTaskAsync(int taskId, int limit)
+        public async Task<IEnumerable<CompanyTaskSubmission>> GetRecentSubmissionsForTaskAsync(int taskId, int limit=1)
         {
             return await _context.CompanyTaskSubmissions
                 .Where(s => s.TaskId == taskId)

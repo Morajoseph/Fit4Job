@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+
 namespace Fit4Job
 {
     public class Program
@@ -46,7 +49,31 @@ namespace Fit4Job
             /************************* Add JWT-Bearer  Authentication ***********************/
 
 
+            string defaultKey = "xP5QyBL0T3yaUjvbf5BfM3znTT9gKpALDF6rD6+q9BQ=";
 
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme =
+                    JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme =
+                    JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme =
+                    JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+
+                string keyString = builder.Configuration["JWT:Key"] ?? defaultKey;
+                byte[]? keyBytes = Convert.FromBase64String(keyString);
+                options.TokenValidationParameters = new()
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["JWT:Issuer"],
+                    ValidateAudience = false,
+                    IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
+                };
+            });
 
 
             /********************************************************************************/
