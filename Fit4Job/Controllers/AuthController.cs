@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
-namespace Fit4Job.Controllers
+﻿namespace Fit4Job.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
