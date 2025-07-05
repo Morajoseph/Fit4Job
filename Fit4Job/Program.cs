@@ -16,7 +16,8 @@ namespace Fit4Job
 
 
 
-            /*********************** Database & User Identity ***********************/
+            /*************************** Database & User Identity ***************************/
+           
             builder.Services.AddDbContext<Fit4JobDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("GlobalConnectionString"));
@@ -25,13 +26,26 @@ namespace Fit4Job
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
                 .AddEntityFrameworkStores<Fit4JobDbContext>()
                 .AddDefaultTokenProviders();
+            
             /********************************************************************************/
 
 
+            /***************************** Dependency Injection *****************************/
+           
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+
+            /********************************************************************************/
+            
+            
+            
+            /********************** Cross-Origin Resource Sharing (CORS) ********************/
 
 
 
 
+            /********************************************************************************/
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

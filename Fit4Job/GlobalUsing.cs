@@ -1,4 +1,5 @@
-﻿global using Fit4Job.Enums;
+﻿global using Fit4Job.UoW;
+global using Fit4Job.Enums;
 global using Fit4Job.Models;
 global using Fit4Job.DataContext;
 global using Fit4Job.Repositories.Generic;
