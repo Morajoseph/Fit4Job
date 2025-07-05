@@ -6,18 +6,10 @@
         {
 
         }
-        public async Task<IEnumerable<CompanyExamAttempt>> GetAttemptsByUserIdAsync(int userId)
-        {
-            return await _context.Set<CompanyExamAttempt>()
-                .Where(a => a.UserId == userId && a.DeletedAt == null)
-                .Include(a => a.Exam)
-                .OrderByDescending(a => a.CreatedAt)
-                .ToListAsync();
-        }
 
         public async Task<IEnumerable<CompanyExamAttempt>> GetAttemptsByExamIdAsync(int examId)
         {
-            return await _context.Set<CompanyExamAttempt>()
+            return await _context.CompanyExamAttempts
                 .Where(a => a.ExamId == examId && a.DeletedAt == null)
                 .Include(a => a.User)
                 .OrderByDescending(a => a.CreatedAt)
@@ -26,44 +18,24 @@
 
         public async Task<CompanyExamAttempt?> GetAttemptWithAnswersAsync(int attemptId)
         {
-            return await _context.Set<CompanyExamAttempt>()
+            return await _context.CompanyExamAttempts
                 .Include(a => a.Answers)
                 .FirstOrDefaultAsync(a => a.Id == attemptId && a.DeletedAt == null);
         }
 
         public async Task<CompanyExamAttempt?> GetAttemptWithFullDetailsAsync(int attemptId)
         {
-            return await _context.Set<CompanyExamAttempt>()
+            return await _context.CompanyExamAttempts
                 .Include(a => a.User)
                 .Include(a => a.Exam)
                 .Include(a => a.Answers)
                 .FirstOrDefaultAsync(a => a.Id == attemptId && a.DeletedAt == null);
         }
 
-        public async Task<IEnumerable<CompanyExamAttempt>> GetUserExamAttemptsAsync(int userId, int examId)
-        {
-            return await _context.Set<CompanyExamAttempt>()
-                .Where(a => a.UserId == userId && a.ExamId == examId && a.DeletedAt == null)
-                .OrderByDescending(a => a.CreatedAt)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<CompanyExamAttempt>> GetAttemptsByDateRangeAsync(DateTime startDate, DateTime endDate)
-        {
-            return await _context.Set<CompanyExamAttempt>()
-                .Where(a => a.CreatedAt >= startDate && a.CreatedAt <= endDate && a.DeletedAt == null)
-                .Include(a => a.User)
-                .Include(a => a.Exam)
-                .OrderByDescending(a => a.CreatedAt)
-                .ToListAsync();
-        }
-
         public async Task<IEnumerable<CompanyExamAttempt>> GetTopPerformersAsync(int examId, int topCount = 10)
         {
-            return await _context.Set<CompanyExamAttempt>()
-                .Where(a => a.ExamId == examId &&
-                           a.Status == CompanyExamAttemptStatus.Completed &&
-                           a.DeletedAt == null)
+            return await _context.CompanyExamAttempts
+                .Where(a => a.ExamId == examId && a.DeletedAt == null)
                 .Include(a => a.User)
                 .OrderByDescending(a => a.Score)
                 .ThenBy(a => a.Duration)
@@ -86,7 +58,7 @@
 
         public async Task<bool> RestoreAsync(int attemptId)
         {
-            var attempt = await _context.Set<CompanyExamAttempt>()
+            var attempt = await _context.CompanyExamAttempts
                 .FirstOrDefaultAsync(a => a.Id == attemptId);
 
             if (attempt != null && attempt.DeletedAt != null)
@@ -111,7 +83,7 @@
                 attempt.UpdatedAt = DateTime.UtcNow;
 
                 // Calculate percentage score
-                var exam = await _context.Set<CompanyExam>().FindAsync(attempt.ExamId);
+                var exam = await _context.CompanyExams.FindAsync(attempt.ExamId);
                 if (exam != null && exam.TotalScore > 0)
                 {
                     attempt.PercentageScore = (finalScore / exam.TotalScore) * 100;
@@ -123,18 +95,17 @@
             return false;
         }
 
-
         // Override the base GetByIdAsync to exclude soft deleted records
         public override async Task<CompanyExamAttempt?> GetByIdAsync(int id)
         {
-            return await _context.Set<CompanyExamAttempt>()
+            return await _context.CompanyExamAttempts
                 .FirstOrDefaultAsync(a => a.Id == id && a.DeletedAt == null);
         }
 
         // Override the base GetAllAsync to exclude soft deleted records
         public override async Task<IEnumerable<CompanyExamAttempt>> GetAllAsync()
         {
-            return await _context.Set<CompanyExamAttempt>()
+            return await _context.CompanyExamAttempts
                 .Where(a => a.DeletedAt == null)
                 .Include(a => a.User)
                 .Include(a => a.Exam)
