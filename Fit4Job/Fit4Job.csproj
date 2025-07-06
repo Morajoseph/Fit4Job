@@ -8,16 +8,12 @@
 
   <ItemGroup>
     <Compile Remove="Data\**" />
-    <Compile Remove="DTOs\**" />
     <Compile Remove="GenericRepositories\**" />
     <Content Remove="Data\**" />
-    <Content Remove="DTOs\**" />
     <Content Remove="GenericRepositories\**" />
     <EmbeddedResource Remove="Data\**" />
-    <EmbeddedResource Remove="DTOs\**" />
     <EmbeddedResource Remove="GenericRepositories\**" />
     <None Remove="Data\**" />
-    <None Remove="DTOs\**" />
     <None Remove="GenericRepositories\**" />
   </ItemGroup>
 

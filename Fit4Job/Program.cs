@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Threading.Tasks;
 
 namespace Fit4Job
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -32,14 +33,17 @@ namespace Fit4Job
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
                 .AddEntityFrameworkStores<Fit4JobDbContext>()
                 .AddDefaultTokenProviders();
-            
+
             /********************************************************************************/
 
 
             /***************************** Dependency Injection *****************************/
-           
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            builder.Services.AddScoped<IAdminProfileRepository, AdminProfileRepository>();
+            builder.Services.AddScoped<ICompanyProfileRepository, CompanyProfileRepository>();
+            builder.Services.AddScoped<IJobSeekerProfileRepository, JobSeekerProfileRepository>();
+
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             /********************************************************************************/
 
@@ -92,6 +96,15 @@ namespace Fit4Job
             /****************************** Application  Build ******************************/
             var app = builder.Build();
 
+
+            // Seed roles after building the app
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
+                await SeedRolesAsync(roleManager);
+            }
+
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -99,12 +112,24 @@ namespace Fit4Job
                 app.UseSwaggerUI();
             }
 
+
             app.UseAuthorization();
-
-
             app.MapControllers();
-
             app.Run();
+        }
+        /******************************** Helper  methods ********************************/
+
+        private static async Task SeedRolesAsync(RoleManager<IdentityRole<int>> roleManager)
+        {
+            string[] roleNames = { "Admin", "Company", "JobSeeker" };
+
+            foreach (var roleName in roleNames)
+            {
+                if (!await roleManager.RoleExistsAsync(roleName))
+                {
+                    await roleManager.CreateAsync(new IdentityRole<int>(roleName));
+                }
+            }
         }
     }
 }

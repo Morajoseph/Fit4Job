@@ -1,4 +1,4 @@
-﻿namespace Fit4Job.SystemDTOs.AccountDTOS
+﻿namespace Fit4Job.DTOs.AuthorizationDTOs
 {
     public class LoginDTO
     {
