@@ -4,27 +4,21 @@
     [ApiController]
     public class AuthController : ControllerBase
     {
-
         private readonly IConfiguration config;
         private readonly UserManager<ApplicationUser> userManager;
-        private readonly RoleManager<IdentityRole<int>> roleManager;
         private readonly IAdminProfileRepository adminProfileRepository;
         private readonly ICompanyProfileRepository companyProfileRepository;
         private readonly IJobSeekerProfileRepository jobSeekerProfileRepository;
-        public AuthController(UserManager<ApplicationUser> userManager, IConfiguration config,
-            RoleManager<IdentityRole<int>> roleManager, AdminProfileRepository adminProfileRepository,
-            ICompanyProfileRepository companyProfileRepository, IJobSeekerProfileRepository jobSeekerProfileRepository)
+        public AuthController(UserManager<ApplicationUser> userManager, IConfiguration config, AdminProfileRepository adminProfileRepository, ICompanyProfileRepository companyProfileRepository, IJobSeekerProfileRepository jobSeekerProfileRepository)
         {
-
             this.config = config;
             this.userManager = userManager;
-            this.roleManager = roleManager;
             this.adminProfileRepository = adminProfileRepository;
             this.companyProfileRepository = companyProfileRepository;
             this.jobSeekerProfileRepository = jobSeekerProfileRepository;
         }
 
-
+        /* ****************************************** Endpoints ****************************************** */
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginDTO loginDTO)
@@ -187,21 +181,56 @@
         }
 
         /* ****************************************** Helper Methods ****************************************** */
-
-        private async Task<ApplicationUser?> FindUserByEmailOrUsernameAsync(string emailOrUsername)
+        private async Task<string?> IsAlreadyExists(BaseRegistrationDTO registrationDTO)
         {
-            // Try to find by email first
-            var user = await userManager.FindByEmailAsync(emailOrUsername);
-
-            // If not found by email, try by username
-            if (user == null)
+            var existingUser = await userManager.FindByEmailAsync(registrationDTO.Email);
+            if (existingUser != null)
             {
-                user = await userManager.FindByNameAsync(emailOrUsername);
+                return "Email is already registered";
             }
 
-            return user;
+            existingUser = await userManager.FindByNameAsync(registrationDTO.Email);
+            if (existingUser != null)
+            {
+                return "Username is already used";
+            }
+
+            return null;
         }
 
+        private async Task CreateAdminProfile(AdminRegistrationDTO registrationDTO, int userId)
+        {
+            AdminProfile admin = new AdminProfile()
+            {
+                UserId = userId,
+                FirstName = registrationDTO.FirstName,
+                LastName = registrationDTO.LastName,
+            };
+            await adminProfileRepository.AddAsync(admin);
+            await adminProfileRepository.SaveChangesAsync();
+        }
+        private async Task CreateCompanyProfile(CompanyRegistrationDTO registrationDTO, int userId)
+        {
+            CompanyProfile company = new CompanyProfile()
+            {
+                UserId = userId,
+                CompanyName = registrationDTO.CompanyName,
+                CompanySize = registrationDTO.CompanySize
+            };
+            await companyProfileRepository.AddAsync(company);
+            await companyProfileRepository.SaveChangesAsync();
+        }
+        private async Task CreateJobSeekerProfile(JobSeekerRegistrationDTO registrationDTO, int userId)
+        {
+            JobSeekerProfile jobSeeker = new JobSeekerProfile()
+            {
+                UserId = userId,
+                FirstName = registrationDTO.FirstName,
+                LastName = registrationDTO.LastName,
+            };
+            await jobSeekerProfileRepository.AddAsync(jobSeeker);
+            await jobSeekerProfileRepository.SaveChangesAsync();
+        }
         private async Task<(string Token, DateTime Expiration)> GenerateJwtTokenAsync(ApplicationUser user, bool rememberMe)
         {
             var userRoles = await userManager.GetRolesAsync(user);
@@ -241,57 +270,18 @@
 
             return (new JwtSecurityTokenHandler().WriteToken(token), expires);
         }
-
-
-
-        private async Task<string?> IsAlreadyExists(BaseRegistrationDTO registrationDTO)
+        private async Task<ApplicationUser?> FindUserByEmailOrUsernameAsync(string emailOrUsername)
         {
-            var existingUser = await userManager.FindByEmailAsync(registrationDTO.Email);
-            if (existingUser != null)
+            // Try to find by email first
+            var user = await userManager.FindByEmailAsync(emailOrUsername);
+
+            // If not found by email, try by username
+            if (user == null)
             {
-                return "Email is already registered";
+                user = await userManager.FindByNameAsync(emailOrUsername);
             }
 
-            existingUser = await userManager.FindByNameAsync(registrationDTO.Email);
-            if (existingUser != null)
-            {
-                return "Username is already used";
-            }
-
-            return null;
-        }
-        private async Task CreateAdminProfile(AdminRegistrationDTO registrationDTO, int userId)
-        {
-            AdminProfile admin = new AdminProfile()
-            {
-                UserId = userId,
-                FirstName = registrationDTO.FirstName,
-                LastName = registrationDTO.LastName,
-            };
-            await adminProfileRepository.AddAsync(admin);
-            await adminProfileRepository.SaveChangesAsync();
-        }
-        private async Task CreateCompanyProfile(CompanyRegistrationDTO registrationDTO, int userId)
-        {
-            CompanyProfile company = new CompanyProfile()
-            {
-                UserId = userId,
-                CompanyName = registrationDTO.CompanyName,
-                CompanySize = registrationDTO.CompanySize
-            };
-            await companyProfileRepository.AddAsync(company);
-            await companyProfileRepository.SaveChangesAsync();
-        }
-        private async Task CreateJobSeekerProfile(JobSeekerRegistrationDTO registrationDTO, int userId)
-        {
-            JobSeekerProfile jobSeeker = new JobSeekerProfile()
-            {
-                UserId = userId,
-                FirstName = registrationDTO.FirstName,
-                LastName = registrationDTO.LastName,
-            };
-            await jobSeekerProfileRepository.AddAsync(jobSeeker);
-            await jobSeekerProfileRepository.SaveChangesAsync();
+            return user;
         }
     }
 }
