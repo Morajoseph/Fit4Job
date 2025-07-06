@@ -1,11 +1,12 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using Fit4Job.DTOs.AuthorizationDTOs;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Fit4Job.DTOs.AuthorizationDTOs;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Fit4Job.Controllers
 {
@@ -20,9 +21,9 @@ namespace Fit4Job.Controllers
         private readonly IAdminProfileRepository adminProfileRepository;
         private readonly ICompanyProfileRepository companyProfileRepository;
         private readonly IJobSeekerProfileRepository jobSeekerProfileRepository;
-        public AuthController(UserManager<ApplicationUser> userManager, IConfiguration config, 
-            RoleManager<IdentityRole<int>> roleManager, AdminProfileRepository adminProfileRepository ,
-            ICompanyProfileRepository companyProfileRepository , IJobSeekerProfileRepository jobSeekerProfileRepository)
+        public AuthController(UserManager<ApplicationUser> userManager, IConfiguration config,
+            RoleManager<IdentityRole<int>> roleManager, AdminProfileRepository adminProfileRepository,
+            ICompanyProfileRepository companyProfileRepository, IJobSeekerProfileRepository jobSeekerProfileRepository)
         {
 
             this.config = config;
@@ -41,43 +42,25 @@ namespace Fit4Job.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var user = await userManager.FindByEmailAsync(loginDTO.Email); // Fixed variable name
+            var user = await FindUserByEmailOrUsernameAsync(loginDTO.EmailOrUsername);
             if (user == null)
-                return Unauthorized("Invalid email");
+                return Unauthorized(new { message = "Invalid credentials" });
 
-            var isPasswordValid = await userManager.CheckPasswordAsync(user, loginDTO.Password); // Fixed variable name
+            var isPasswordValid = await userManager.CheckPasswordAsync(user, loginDTO.Password);
             if (!isPasswordValid)
                 return Unauthorized("Invalid password");
 
-            var userRoles = await userManager.GetRolesAsync(user);
+            // Generate JWT token
+            var token = await GenerateJwtTokenAsync(user, loginDTO.RememberMe);
 
-            var authClaims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            foreach (var userRole in userRoles)
-            {
-                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-            }
-
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT:Key"]));
-
-            var token = new JwtSecurityToken(
-                issuer: config["JWT:Iss"],
-                expires: loginDTO.RememberMe ? DateTime.Now.AddDays(7) : DateTime.Now.AddHours(2),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-            );
 
             return Ok(new
             {
-                token = new JwtSecurityTokenHandler().WriteToken(token),
-                expiration = token.ValidTo,
-                username = user.UserName,
-                roles = userRoles
+                Token = token.Token,
+                Expiration = token.Expiration,
+                Email = user.Email!,
+                Username = user.UserName!,
+                Roles = await userManager.GetRolesAsync(user)
             });
         }
 
@@ -214,6 +197,63 @@ namespace Fit4Job.Controllers
         }
 
         /* ****************************************** Helper Methods ****************************************** */
+
+        private async Task<ApplicationUser?> FindUserByEmailOrUsernameAsync(string emailOrUsername)
+        {
+            // Try to find by email first
+            var user = await userManager.FindByEmailAsync(emailOrUsername);
+
+            // If not found by email, try by username
+            if (user == null)
+            {
+                user = await userManager.FindByNameAsync(emailOrUsername);
+            }
+
+            return user;
+        }
+
+        private async Task<(string Token, DateTime Expiration)> GenerateJwtTokenAsync(ApplicationUser user, bool rememberMe)
+        {
+            var userRoles = await userManager.GetRolesAsync(user);
+
+            var authClaims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName!),
+                new Claim(ClaimTypes.Email, user.Email!),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iat,
+                new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString(),ClaimValueTypes.Integer64)
+            };
+
+            // Add role claims
+            foreach (var role in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            var jwtKey = config["JWT:Key"];
+            if (string.IsNullOrEmpty(jwtKey))
+            {
+                throw new InvalidOperationException("JWT Key is not configured");
+            }
+
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+            var expires = rememberMe ? DateTime.UtcNow.AddDays(7) : DateTime.UtcNow.AddHours(12);
+
+            var token = new JwtSecurityToken(
+                issuer: config["JWT:Issuer"],
+                //audience: config["JWT:Audience"], // Add audience
+                expires: expires,
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+            );
+
+            return (new JwtSecurityTokenHandler().WriteToken(token), expires);
+        }
+
+
+
         private async Task<string?> IsAlreadyExists(BaseRegistrationDTO registrationDTO)
         {
             var existingUser = await userManager.FindByEmailAsync(registrationDTO.Email);
@@ -252,7 +292,7 @@ namespace Fit4Job.Controllers
             await companyProfileRepository.AddAsync(company);
             await companyProfileRepository.SaveChangesAsync();
         }
-        private async Task CreateJobSeekerProfile(JobSeekerRegistrationDTO registrationDTO , int userId)
+        private async Task CreateJobSeekerProfile(JobSeekerRegistrationDTO registrationDTO, int userId)
         {
             JobSeekerProfile jobSeeker = new JobSeekerProfile()
             {

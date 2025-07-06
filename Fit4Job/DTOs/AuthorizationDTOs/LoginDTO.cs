@@ -2,38 +2,18 @@
 {
     public class LoginDTO
     {
+        [Display(Name = "Email or Username")]
+        [Required(ErrorMessage = "Email or Username is required.")]
+        [StringLength(100, MinimumLength = 3, ErrorMessage = "Email or Username must be between 3 and 100 characters.")]
+        public string EmailOrUsername { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "First name is required")]
-        [StringLength(20, MinimumLength = 2, ErrorMessage = "First name must be between 2 and 20 characters")]
-        [Display(Name = "First Name")]
-
-        public string FirstName { get; set; }
-
-
-
-
-        [Required(ErrorMessage = "Last name is required")]
-        [StringLength(20, MinimumLength = 2, ErrorMessage = "Last name must be between 2 and 20 characters")]
-        [Display(Name = "Last Name")]
-        public string LastName { get; set; }
-
-
-        [Required]
-        [EmailAddress(ErrorMessage = "Invalid email address!.")]
-        public string Email { get; set; }
-
-
-        [Required]
+        [Display(Name = "Password")]
         [DataType(DataType.Password)]
-        public string Password { get; set; }
+        [Required(ErrorMessage = "Password is required")]
+        public string Password { get; set; } = string.Empty;
 
-
-        [Required]
-        [Compare("Password")]
-        [DataType(DataType.Password)]
-        public string ConfirmPassword { get; set; }
-
-        public bool RememberMe { get; set; }
+        [Display(Name = "Remember Me.")]
+        public bool RememberMe { get; set; } = false;
 
     }
 }
