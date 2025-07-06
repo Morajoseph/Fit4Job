@@ -37,7 +37,6 @@
             // Generate JWT token
             var token = await GenerateJwtTokenAsync(user, loginDTO.RememberMe);
 
-
             return Ok(new
             {
                 Token = token.Token,
