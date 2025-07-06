@@ -48,7 +48,6 @@
             });
         }
 
-
         [HttpPost("Registration/Admin")]
         public async Task<IActionResult> AdminRegistration(AdminRegistrationDTO registrationDTO)
         {
@@ -90,7 +89,6 @@
 
             return Ok("Account Created Successfully");
         }
-
 
         [HttpPost("Registration/Company")]
         public async Task<IActionResult> CompanyRegistration(CompanyRegistrationDTO registrationDTO)
@@ -135,7 +133,6 @@
 
             return Ok("Account Created Successfully");
         }
-
 
         [HttpPost("Registration/JobSeeker")]
         public async Task<IActionResult> JobSeekerRegistration(JobSeekerRegistrationDTO registrationDTO)
@@ -197,7 +194,6 @@
 
             return null;
         }
-
         private async Task CreateAdminProfile(AdminRegistrationDTO registrationDTO, int userId)
         {
             AdminProfile admin = new AdminProfile()

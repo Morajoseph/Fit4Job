@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Threading.Tasks;
 
 namespace Fit4Job
@@ -17,7 +19,56 @@ namespace Fit4Job
             /******************************* Swagger & OpenAPI ******************************/
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(swagger => {
+                //This is to generate the Default UI of Swagger Documentation   
+
+                swagger.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Fit4Job WebAPIs",
+                    Version = "v1",
+                    Description = "Fit4Job platform APIs using ASP.NET Core 8"
+                });
+
+                // To Enable authorization using Swagger (JWT)    
+                swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter 'Bearer' [space] and then your valid token in the text input below.\r\n\r\nExample: \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\"",
+                });
+
+                swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
+
+            });
+
+            // Configure Swagger UI
+            //builder.Services.Configure<SwaggerUIOptions>(options =>
+            //{
+                //options.DefaultModelsExpandDepth(-1); // Hide schemas section
+                //options.DocExpansion(DocExpansion.None); // Collapse all operations by default
+                //options.EnableDeepLinking();
+                //options.DisplayOperationId();
+                //options.EnableFilter();
+                //options.ShowExtensions();
+                //options.EnableValidator();
+                //options.SupportedSubmitMethods(SubmitMethod.Get, SubmitMethod.Post, SubmitMethod.Put, SubmitMethod.Delete, SubmitMethod.Patch);
+            //});
 
             /********************************************************************************/
 
