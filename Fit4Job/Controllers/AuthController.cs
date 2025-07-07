@@ -1,4 +1,7 @@
-﻿namespace Fit4Job.Controllers
+﻿using Fit4Job.ViewModels.AuthViewModels;
+using Fit4Job.ViewModels.Responses;
+
+namespace Fit4Job.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -21,23 +24,30 @@
         /* ****************************************** Endpoints ****************************************** */
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(LoginDTO loginDTO)
+        public async Task<ApiResponse<LoginViewModel>> Login(LoginDTO loginDTO)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            {
+                return ApiResponseHelper.Error<LoginViewModel>(ErrorCode.InvalidCredentials, "Invalid email/Username or password");
+            }
 
             var user = await FindUserByEmailOrUsernameAsync(loginDTO.EmailOrUsername);
             if (user == null)
-                return Unauthorized(new { message = "Invalid credentials" });
+            {
+                return ApiResponseHelper.Error<LoginViewModel>(ErrorCode.InvalidCredentials, "Invalid Credentials.");
+            }
 
             var isPasswordValid = await userManager.CheckPasswordAsync(user, loginDTO.Password);
             if (!isPasswordValid)
-                return Unauthorized("Invalid password");
+            {
+                return ApiResponseHelper.Error<LoginViewModel>(ErrorCode.InvalidCredentials, "Invalid email/Username or password");
+            }
 
             // Generate JWT token
             var token = await GenerateJwtTokenAsync(user, loginDTO.RememberMe);
 
-            return Ok(new
+
+            return ApiResponseHelper.Success(new LoginViewModel()
             {
                 Token = token.Token,
                 Expiration = token.Expiration,
@@ -48,18 +58,14 @@
         }
 
         [HttpPost("Registration/Admin")]
-        public async Task<IActionResult> AdminRegistration(AdminRegistrationDTO registrationDTO)
+        public async Task<ApiResponse<bool>> AdminRegistration(AdminRegistrationDTO registrationDTO)
         {
             if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+                return ApiResponseHelper.Error<bool>(ErrorCode.ValidationError, "Validation Error");
 
-            string? isAlreadyExists = await IsAlreadyExists(registrationDTO);
-            if (isAlreadyExists != null)
-            {
-                return BadRequest(isAlreadyExists);
-            }
+            var isAlreadyExists = await IsAlreadyExists(registrationDTO);
+            if (isAlreadyExists != ErrorCode.None)
+                return ApiResponseHelper.Error<bool>(isAlreadyExists, "Email Or Username is already exists");
 
             ApplicationUser newUser = new ApplicationUser()
             {
@@ -69,7 +75,6 @@
             };
 
             var result = await userManager.CreateAsync(newUser, registrationDTO.Password);
-
             if (!result.Succeeded)
             {
                 StringBuilder errorsDescription = new StringBuilder();
@@ -77,31 +82,25 @@
                 {
                     errorsDescription.AppendLine(error.Description);
                 }
-                return BadRequest(errorsDescription.ToString());
+                return ApiResponseHelper.Error<bool>(ErrorCode.ValidationError, errorsDescription.ToString());
             }
 
             await userManager.AddToRoleAsync(newUser, "Admin");
-
             int userId = newUser.Id;
-
             await CreateAdminProfile(registrationDTO, userId);
 
-            return Ok("Account Created Successfully");
+            return ApiResponseHelper.Success<bool>(true);
         }
 
         [HttpPost("Registration/Company")]
-        public async Task<IActionResult> CompanyRegistration(CompanyRegistrationDTO registrationDTO)
+        public async Task<ApiResponse<bool>> CompanyRegistration(CompanyRegistrationDTO registrationDTO)
         {
             if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+                return ApiResponseHelper.Error<bool>(ErrorCode.ValidationError, "Validation Error");
 
-            string? isAlreadyExists = await IsAlreadyExists(registrationDTO);
-            if (isAlreadyExists != null)
-            {
-                return BadRequest(isAlreadyExists);
-            }
+            var isAlreadyExists = await IsAlreadyExists(registrationDTO);
+            if (isAlreadyExists != ErrorCode.None)
+                return ApiResponseHelper.Error<bool>(isAlreadyExists, "Email Or Username is already exists");
 
             ApplicationUser newUser = new ApplicationUser()
             {
@@ -120,33 +119,26 @@
                 {
                     errorsDescription.AppendLine(error.Description);
                 }
-                return BadRequest(errorsDescription.ToString());
+                return ApiResponseHelper.Error<bool>(ErrorCode.ValidationError, errorsDescription.ToString());
             }
 
             await userManager.AddToRoleAsync(newUser, "Company");
-
             int userId = newUser.Id;
-
             await CreateCompanyProfile(registrationDTO, userId);
 
-
-            return Ok("Account Created Successfully");
+            return ApiResponseHelper.Success<bool>(true);
         }
 
         [HttpPost("Registration/JobSeeker")]
-        public async Task<IActionResult> JobSeekerRegistration(JobSeekerRegistrationDTO registrationDTO)
+        public async Task<ApiResponse<bool>> JobSeekerRegistration(JobSeekerRegistrationDTO registrationDTO)
         {
 
             if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+                return ApiResponseHelper.Error<bool>(ErrorCode.ValidationError, "Validation Error");
 
-            string? isAlreadyExists = await IsAlreadyExists(registrationDTO);
-            if (isAlreadyExists != null)
-            {
-                return BadRequest(isAlreadyExists);
-            }
+            var isAlreadyExists = await IsAlreadyExists(registrationDTO);
+            if (isAlreadyExists != ErrorCode.None)
+                return ApiResponseHelper.Error<bool>(isAlreadyExists, "Email Or Username is already exists");
 
             ApplicationUser newUser = new ApplicationUser()
             {
@@ -156,7 +148,6 @@
             };
 
             var result = await userManager.CreateAsync(newUser, registrationDTO.Password);
-
             if (!result.Succeeded)
             {
                 StringBuilder errorsDescription = new StringBuilder();
@@ -164,34 +155,32 @@
                 {
                     errorsDescription.AppendLine(error.Description);
                 }
-                return BadRequest(errorsDescription.ToString());
+                return ApiResponseHelper.Error<bool>(ErrorCode.ValidationError, errorsDescription.ToString());
             }
 
             await userManager.AddToRoleAsync(newUser, "JobSeeker");
-
             int userId = newUser.Id;
-
             await CreateJobSeekerProfile(registrationDTO, userId);
 
-            return Ok("Account Created Successfully");
+            return ApiResponseHelper.Success<bool>(true);
         }
 
         /* ****************************************** Helper Methods ****************************************** */
-        private async Task<string?> IsAlreadyExists(BaseRegistrationDTO registrationDTO)
+        private async Task<ErrorCode> IsAlreadyExists(BaseRegistrationDTO registrationDTO)
         {
             var existingUser = await userManager.FindByEmailAsync(registrationDTO.Email);
             if (existingUser != null)
             {
-                return "Email is already registered";
+                return ErrorCode.EmailAlreadyExists;
             }
 
             existingUser = await userManager.FindByNameAsync(registrationDTO.Email);
             if (existingUser != null)
             {
-                return "Username is already used";
+                return ErrorCode.UsernameAlreadyExists;
             }
 
-            return null;
+            return ErrorCode.None;
         }
         private async Task CreateAdminProfile(AdminRegistrationDTO registrationDTO, int userId)
         {

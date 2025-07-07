@@ -1,6 +1,6 @@
 ﻿namespace Fit4Job.ViewModels.Responses
 {
-    public class ErrorApiResponse : ApiResponse<bool>
+    public class ErrorApiResponse<T> : ApiResponse<T>
     {
 
     }

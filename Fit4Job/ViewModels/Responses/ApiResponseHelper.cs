@@ -13,9 +13,9 @@
             };
         }
 
-        public static ErrorApiResponse Error(ErrorCode errorCode, string message = "")
+        public static ErrorApiResponse<T> Error<T>(ErrorCode errorCode, string message = "")
         {
-            return new ErrorApiResponse()
+            return new ErrorApiResponse<T>()
             {
                 Data = default,
                 Success = false,
