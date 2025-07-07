@@ -1,7 +1,4 @@
-﻿using Fit4Job.ViewModels.AuthViewModels;
-using Fit4Job.ViewModels.Responses;
-
-namespace Fit4Job.Controllers
+﻿namespace Fit4Job.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
