@@ -1,4 +1,4 @@
-﻿namespace Fit4Job.ViewModels.ResponseViewModels
+﻿namespace Fit4Job.ViewModels.Responses
 {
     // Base Response Models
     public class ApiResponse<T>
