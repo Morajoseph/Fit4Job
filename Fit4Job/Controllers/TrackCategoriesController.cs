@@ -104,5 +104,50 @@ namespace Fit4Job.Controllers
         }
 
 
+        // DELETE: Soft Delete a track category
+        [HttpDelete("{id:int}")]
+        public async Task<ApiResponse<string>> SoftDelete(int id)
+        {
+            var category = await unitOfWork.TrackCategoryRepository.GetByIdAsync(id);
+            if (category == null)
+            {
+                return ApiResponseHelper.Error<string>(ErrorCode.NotFound, "Category not found");
+            }
+
+            if (category.DeletedAt != null)
+            {
+                return ApiResponseHelper.Error<string>(ErrorCode.BadRequest, "Category is already deleted");
+            }
+
+            category.DeletedAt = DateTime.UtcNow;
+            unitOfWork.TrackCategoryRepository.Update(category);
+            await unitOfWork.CompleteAsync();
+
+            return ApiResponseHelper.Success("Category deleted successfully");
+        }
+
+
+        // PATCH: Restore a soft-deleted track category
+        [HttpPatch("{id:int}/restore")]
+        public async Task<ApiResponse<string>> Restore(int id)
+        {
+            var category = await unitOfWork.TrackCategoryRepository.GetByIdAsync(id);
+            if (category == null)
+            {
+                return ApiResponseHelper.Error<string>(ErrorCode.NotFound, "Category not found");
+            }
+
+            if (category.DeletedAt == null)
+            {
+                return ApiResponseHelper.Error<string>(ErrorCode.BadRequest, "Category is not deleted");
+            }
+
+            category.DeletedAt = null;
+            unitOfWork.TrackCategoryRepository.Update(category);
+            await unitOfWork.CompleteAsync();
+
+            return ApiResponseHelper.Success("Category restored successfully");
+        }
+
     }
 }
