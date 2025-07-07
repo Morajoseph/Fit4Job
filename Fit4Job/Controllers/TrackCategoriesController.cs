@@ -1,4 +1,5 @@
 ﻿using Fit4Job.DTOs.TrackCategoriesDTOs;
+using Fit4Job.Models;
 using Fit4Job.ViewModels.TrackCategoriesViewModels;
 
 namespace Fit4Job.Controllers
@@ -100,6 +101,28 @@ namespace Fit4Job.Controllers
 
             var updatedVM = new TrackCategoryViewModel(oldCategory);
             return ApiResponseHelper.Success(updatedVM,"updated successfully");
+
+        }
+
+
+        // Get all track categories
+        [HttpGet("all")]
+        public async Task<ApiResponse<IEnumerable<TrackCategoryViewModel>>> GetAllTrackCategories()
+        {
+            var categories = await unitOfWork.TrackCategoryRepository.GetAllAsync();
+            var data = categories.Select(c => TrackCategoryViewModel.GetViewModel(c));
+            return ApiResponseHelper.Success(data);
+        }
+
+
+        // Get all track categories by search name,status
+
+        [HttpGet("search/{keyword}/{isActive}")]
+        public async Task<ApiResponse<IEnumerable<TrackCategoryViewModel>>> Search(string keyword, bool isActive)
+        {
+            var categories = await unitOfWork.TrackCategoryRepository.SearchByNameAndStatusAsync(keyword,isActive);
+            var data = categories.Select(c => TrackCategoryViewModel.GetViewModel(c));
+            return ApiResponseHelper.Success(data);
 
         }
 
