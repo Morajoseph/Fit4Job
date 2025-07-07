@@ -7,12 +7,16 @@
 
         }
 
-        public async Task<IEnumerable<TrackCategory>> SearchByNameAsync(string keyword)
+        public async Task<IEnumerable<TrackCategory>> SearchByNameAndStatusAsync(string keyword, bool isActive)
         {
             return await _context.TrackCategories
-                .Where(tc => tc.Name.Contains(keyword) && tc.DeletedAt == null)
-                .ToListAsync();
+           .Where(tc => tc.Name.Contains(keyword) &&
+            (isActive ? tc.DeletedAt == null : tc.DeletedAt != null))
+            .ToListAsync();
+
         }
+
+
 
         public async Task<IEnumerable<TrackCategory>> GetActiveCategoriesAsync()
         {
@@ -21,12 +25,7 @@
                 .ToListAsync();
         }
 
-        public override async Task<IEnumerable<TrackCategory>> GetAllAsync()
-        {
-            return await _context.TrackCategories
-                .Where(b => b.DeletedAt == null)
-                .ToListAsync();
-        }
+       
 
     }
 }

@@ -105,5 +105,72 @@ namespace Fit4Job.Controllers
         }
 
 
+        // DELETE: Soft Delete a track category
+        [HttpDelete("{id:int}")]
+        public async Task<ApiResponse<string>> SoftDelete(int id)
+        {
+            var category = await unitOfWork.TrackCategoryRepository.GetByIdAsync(id);
+            if (category == null)
+            {
+                return ApiResponseHelper.Error<string>(ErrorCode.NotFound, "Category not found");
+            }
+
+            if (category.DeletedAt != null)
+            {
+                return ApiResponseHelper.Error<string>(ErrorCode.BadRequest, "Category is already deleted");
+            }
+
+            category.DeletedAt = DateTime.UtcNow;
+            unitOfWork.TrackCategoryRepository.Update(category);
+            await unitOfWork.CompleteAsync();
+
+            return ApiResponseHelper.Success("Category deleted successfully");
+        }
+
+
+        // PATCH: Restore a soft-deleted track category
+        [HttpPatch("{id:int}/restore")]
+        public async Task<ApiResponse<string>> Restore(int id)
+        {
+            var category = await unitOfWork.TrackCategoryRepository.GetByIdAsync(id);
+            if (category == null)
+            {
+                return ApiResponseHelper.Error<string>(ErrorCode.NotFound, "Category not found");
+            }
+
+            if (category.DeletedAt == null)
+            {
+                return ApiResponseHelper.Error<string>(ErrorCode.BadRequest, "Category is not deleted");
+            }
+
+            category.DeletedAt = null;
+            unitOfWork.TrackCategoryRepository.Update(category);
+            await unitOfWork.CompleteAsync();
+
+            return ApiResponseHelper.Success("Category restored successfully");
+        }
+
+
+        // Get all track categories
+        [HttpGet("all")]
+        public async Task<ApiResponse<IEnumerable<TrackCategoryViewModel>>> GetAllTrackCategories()
+        {
+            var categories = await unitOfWork.TrackCategoryRepository.GetAllAsync();
+            var data = categories.Select(c => TrackCategoryViewModel.GetViewModel(c));
+            return ApiResponseHelper.Success(data);
+        }
+
+
+        // Get all track categories by search name,status
+
+        [HttpGet("search/{keyword}/{isActive}")]
+        public async Task<ApiResponse<IEnumerable<TrackCategoryViewModel>>> Search(string keyword, bool isActive)
+        {
+            var categories = await unitOfWork.TrackCategoryRepository.SearchByNameAndStatusAsync(keyword,isActive);
+            var data = categories.Select(c => TrackCategoryViewModel.GetViewModel(c));
+            return ApiResponseHelper.Success(data);
+
+        }
+
     }
 }
