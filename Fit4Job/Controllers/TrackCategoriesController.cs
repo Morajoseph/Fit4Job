@@ -1,8 +1,4 @@
-﻿using Fit4Job.DTOs.TrackCategoriesDTOs;
-using Fit4Job.Models;
-using Fit4Job.ViewModels.TrackCategoriesViewModels;
-
-namespace Fit4Job.Controllers
+﻿namespace Fit4Job.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -18,7 +14,7 @@ namespace Fit4Job.Controllers
         [HttpGet]
         public async Task<ApiResponse<IEnumerable<TrackCategoryViewModel>>> GetAllActive()
         {
-            var categories = await unitOfWork.TrackCategoryRepository.GetAllAsync();
+            var categories = await unitOfWork.TrackCategoryRepository.GetActiveCategoriesAsync();
             var data = categories.Select(c => TrackCategoryViewModel.GetViewModel(c));
             return ApiResponseHelper.Success(data);
         }
@@ -35,75 +31,62 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(new TrackCategoryViewModel(category));
         }
 
-
         //  create track category
         [HttpPost]
-        public async Task<ApiResponse<TrackCategoryViewModel>> Create([FromBody] CreateTrackCategoryDTO createTrackCategoryDTO)
+        public async Task<ApiResponse<TrackCategoryViewModel>> Create(CreateTrackCategoryDTO createTrackCategoryDTO)
         {
-            if(createTrackCategoryDTO == null)
-            {
-                return ApiResponseHelper.Error<TrackCategoryViewModel>(ErrorCode.BadRequest, "Invalid data");
-
-            }
-
-            if (!ModelState.IsValid)
+            if (createTrackCategoryDTO == null || !ModelState.IsValid)
             {
                 return ApiResponseHelper.Error<TrackCategoryViewModel>(ErrorCode.BadRequest, "Invalid data");
             }
+
             var trackCategory = new TrackCategory()
             {
                 Name = createTrackCategoryDTO.Name,
                 Description = createTrackCategoryDTO.Description
-
-
             };
-           
-        
 
             await unitOfWork.TrackCategoryRepository.AddAsync(trackCategory);
             await unitOfWork.CompleteAsync();
             var createdVM = new TrackCategoryViewModel(trackCategory);
-            return ApiResponseHelper.Success(createdVM, "Created successfully");
 
+            return ApiResponseHelper.Success(createdVM, "Created successfully");
         }
 
-
-        //update track category by Id
-
+        // Update track category by Id
         [HttpPut("{id:int}")]
-        public async Task<ApiResponse<TrackCategoryViewModel>> UpdateCategory(int id , [FromBody] EditTrackCategoryDTO editTrackCategoryDTO)
+        public async Task<ApiResponse<TrackCategoryViewModel>> UpdateCategory(int id, EditTrackCategoryDTO editTrackCategoryDTO)
         {
-         
+
             if (editTrackCategoryDTO == null)
             {
                 return ApiResponseHelper.Error<TrackCategoryViewModel>(ErrorCode.BadRequest, "Request body is required");
             }
 
-
             if (!ModelState.IsValid)
             {
                 return ApiResponseHelper.Error<TrackCategoryViewModel>(ErrorCode.BadRequest, "Invalid data");
             }
-            var oldCategory =  await unitOfWork.TrackCategoryRepository.GetByIdAsync(id);
-           
+
+
+            var oldCategory = await unitOfWork.TrackCategoryRepository.GetByIdAsync(id);
             if (oldCategory == null)
             {
                 return ApiResponseHelper.Error<TrackCategoryViewModel>(ErrorCode.NotFound, "Category not found");
             }
 
-          
-            oldCategory.Name= editTrackCategoryDTO.Name;
-            oldCategory.Description= editTrackCategoryDTO.Description;
 
-             unitOfWork.TrackCategoryRepository.Update(oldCategory);
-             await unitOfWork.CompleteAsync();
+            oldCategory.Name = editTrackCategoryDTO.Name;
+            oldCategory.Description = editTrackCategoryDTO.Description;
+            oldCategory.UpdatedAt = DateTime.UtcNow;
+
+            unitOfWork.TrackCategoryRepository.Update(oldCategory);
+            await unitOfWork.CompleteAsync();
 
 
             var updatedVM = new TrackCategoryViewModel(oldCategory);
-            return ApiResponseHelper.Success(updatedVM,"updated successfully");
-
+            return ApiResponseHelper.Success(updatedVM, "updated successfully");
         }
-
 
         // DELETE: Soft Delete a track category
         [HttpDelete("{id:int}")]
@@ -121,12 +104,12 @@ namespace Fit4Job.Controllers
             }
 
             category.DeletedAt = DateTime.UtcNow;
+            category.UpdatedAt = DateTime.UtcNow;
             unitOfWork.TrackCategoryRepository.Update(category);
             await unitOfWork.CompleteAsync();
 
             return ApiResponseHelper.Success("Category deleted successfully");
         }
-
 
         // PATCH: Restore a soft-deleted track category
         [HttpPatch("{id:int}/restore")]
@@ -144,12 +127,12 @@ namespace Fit4Job.Controllers
             }
 
             category.DeletedAt = null;
+            category.UpdatedAt = DateTime.UtcNow;
             unitOfWork.TrackCategoryRepository.Update(category);
             await unitOfWork.CompleteAsync();
 
             return ApiResponseHelper.Success("Category restored successfully");
         }
-
 
         // Get all track categories
         [HttpGet("all")]
@@ -160,17 +143,13 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(data);
         }
 
-
         // Get all track categories by search name,status
-
         [HttpGet("search/{keyword}/{isActive}")]
         public async Task<ApiResponse<IEnumerable<TrackCategoryViewModel>>> Search(string keyword, bool isActive)
         {
-            var categories = await unitOfWork.TrackCategoryRepository.SearchByNameAndStatusAsync(keyword,isActive);
+            var categories = await unitOfWork.TrackCategoryRepository.SearchByNameAndStatusAsync(keyword, isActive);
             var data = categories.Select(c => TrackCategoryViewModel.GetViewModel(c));
             return ApiResponseHelper.Success(data);
-
         }
-
     }
 }

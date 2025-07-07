@@ -6,8 +6,10 @@ global using Fit4Job.ViewModels.Responses;
 global using Fit4Job.Repositories.Generic;
 global using Fit4Job.DTOs.AuthorizationDTOs;
 global using Fit4Job.Repositories.Interfaces;
+global using Fit4Job.DTOs.TrackCategoriesDTOs;
 global using Fit4Job.ViewModels.AuthViewModels;
 global using Fit4Job.Repositories.Implementations;
+global using Fit4Job.ViewModels.TrackCategoriesViewModels;
 
 
 global using Microsoft.AspNetCore.Mvc;
