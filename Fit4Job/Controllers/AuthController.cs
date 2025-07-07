@@ -9,7 +9,7 @@
         private readonly IAdminProfileRepository adminProfileRepository;
         private readonly ICompanyProfileRepository companyProfileRepository;
         private readonly IJobSeekerProfileRepository jobSeekerProfileRepository;
-        public AuthController(UserManager<ApplicationUser> userManager, IConfiguration config, AdminProfileRepository adminProfileRepository, ICompanyProfileRepository companyProfileRepository, IJobSeekerProfileRepository jobSeekerProfileRepository)
+        public AuthController(UserManager<ApplicationUser> userManager, IConfiguration config, IAdminProfileRepository adminProfileRepository, ICompanyProfileRepository companyProfileRepository, IJobSeekerProfileRepository jobSeekerProfileRepository)
         {
             this.config = config;
             this.userManager = userManager;
