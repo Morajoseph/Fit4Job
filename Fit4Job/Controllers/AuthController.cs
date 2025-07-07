@@ -210,7 +210,6 @@
             {
                 UserId = userId,
                 CompanyName = registrationDTO.CompanyName,
-                CompanySize = registrationDTO.CompanySize
             };
             await companyProfileRepository.AddAsync(company);
             await companyProfileRepository.SaveChangesAsync();
