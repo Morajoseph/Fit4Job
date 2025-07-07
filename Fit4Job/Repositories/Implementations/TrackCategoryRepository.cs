@@ -21,6 +21,12 @@
                 .ToListAsync();
         }
 
+        public override async Task<IEnumerable<TrackCategory>> GetAllAsync()
+        {
+            return await _context.TrackCategories
+                .Where(b => b.DeletedAt == null)
+                .ToListAsync();
+        }
 
     }
 }
