@@ -1,5 +1,7 @@
 ﻿using Fit4Job.DTOs.TrackAttemptsDTOs;
 using Fit4Job.ViewModels.TrackAttemptsViewModels;
+using Fit4Job.ViewModels.TrackQuestionAnswerViewModel;
+using Fit4Job.ViewModels.UserBadgeViewModels;
 
 namespace Fit4Job.Controllers
 {
@@ -54,5 +56,36 @@ namespace Fit4Job.Controllers
 
             return ApiResponseHelper.Success(trackAttemptViewModel, "Created successfully");
         }
+
+
+        [HttpGet("track/{trackId:int}")]
+        public async Task<ApiResponse<IEnumerable<TrackAttemptViewModel>>> GetAllByTrack(int trackId)
+        {
+            var userIdString = userManager.GetUserId(User);
+            int userId = int.Parse(userIdString);
+
+            var attempts = await unitOfWork.TrackAttemptRepository.GetAllAttemptsByUserInTrackAsync(userId, trackId);
+            var data = attempts.Select(t => TrackAttemptViewModel.GetViewModel(t));
+            return ApiResponseHelper.Success(data);
+        }
+
+
+        [HttpGet("{id:int}/answers")]
+        public async Task<ApiResponse<IEnumerable<TrackQuestionAnswerViewModel>>> GetAnswers(int id)
+        {
+            var answers = await unitOfWork.TrackQuestionAnswerRepository.GetAllAnswersByAttemptAsync(id);
+            var data = answers.Select(a => TrackQuestionAnswerViewModel.FromModel(a));
+            return ApiResponseHelper.Success(data);
+        }
+
+        [HttpGet("{id:int}/badges")]
+        public async Task<ApiResponse<IEnumerable<UserBadgeViewModels>>> GetBadges(int id)
+        {
+            var badges = await unitOfWork.UserBadgeRepository.GetBadgesByAttemptIdAsync(id);
+            var data = badges.Select(b => UserBadgeViewModels.FromModel(b));
+            return ApiResponseHelper.Success(data);
+        }
+
+
     }
 }
