@@ -47,5 +47,23 @@
                 .Include(t => t.TrackQuestions)
                 .FirstOrDefaultAsync(t => t.Id == trackId);
         }
+
+        //
+        public async Task<IEnumerable<Badge>> GetBadgesByTrackIdAsync(int trackId)
+        {
+            return await _context.Badges
+                .Where(b => b.TrackId == trackId)
+                .ToListAsync();
+        }
+
+
+        public async Task<Track?> GetTrackWithDetailsAsync(int id)
+        {
+            return await _context.Tracks
+                .Include(t => t.Category)
+                .Include(t => t.Creator)
+                .FirstOrDefaultAsync(t => t.Id == id && t.DeletedAt == null);
+        }
+
     }
 }
