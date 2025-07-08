@@ -56,6 +56,35 @@ namespace Fit4Job.Controllers
         }
 
 
+        [HttpGet("All")]
+        public async Task<ApiResponse<IEnumerable<TrackViewModel>>> GetAllIncludingDeleted()
+        {
+            var allTracks = await unitOfWork.TrackRepository.GetAllTracksIncludingDeletedAsync();
+            var data = allTracks.Select(t => TrackViewModel.GetViewModel(t));
+            return ApiResponseHelper.Success(data);
+        }
+
+        [HttpGet("Search")]
+        public async Task<ApiResponse<IEnumerable<TrackViewModel>>> Search([FromQuery] TrackSearchDTO searchDTO)
+        {
+            var tracks = await unitOfWork.TrackRepository.SearchTracksAsync(searchDTO);
+            var data = tracks.Select(t => TrackViewModel.GetViewModel(t));
+            return ApiResponseHelper.Success(data);
+        }
+
+        [HttpGet("Category/{categoryId:int}")]
+        public async Task<ApiResponse<IEnumerable<TrackViewModel>>> GetByCategory(int categoryId)
+        {
+            if (categoryId <= 0)
+            {
+                return ApiResponseHelper.Error<IEnumerable<TrackViewModel>>(ErrorCode.BadRequest, "Invalid CategoryId");
+            }
+
+            var tracks = await unitOfWork.TrackRepository.GetAllTracksByCategoryIdAsync(categoryId);
+            var data = tracks.Select(t => TrackViewModel.GetViewModel(t));
+            return ApiResponseHelper.Success(data);
+        }
+
 
 
     }
