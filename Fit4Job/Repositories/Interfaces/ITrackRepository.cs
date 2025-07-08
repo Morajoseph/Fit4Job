@@ -13,5 +13,10 @@ namespace Fit4Job.Repositories.Interfaces
 
         Task<IEnumerable<Track>> GetAllTracksIncludingDeletedAsync();
         Task<IEnumerable<Track>> SearchTracksAsync(TrackSearchDTO searchDTO);
+
+        //
+        Task<IEnumerable<Badge>> GetBadgesByTrackIdAsync(int trackId);
+        Task<Track?> GetTrackWithDetailsAsync(int id);
+
     }
 }

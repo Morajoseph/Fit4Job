@@ -86,6 +86,56 @@ namespace Fit4Job.Controllers
         }
 
 
+        //Get questions for a specific track
+
+        [HttpGet("{id}/questions")]
+        public async Task<ApiResponse<IEnumerable<TrackQuestionViewModel>>> GetQuestionsForTrack(int id)
+        {
+            var track = await unitOfWork.TrackRepository.GetTrackWithQuestionsAsync(id);
+
+            if (track == null)
+            {
+                return ApiResponseHelper.Error<IEnumerable<TrackQuestionViewModel>>(ErrorCode.NotFound, "Track not found");
+            }
+
+            var questions = track.TrackQuestions?
+                .Where(q => q.DeletedAt == null)
+                .Select(TrackQuestionViewModel.GetViewModel);
+                
+
+            return ApiResponseHelper.Success(questions);
+        }
+
+
+        //Get badges earned from this track
+
+        [HttpGet("{id}/badges")]
+        public async Task<ApiResponse<IEnumerable<BadgeViewModel>>> GetBadgesByTrackId(int id)
+        {
+            var badges = await unitOfWork.TrackRepository.GetBadgesByTrackIdAsync(id);
+
+            if (badges == null || !badges.Any())
+            {
+                return ApiResponseHelper.Error<IEnumerable<BadgeViewModel>>(ErrorCode.NotFound, "No badges found for this track");
+            }
+
+            var data = badges.Select(BadgeViewModel.GetViewModel);
+            return ApiResponseHelper.Success(data);
+        }
+
+        // Get track with category and creator details
+
+        [HttpGet("{id}/details")]
+        public async Task<ApiResponse<TrackDetailsViewModel>> GetTrackDetails(int id)
+        {
+            var track = await unitOfWork.TrackRepository.GetTrackWithDetailsAsync(id);
+
+            if (track == null)
+                return ApiResponseHelper.Error<TrackDetailsViewModel>(ErrorCode.NotFound, "Track not found");
+
+            var viewModel = TrackDetailsViewModel.GetViewModel(track);
+            return ApiResponseHelper.Success(viewModel);
+        }
 
     }
 }
