@@ -6,6 +6,26 @@
         {
 
         }
+
+
+        public async Task<IEnumerable<TrackAttempt>> GetAttemptsByUserIdWithTrackAsync(int userId)
+        {
+            return await _context.TrackAttempts
+                .Include(t => t.Track)
+                .Where(t => t.UserId == userId)
+                .OrderByDescending(t => t.StartTime)
+                .ToListAsync();
+        }
+
+
+        public async Task<TrackAttempt?> GetActiveAttemptByUserIdAsync(int userId)
+        {
+            return await _context.TrackAttempts
+                .Where(a => a.UserId == userId && a.Status == AttemptStatus.InProgress)
+                .OrderByDescending(a => a.StartTime)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<IEnumerable<TrackAttempt>> GetAllAttemptsByUserAsync(int userId)
         {
             return await _context.TrackAttempts

@@ -216,5 +216,67 @@ namespace Fit4Job.Controllers
                 return ApiResponseHelper.Error<IEnumerable<TrackAttemptViewModel>>(ErrorCode.InternalServerError, "An error occurred while retrieving user track attempts");
             }
         }
+
+        //Summary of all attempts for dashboard
+
+        [HttpGet("summary/user/{userId:int}")]
+        public async Task<ApiResponse<IEnumerable<TrackAttemptSummaryViewModel>>> GetSummaryByUserId(int userId)
+        {
+            var attempts = await unitOfWork.TrackAttemptRepository.GetAttemptsByUserIdWithTrackAsync(userId);
+
+            if (!attempts.Any())
+                return ApiResponseHelper.Error<IEnumerable<TrackAttemptSummaryViewModel>>(ErrorCode.NotFound, "No attempts found");
+
+            var viewModels = attempts.Select(TrackAttemptSummaryViewModel.GetViewModel);
+            return ApiResponseHelper.Success(viewModels);
+        }
+
+
+
+
+        //Get current active (in-progress) attempt for user
+
+        [HttpGet("active/user/{userId:int}")]
+        public async Task<ApiResponse<TrackAttemptViewModel>> GetActiveAttemptByUserId(int userId)
+        {
+            var attempt = await unitOfWork.TrackAttemptRepository.GetActiveAttemptByUserIdAsync(userId);
+
+            if (attempt == null)
+            {
+                return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.NotFound, "No active attempt found");
+            }
+
+            var viewModel = new TrackAttemptViewModel(attempt);
+
+            return ApiResponseHelper.Success(viewModel);
+        }
+
+
+        //Update progress percentage & solved count
+
+        [HttpPatch("{id:int}/progress")]
+        public async Task<ApiResponse<TrackAttemptViewModel>> UpdateProgress(int id, [FromBody] UpdateTrackAttemptProgressDTO dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.BadRequest, "Invalid data");
+            }
+
+            var attempt = await unitOfWork.TrackAttemptRepository.GetByIdAsync(id);
+
+            if (attempt == null)
+            {
+                return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.NotFound, "Attempt not found");
+            }
+
+            dto.UpdateAttempt(attempt);
+
+
+            unitOfWork.TrackAttemptRepository.Update(attempt);
+            await unitOfWork.CompleteAsync();
+
+            var viewModel = new TrackAttemptViewModel(attempt);
+            return ApiResponseHelper.Success(viewModel, "Progress updated successfully");
+        }
     }
 }

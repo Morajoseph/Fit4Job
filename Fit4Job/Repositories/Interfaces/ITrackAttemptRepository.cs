@@ -2,6 +2,11 @@
 {
     public interface ITrackAttemptRepository : IGenericRepository<TrackAttempt>
     {
+
+        Task<IEnumerable<TrackAttempt>> GetAttemptsByUserIdWithTrackAsync(int userId);
+
+        Task<TrackAttempt?> GetActiveAttemptByUserIdAsync(int userId);
+
         Task<IEnumerable<TrackAttempt>> GetAllAttemptsByUserAsync(int userId);
        // Task<TrackAttempt?> GetFirstAttemptAsync(int userId, int trackId);
 
