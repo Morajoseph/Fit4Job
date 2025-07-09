@@ -26,28 +26,23 @@
         [DataType(DataType.MultilineText)]
         public string? CompanyDescription { get; set; }
 
-
         [Url(ErrorMessage = "Please enter a valid LinkedIn URL")]
         [StringLength(255, ErrorMessage = "LinkedIn URL cannot exceed 255 characters")]
         [Display(Name = "LinkedIn URL", Description = "Company's LinkedIn profile URL")]
         public string? LinkedinUrl { get; set; }
-
 
         [Url(ErrorMessage = "Please enter a valid website URL")]
         [StringLength(255, ErrorMessage = "Website URL cannot exceed 255 characters")]
         [Display(Name = "Website URL", Description = "Company's official website URL")]
         public string? WebsiteUrl { get; set; }
 
-
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Industry must be between 2 and 100 characters")]
         [Display(Name = "Industry", Description = "Primary industry or sector of the company")]
         public string? Industry { get; set; }
 
-
         [Display(Name = "Company Size", Description = "Number of employees in the company")]
         [EnumDataType(typeof(CompanySize), ErrorMessage = "Invalid company size")]
         public CompanySize? CompanySize { get; set; }
-
 
         [Range(1800, 3000, ErrorMessage = "Founding year must be between 1800 and 3000")]
         [Display(Name = "Founding Year", Description = "Year when the company was founded")]
@@ -58,23 +53,19 @@
         [EnumDataType(typeof(CompanyStatus), ErrorMessage = "Invalid company status")]
         public CompanyStatus Status { get; set; } = CompanyStatus.Pending;
 
-
         [Required]
         [DataType(DataType.DateTime)]
         [Display(Name = "Created At")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
 
         [Required]
         [DataType(DataType.DateTime)]
         [Display(Name = "Updated At")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-
         [DataType(DataType.DateTime)]
         [Display(Name = "Deleted At")]
         public DateTime? DeletedAt { get; set; }
-
 
         // Helper properties
         [NotMapped]
