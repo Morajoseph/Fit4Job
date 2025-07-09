@@ -10,11 +10,9 @@
         [Display(Name = "Answer ID")]
         public int Id { get; set; }
 
-
         [Required(ErrorMessage = "Attempt ID is required")]
         [Display(Name = "Attempt ID")]
         public int AttemptId { get; set; }
-
 
         [Required(ErrorMessage = "Question ID is required")]
         [Display(Name = "Question ID")]
@@ -29,23 +27,19 @@
         [MaxLength(2000, ErrorMessage = "Text answer cannot exceed 2,000 characters")]
         public string? TextAnswer { get; set; }
 
-
         [Required(ErrorMessage = "Is Correct is required")]
         [Display(Name = "Is Correct")]
         public bool IsCorrect { get; set; } = false;
 
-
-        [Required(ErrorMessage = "Points Earned is required")]
         [Range(0, 9999.99)]
         [Display(Name = "Points Earned")]
         [Column(TypeName = "decimal(5,2)")]
+        [Required(ErrorMessage = "Points Earned is required")]
         public decimal PointsEarned { get; set; } = 0.00m;
-
 
         [DataType(DataType.DateTime)]
         [Display(Name = "Answered At")]
         public DateTime AnsweredAt { get; set; } = DateTime.UtcNow;
-
 
         // Computed properties for working with selected options
         [NotMapped]
@@ -78,8 +72,7 @@
 
         [NotMapped]
         [Display(Name = "Answer Type")]
-        public string AnswerType => !string.IsNullOrEmpty(TextAnswer) ? "Text" :
-                                   SelectedOptions.Any() ? "Multiple Choice" : "No Answer";
+        public string AnswerType => !string.IsNullOrEmpty(TextAnswer) ? "Text" : SelectedOptions.Any() ? "Multiple Choice" : "No Answer";
 
         // Navigation properties
         [Display(Name = "Attempt")]
