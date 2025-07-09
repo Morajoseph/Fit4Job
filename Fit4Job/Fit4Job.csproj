@@ -33,7 +33,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DTOs\TrackQuestionsDTOs\" />
+    <Folder Include="DTOs\TrackQuestionOptionsDTOs\" />
     <Folder Include="Migrations\" />
+    <Folder Include="ViewModels\TrackQuestionsViewModels\" />
+    <Folder Include="ViewModels\TrackQuestionOptionsViewModels\" />
   </ItemGroup>
 
 </Project>
