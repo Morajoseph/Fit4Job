@@ -1,4 +1,6 @@
-﻿namespace Fit4Job.Repositories.Interfaces
+﻿using Fit4Job.DTOs.TracksDTOs;
+
+namespace Fit4Job.Repositories.Interfaces
 {
     public interface ITrackRepository : IGenericRepository<Track>
     {
@@ -8,5 +10,13 @@
         Task<IEnumerable<Track>> GetPremiumTracksAsync();
         Task<IEnumerable<Track>> GetActiveTracksAsync();
         Task<Track> GetTrackWithQuestionsAsync(int trackId);
+
+        Task<IEnumerable<Track>> GetAllTracksIncludingDeletedAsync();
+        Task<IEnumerable<Track>> SearchTracksAsync(TrackSearchDTO searchDTO);
+
+        //
+        Task<IEnumerable<Badge>> GetBadgesByTrackIdAsync(int trackId);
+        Task<Track?> GetTrackWithDetailsAsync(int id);
+
     }
 }

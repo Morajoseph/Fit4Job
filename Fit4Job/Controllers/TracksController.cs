@@ -171,7 +171,86 @@ namespace Fit4Job.Controllers
 
 
 
+        [HttpGet("All")]
+        public async Task<ApiResponse<IEnumerable<TrackViewModel>>> GetAllIncludingDeleted()
+        {
+            var allTracks = await unitOfWork.TrackRepository.GetAllTracksIncludingDeletedAsync();
+            var data = allTracks.Select(t => TrackViewModel.GetViewModel(t));
+            return ApiResponseHelper.Success(data);
+        }
 
+        [HttpGet("Search")]
+        public async Task<ApiResponse<IEnumerable<TrackViewModel>>> Search([FromQuery] TrackSearchDTO searchDTO)
+        {
+            var tracks = await unitOfWork.TrackRepository.SearchTracksAsync(searchDTO);
+            var data = tracks.Select(t => TrackViewModel.GetViewModel(t));
+            return ApiResponseHelper.Success(data);
+        }
+
+        [HttpGet("Category/{categoryId:int}")]
+        public async Task<ApiResponse<IEnumerable<TrackViewModel>>> GetByCategory(int categoryId)
+        {
+            if (categoryId <= 0)
+            {
+                return ApiResponseHelper.Error<IEnumerable<TrackViewModel>>(ErrorCode.BadRequest, "Invalid CategoryId");
+            }
+
+            var tracks = await unitOfWork.TrackRepository.GetAllTracksByCategoryIdAsync(categoryId);
+            var data = tracks.Select(t => TrackViewModel.GetViewModel(t));
+            return ApiResponseHelper.Success(data);
+        }
+
+
+        //Get questions for a specific track
+
+        [HttpGet("{id}/questions")]
+        public async Task<ApiResponse<IEnumerable<TrackQuestionViewModel>>> GetQuestionsForTrack(int id)
+        {
+            var track = await unitOfWork.TrackRepository.GetTrackWithQuestionsAsync(id);
+
+            if (track == null)
+            {
+                return ApiResponseHelper.Error<IEnumerable<TrackQuestionViewModel>>(ErrorCode.NotFound, "Track not found");
+            }
+
+            var questions = track.TrackQuestions?
+                .Where(q => q.DeletedAt == null)
+                .Select(TrackQuestionViewModel.GetViewModel);
+                
+
+            return ApiResponseHelper.Success(questions);
+        }
+
+
+        //Get badges earned from this track
+
+        [HttpGet("{id}/badges")]
+        public async Task<ApiResponse<IEnumerable<BadgeViewModel>>> GetBadgesByTrackId(int id)
+        {
+            var badges = await unitOfWork.TrackRepository.GetBadgesByTrackIdAsync(id);
+
+            if (badges == null || !badges.Any())
+            {
+                return ApiResponseHelper.Error<IEnumerable<BadgeViewModel>>(ErrorCode.NotFound, "No badges found for this track");
+            }
+
+            var data = badges.Select(BadgeViewModel.GetViewModel);
+            return ApiResponseHelper.Success(data);
+        }
+
+        // Get track with category and creator details
+
+        [HttpGet("{id}/details")]
+        public async Task<ApiResponse<TrackDetailsViewModel>> GetTrackDetails(int id)
+        {
+            var track = await unitOfWork.TrackRepository.GetTrackWithDetailsAsync(id);
+
+            if (track == null)
+                return ApiResponseHelper.Error<TrackDetailsViewModel>(ErrorCode.NotFound, "Track not found");
+
+            var viewModel = TrackDetailsViewModel.GetViewModel(track);
+            return ApiResponseHelper.Success(viewModel);
+        }
 
     }
 } 
