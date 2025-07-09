@@ -126,6 +126,7 @@ namespace Fit4Job
                     ValidateIssuer = true,
                     ValidIssuer = builder.Configuration["JWT:Issuer"],
                     ValidateAudience = false,
+                    ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
                 };
             });

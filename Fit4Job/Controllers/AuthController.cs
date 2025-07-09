@@ -237,7 +237,7 @@
                 throw new InvalidOperationException("JWT Key is not configured");
             }
 
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+            var authSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(jwtKey));
             var expires = rememberMe ? DateTime.UtcNow.AddDays(7) : DateTime.UtcNow.AddHours(12);
 
             var token = new JwtSecurityToken(
