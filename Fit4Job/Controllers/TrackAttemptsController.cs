@@ -2,7 +2,6 @@
 using Fit4Job.ViewModels.TrackAttemptsViewModels;
 using Fit4Job.ViewModels.TrackQuestionAnswerViewModel;
 using Fit4Job.ViewModels.UserBadgeViewModels;
-using Fit4Job.ViewModels.TracksViewModels;
 
 namespace Fit4Job.Controllers
 {
@@ -39,7 +38,7 @@ namespace Fit4Job.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<ApiResponse<TrackAttemptViewModel>> Create(CreateTrackAttemptDTO createTrackAttemptDTO )
+        public async Task<ApiResponse<TrackAttemptViewModel>> Create(CreateTrackAttemptDTO createTrackAttemptDTO)
         {
             if (createTrackAttemptDTO == null || !ModelState.IsValid)
             {
@@ -88,15 +87,12 @@ namespace Fit4Job.Controllers
         }
 
 
-
         //update track attempt
 
         [HttpPut("{id:int}")]
-
-        public async Task<ApiResponse<TrackAttemptViewModel>> UpdateTrackAttempt(int id, EditTrackAttemptDTO editTrackAttemptDTO )
-
+        public async Task<ApiResponse<TrackAttemptViewModel>> UpdateTrackAttempt(int id, EditTrackAttemptDTO editTrackAttemptDTO)
         {
-            if(editTrackAttemptDTO == null)
+            if (editTrackAttemptDTO == null)
             {
                 return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.BadRequest, "Invalid data ");
 
@@ -108,7 +104,7 @@ namespace Fit4Job.Controllers
 
 
             }
-            if(id != editTrackAttemptDTO.AttemptId)
+            if (id != editTrackAttemptDTO.AttemptId)
             {
                 return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.BadRequest, "ID mismatch");
 
@@ -116,11 +112,11 @@ namespace Fit4Job.Controllers
 
 
             var attempt = await unitOfWork.TrackAttemptRepository.GetByIdAsync(id);
-            if(attempt == null)
+            if (attempt == null)
             {
                 return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.NotFound, "Track attempt not found");
             }
-       
+
             var userExist = await unitOfWork.ApplicationUserRepository.GetByIdAsync(editTrackAttemptDTO.UserId);
             if (userExist is null)
             {
@@ -139,7 +135,7 @@ namespace Fit4Job.Controllers
             attempt.SolvedQuestionsCount = editTrackAttemptDTO.SolvedQuestionsCount;
             attempt.TotalScore = editTrackAttemptDTO.TotalScore;
             attempt.ProgressPercentage = editTrackAttemptDTO.ProgressPercentage;
-           
+
 
 
             try
@@ -158,7 +154,6 @@ namespace Fit4Job.Controllers
 
         }
 
-
         [HttpPatch("{id:int}/end")]
         public async Task<ApiResponse<TrackAttemptViewModel>> EndTrackAttempt(int id)
         {
@@ -168,7 +163,7 @@ namespace Fit4Job.Controllers
                 return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.NotFound, "Track attempt not found");
             }
 
-           
+
             if (attempt.Status == AttemptStatus.Completed)
             {
                 return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.BadRequest, "Track attempt is already completed");
@@ -179,12 +174,12 @@ namespace Fit4Job.Controllers
                 return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.BadRequest, "Only in-progress attempts can be ended");
             }
 
-          
+
             attempt.EndTime = DateTime.UtcNow;
             attempt.Status = AttemptStatus.Completed;
-           
 
-        
+
+
 
             try
             {
@@ -221,7 +216,5 @@ namespace Fit4Job.Controllers
                 return ApiResponseHelper.Error<IEnumerable<TrackAttemptViewModel>>(ErrorCode.InternalServerError, "An error occurred while retrieving user track attempts");
             }
         }
-
-
     }
 }

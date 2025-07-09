@@ -16,7 +16,7 @@ namespace Fit4Job.Controllers
             this.userManager = userManager;
         }
 
-        [HttpGet("Active/All")]
+        [HttpGet("All/Active")]
         public async Task<ApiResponse<IEnumerable<TrackViewModel>>> GetAllActive()
         {
             var activeTracks = await unitOfWork.TrackRepository.GetActiveTracksAsync();
@@ -56,7 +56,7 @@ namespace Fit4Job.Controllers
         }
 
         //update track
-        [HttpPut("{id:int}")]
+        [HttpPut("Update/{id:int}")]
         public async Task<ApiResponse<TrackViewModel>> UpdateTracke(int id, EditTrackDTO editTrackDTO)
         {
             if (editTrackDTO == null)
@@ -95,7 +95,7 @@ namespace Fit4Job.Controllers
             }
             catch (Exception ex)
             {
-              
+
                 return ApiResponseHelper.Error<TrackViewModel>(ErrorCode.InternalServerError, "An error occurred while updating the track");
             }
 
@@ -105,16 +105,16 @@ namespace Fit4Job.Controllers
 
 
         // DELETE: Soft Delete a track 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("Delete/{id:int}")]
 
         public async Task<ApiResponse<string>> SoftDelete(int id)
         {
             var track = await unitOfWork.TrackRepository.GetByIdAsync(id);
-            if(track == null)
+            if (track == null)
             {
                 return ApiResponseHelper.Error<string>(ErrorCode.NotFound, "Track not found");
             }
-            if(track.DeletedAt != null)
+            if (track.DeletedAt != null)
             {
                 return ApiResponseHelper.Error<string>(ErrorCode.BadRequest, "Track is already deleted");
 
@@ -130,10 +130,8 @@ namespace Fit4Job.Controllers
 
         }
 
-        // PATCH: Restore a soft-deleted track
-
-        [HttpPatch("{id:int}/restore")]
-
+        // PATCH: Restore a soft-deleted 
+        [HttpPatch("Restore/{id:int}")]
         public async Task<ApiResponse<TrackViewModel>> Restore(int id)
         {
             var track = await unitOfWork.TrackRepository.GetByIdAsync(id);
@@ -168,9 +166,6 @@ namespace Fit4Job.Controllers
 
         }
 
-
-
-
         [HttpGet("All")]
         public async Task<ApiResponse<IEnumerable<TrackViewModel>>> GetAllIncludingDeleted()
         {
@@ -200,10 +195,8 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(data);
         }
 
-
-        //Get questions for a specific track
-
-        [HttpGet("{id}/questions")]
+        //Get questions for a specific 
+        [HttpGet("Questions/{id:int}")]
         public async Task<ApiResponse<IEnumerable<TrackQuestionViewModel>>> GetQuestionsForTrack(int id)
         {
             var track = await unitOfWork.TrackRepository.GetTrackWithQuestionsAsync(id);
@@ -216,15 +209,14 @@ namespace Fit4Job.Controllers
             var questions = track.TrackQuestions?
                 .Where(q => q.DeletedAt == null)
                 .Select(TrackQuestionViewModel.GetViewModel);
-                
+
 
             return ApiResponseHelper.Success(questions);
         }
 
 
         //Get badges earned from this track
-
-        [HttpGet("{id}/badges")]
+        [HttpGet("Badges/{id:int}")]
         public async Task<ApiResponse<IEnumerable<BadgeViewModel>>> GetBadgesByTrackId(int id)
         {
             var badges = await unitOfWork.TrackRepository.GetBadgesByTrackIdAsync(id);
@@ -239,8 +231,7 @@ namespace Fit4Job.Controllers
         }
 
         // Get track with category and creator details
-
-        [HttpGet("{id}/details")]
+        [HttpGet("Details/{id:int}")]
         public async Task<ApiResponse<TrackDetailsViewModel>> GetTrackDetails(int id)
         {
             var track = await unitOfWork.TrackRepository.GetTrackWithDetailsAsync(id);
@@ -253,4 +244,4 @@ namespace Fit4Job.Controllers
         }
 
     }
-} 
+}
