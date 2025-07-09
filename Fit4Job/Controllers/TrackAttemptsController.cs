@@ -1,5 +1,6 @@
 ﻿using Fit4Job.DTOs.TrackAttemptsDTOs;
 using Fit4Job.ViewModels.TrackAttemptsViewModels;
+using Fit4Job.ViewModels.TracksViewModels;
 
 namespace Fit4Job.Controllers
 {
@@ -54,5 +55,140 @@ namespace Fit4Job.Controllers
 
             return ApiResponseHelper.Success(trackAttemptViewModel, "Created successfully");
         }
+
+        //update track attempt
+
+        [HttpPut("{id:int}")]
+
+        public async Task<ApiResponse<TrackAttemptViewModel>> UpdateTrackAttempt(int id, EditTrackAttemptDTO editTrackAttemptDTO )
+
+        {
+            if(editTrackAttemptDTO == null)
+            {
+                return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.BadRequest, "Invalid data ");
+
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.BadRequest, "Invalid data ");
+
+
+            }
+            if(id != editTrackAttemptDTO.AttemptId)
+            {
+                return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.BadRequest, "ID mismatch");
+
+            }
+
+
+            var attempt = await unitOfWork.TrackAttemptRepository.GetByIdAsync(id);
+            if(attempt == null)
+            {
+                return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.NotFound, "Track attempt not found");
+            }
+       
+            var userExist = await unitOfWork.ApplicationUserRepository.GetByIdAsync(editTrackAttemptDTO.UserId);
+            if (userExist is null)
+            {
+                return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.BadRequest, "Invalid user");
+            }
+
+            var trackExist = await unitOfWork.TrackRepository.GetByIdAsync(editTrackAttemptDTO.TrackId);
+            if (trackExist is null)
+            {
+                return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.BadRequest, "Invalid track");
+            }
+
+            attempt.UserId = editTrackAttemptDTO.UserId;
+            attempt.TrackId = editTrackAttemptDTO.TrackId;
+            attempt.Status = editTrackAttemptDTO.Status;
+            attempt.SolvedQuestionsCount = editTrackAttemptDTO.SolvedQuestionsCount;
+            attempt.TotalScore = editTrackAttemptDTO.TotalScore;
+            attempt.ProgressPercentage = editTrackAttemptDTO.ProgressPercentage;
+           
+
+
+            try
+            {
+                unitOfWork.TrackAttemptRepository.Update(attempt);
+                await unitOfWork.CompleteAsync();
+            }
+            catch (Exception ex)
+            {
+
+                return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.InternalServerError, "An error occurred while updating the track attempt");
+            }
+
+            var updatedVM = new TrackAttemptViewModel(attempt);
+            return ApiResponseHelper.Success(updatedVM, "Track attempt Updated successfully");
+
+        }
+
+
+        [HttpPatch("{id:int}/end")]
+        public async Task<ApiResponse<TrackAttemptViewModel>> EndTrackAttempt(int id)
+        {
+            var attempt = await unitOfWork.TrackAttemptRepository.GetByIdAsync(id);
+            if (attempt == null)
+            {
+                return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.NotFound, "Track attempt not found");
+            }
+
+           
+            if (attempt.Status == AttemptStatus.Completed)
+            {
+                return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.BadRequest, "Track attempt is already completed");
+            }
+
+            if (attempt.Status != AttemptStatus.InProgress)
+            {
+                return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.BadRequest, "Only in-progress attempts can be ended");
+            }
+
+          
+            attempt.EndTime = DateTime.UtcNow;
+            attempt.Status = AttemptStatus.Completed;
+           
+
+        
+
+            try
+            {
+                unitOfWork.TrackAttemptRepository.Update(attempt);
+                await unitOfWork.CompleteAsync();
+            }
+            catch (Exception ex)
+            {
+                return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.InternalServerError, "An error occurred while ending the track attempt");
+            }
+
+            var updatedVM = new TrackAttemptViewModel(attempt);
+            return ApiResponseHelper.Success(updatedVM, "Track attempt completed successfully");
+        }
+
+        [HttpGet("user/{userId}")]
+        public async Task<ApiResponse<IEnumerable<TrackAttemptViewModel>>> GetUserTrackAttempts(int userId)
+        {
+            var user = await unitOfWork.ApplicationUserRepository.GetByIdAsync(userId);
+            if (user == null)
+            {
+                return ApiResponseHelper.Error<IEnumerable<TrackAttemptViewModel>>(ErrorCode.NotFound, "User not found");
+            }
+
+            try
+            {
+                var attempts = await unitOfWork.TrackAttemptRepository.GetAllAttemptsByUserAsync(userId);
+                var attemptViewModels = attempts.Select(attempt => new TrackAttemptViewModel(attempt));
+
+                return ApiResponseHelper.Success(attemptViewModels, "User track attempts retrieved successfully");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponseHelper.Error<IEnumerable<TrackAttemptViewModel>>(ErrorCode.InternalServerError, "An error occurred while retrieving user track attempts");
+            }
+        }
+
+
     }
 }
