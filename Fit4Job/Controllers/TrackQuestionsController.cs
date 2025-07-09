@@ -1,4 +1,6 @@
-﻿using Fit4Job.Enums;
+﻿using Fit4Job.ViewModels.TracksViewModels;
+
+using Fit4Job.Enums;
 using Fit4Job.ViewModels.TracksViewModels;
 
 namespace Fit4Job.Controllers
@@ -18,6 +20,31 @@ namespace Fit4Job.Controllers
         }
         /* ****************************************** Endpoints ****************************************** */
 
+        //Get all track questions.
+
+        [HttpGet]
+        public async Task<ApiResponse<IEnumerable<TrackQuestionViewModel>>> GetAllTrackQuestions()
+        {
+            var questions = await unitOfWork.TrackQuestionRepository.GetAllAsync();
+            var data = questions.Select(TrackQuestionViewModel.GetViewModel);
+            return ApiResponseHelper.Success(data);
+        }
+
+
+        //Get a question by ID.
+
+        [HttpGet("{id:int}")]
+        public async Task<ApiResponse<TrackQuestionViewModel>> GetById(int id)
+        {
+            var question = await unitOfWork.TrackQuestionRepository.GetByIdAsync(id);
+
+            if (question == null)
+                return ApiResponseHelper.Error<TrackQuestionViewModel>(ErrorCode.NotFound, "Question not found");
+
+            var viewModel = TrackQuestionViewModel.GetViewModel(question);
+
+            return ApiResponseHelper.Success(viewModel);
+        }
         // track question soft delete
 
         [HttpDelete("Delete/{id:int}")]
