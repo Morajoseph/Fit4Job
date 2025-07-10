@@ -142,11 +142,12 @@ namespace Fit4Job
             builder.Services.AddCors(options =>
             {
                 // Allow all origins (Fro DEVELOPMENT & Testing ONLY)
-                options.AddPolicy("DevelopmentPolicy", policy =>
+                options.AddPolicy("AllowAll", policy =>
                 {
-                    policy.AllowAnyOrigin()
+                    policy.SetIsOriginAllowed(_ => true)
                           .AllowAnyHeader()
-                          .AllowAnyMethod();
+                          .AllowAnyMethod()
+                          .AllowCredentials();
                 });
 
             });
@@ -173,11 +174,11 @@ namespace Fit4Job
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                
+
             }
             app.UseSwagger();
             app.UseSwaggerUI();
-   
+
 
             app.UseAuthorization();
             app.MapControllers();
