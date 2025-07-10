@@ -1,4 +1,5 @@
 ﻿using Fit4Job.DTOs.TrackQuestionOptionsDTOs;
+using Fit4Job.Models;
 using Fit4Job.ViewModels.TrackQuestionOptionsViewModels;
 
 namespace Fit4Job.Controllers
@@ -86,6 +87,87 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(viewModel, "Option created successfully");
         }
 
+
+
+        //get all active options for question
+
+        [HttpGet("question/{questionId:int}")]
+        public async Task<ApiResponse<IEnumerable<TrackQuestionOptionViewModel>>>GetActiveOptionsByQuestionId(int questionId)
+
+        {
+            if (questionId <= 0)
+            {
+                return ApiResponseHelper.Error<IEnumerable<TrackQuestionOptionViewModel>>(
+                    ErrorCode.BadRequest,
+                    "Invalid question ID"
+                );
+            }
+
+            var question = await unitOfWork.TrackRepository.GetByIdAsync(questionId);
+            if (question == null)
+            {
+                return ApiResponseHelper.Error<IEnumerable<TrackQuestionOptionViewModel>>(ErrorCode.NotFound, "question not found");
+            }
+
+
+            var options = await unitOfWork.TrackQuestionOptionRepository.GetOptionsByQuestionIdAsync(questionId);
+            var activeOptions = options.Where(o => o.IsActive).ToList();
+
+            var data = activeOptions.Select(q => TrackQuestionOptionViewModel.GetViewModel(q));
+
+            return ApiResponseHelper.Success(data);
+
+        }
+
+        [HttpPatch("restore/{id:int}")]
+        public async Task<ApiResponse<TrackQuestionOptionViewModel>> RestoreQuestionOption(int id)
+        {
+            try
+            {
+           
+                if (id <= 0)
+                {
+                    return ApiResponseHelper.Error<TrackQuestionOptionViewModel>(
+                        ErrorCode.BadRequest,
+                        "Invalid option ID"
+                    );
+                }
+                var option = await unitOfWork.TrackQuestionOptionRepository.GetByIdAsync(id);
+
+                if (option == null)
+                {
+                    return ApiResponseHelper.Error<TrackQuestionOptionViewModel>( ErrorCode.NotFound,"Question option not found");
+                }
+
+                if (option.DeletedAt == null)
+                {
+                    return ApiResponseHelper.Error<TrackQuestionOptionViewModel>(ErrorCode.BadRequest,"Question option is not deleted");
+                }
+
+             
+                var question = await unitOfWork.TrackQuestionRepository.GetByIdAsync(option.QuestionId);
+                if (question == null || question.DeletedAt != null)
+                {
+                    return ApiResponseHelper.Error<TrackQuestionOptionViewModel>(ErrorCode.BadRequest, "Cannot restore option for a deleted or non-existent question");
+                }
+
+             
+                option.DeletedAt = null;
+                option.UpdatedAt = DateTime.UtcNow;
+
+                unitOfWork.TrackQuestionOptionRepository.Update(option);
+                await unitOfWork.CompleteAsync();
+
+         
+                var restoredVM = TrackQuestionOptionViewModel.GetViewModel(option);
+                return ApiResponseHelper.Success(restoredVM);
+            }
+            catch (Exception ex)
+            {
+           
+                return ApiResponseHelper.Error<TrackQuestionOptionViewModel>(ErrorCode.InternalServerError,"An error occurred while restoring the question option" );
+            }
+        }
 
     }
 }
