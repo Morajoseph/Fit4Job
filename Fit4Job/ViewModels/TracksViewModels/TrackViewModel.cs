@@ -32,6 +32,7 @@
         }
         public TrackViewModel (Track track)
         {
+            this.Id = track.Id;
             this.CategoryId = track.CategoryId;
             this.Name = track.Name;
             this.Description = track.Description;
@@ -44,6 +45,7 @@
         {
             return new TrackViewModel()
             {
+                Id = track.Id,
                 CategoryId = track.CategoryId,
                 Name = track.Name,
                 Description = track.Description,

@@ -12,7 +12,8 @@ namespace Fit4Job.Repositories.Implementations
         public async Task<IEnumerable<Track>> GetActiveTracksAsync()
         {
             return await _context.Tracks
-                  .Where(t => t.IsActive)
+                  .Where(t => t.DeletedAt == null)
+                  .AsNoTracking()
                   .ToListAsync();
         }
 

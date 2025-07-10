@@ -18,7 +18,7 @@ namespace Fit4Job.Controllers
             this.userManager = userManager;
         }
 
-        [HttpGet("All/Active")]
+        [HttpGet("all/active")]
         public async Task<ApiResponse<IEnumerable<TrackViewModel>>> GetAllActive()
         {
             var activeTracks = await unitOfWork.TrackRepository.GetActiveTracksAsync();
