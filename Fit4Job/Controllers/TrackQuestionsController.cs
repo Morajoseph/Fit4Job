@@ -1,5 +1,6 @@
 ﻿using Fit4Job.DTOs.TrackQuestionsDTOs;
-using Fit4Job.DTOs.TracksDTOs;
+using Fit4Job.ViewModels.ComplexViewModels;
+using Fit4Job.ViewModels.TrackQuestionOptionsViewModels;
 using Fit4Job.ViewModels.TracksViewModels;
 
 namespace Fit4Job.Controllers
@@ -28,7 +29,6 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(data);
         }
 
-
         // 2 - Get a question by ID.
         [HttpGet("{id:int}")]
         public async Task<ApiResponse<TrackQuestionViewModel>> GetById(int id)
@@ -43,9 +43,8 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(viewModel);
         }
 
-
         // 3 - Get only active questions for a track.
-        [HttpGet("Active/ByTrack/{id:int}")]
+        [HttpGet("active/by-track/{id:int}")]
         public async Task<ApiResponse<IEnumerable<TrackQuestionViewModel>>> GetActiveByTrackId(int trackId)
         {
             var track = await unitOfWork.TrackRepository.GetByIdAsync(trackId);
@@ -59,7 +58,6 @@ namespace Fit4Job.Controllers
         }
 
         // 4 - Create a new track question.
-
         [HttpPost]
         public async Task<ApiResponse<TrackQuestionViewModel>> Create(CreateTrackQuestionDTO createTrackQuestionDTO)
         {
@@ -79,7 +77,7 @@ namespace Fit4Job.Controllers
         }
 
         // 5 - Update an existing question.
-        [HttpPut("Update/{id:int}")]
+        [HttpPut("update/{id:int}")]
         public async Task<ApiResponse<TrackQuestionViewModel>> UpdateTracke(int id, EditTrackQuestionDTO editTrackQuestionDTO)
         {
             if (editTrackQuestionDTO == null || !ModelState.IsValid)
@@ -113,11 +111,8 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(updatedViewModel, "Track Updated successfully");
         }
 
-
-
         // 6 - track question soft delete
-        [HttpDelete("Delete/{id:int}")]
-
+        [HttpDelete("delete/{id:int}")]
         public async Task<ApiResponse<string>> SoftDeleteQuestion(int id)
         {
             var trackQuestion = await unitOfWork.TrackQuestionRepository.GetByIdAsync(id);
@@ -141,8 +136,6 @@ namespace Fit4Job.Controllers
 
         }
 
-        //=======================================================================
-
         // 7 - Get all questions for a specific track.
         [HttpGet("track/{trackId:int}")]
         public async Task<ApiResponse<IEnumerable<TrackQuestionViewModel>>> GetQuestionsByTrackId(int trackId)
@@ -157,9 +150,6 @@ namespace Fit4Job.Controllers
             var data = Questions.Select(q => TrackQuestionViewModel.GetViewModel(q));
             return ApiResponseHelper.Success(data);
         }
-
-
-        //=============================================================
 
         // 8 -  Get questions using query params (type, level, etc.).
         [HttpGet("filter")]
@@ -181,6 +171,56 @@ namespace Fit4Job.Controllers
                 .Where(q => q.QuestionType == questionType && q.QuestionLevel == questionLevel);
             var data = filteredQuestions.Select(q => TrackQuestionViewModel.GetViewModel(q));
             return ApiResponseHelper.Success(data);
+        }
+
+        // 9 - Restore a soft-deleted question. 
+        [HttpPatch("restore/{id:int}")]
+        public async Task<ApiResponse<TrackQuestionViewModel>> Restore(int id)
+        {
+            var question = await unitOfWork.TrackQuestionRepository.GetByIdAsync(id);
+            if (question == null)
+            {
+                return ApiResponseHelper.Error<TrackQuestionViewModel>(ErrorCode.NotFound, "Question not found");
+            }
+
+            if (question.DeletedAt == null)
+            {
+                return ApiResponseHelper.Error<TrackQuestionViewModel>(ErrorCode.BadRequest, "Question is not deleted");
+
+            }
+            question.DeletedAt = null;
+            question.UpdatedAt = DateTime.Now;
+
+            try
+            {
+                unitOfWork.TrackQuestionRepository.Update(question);
+                await unitOfWork.CompleteAsync();
+            }
+            catch (Exception ex)
+            {
+                return ApiResponseHelper.Error<TrackQuestionViewModel>(ErrorCode.InternalServerError, "An error occurred while restoring the track");
+            }
+
+            var restoredVM = new TrackQuestionViewModel(question);
+            return ApiResponseHelper.Success(restoredVM, "Track restored successfully");
+        }
+
+        // 10 -  Get a question with its options (eager loading).
+        [HttpGet("with-options/{id:int}")]
+        public async Task<ApiResponse<TrackQuestionWithOptionsViewModel>> GetWithOptionsById(int id)
+        {
+            var question = await unitOfWork.TrackQuestionRepository.GetByIdAsync(id);
+            if (question == null)
+            {
+                return ApiResponseHelper.Error<TrackQuestionWithOptionsViewModel>(ErrorCode.NotFound, "Question not found");
+            }
+
+            var options = await unitOfWork.TrackQuestionOptionRepository.GetOptionsByQuestionIdAsync(question.Id);
+            var questionVM = new TrackQuestionViewModel(question);
+            var optionsVMs = options.Select(o => TrackQuestionOptionViewModel.GetViewModel(o));
+
+            var viewModel = TrackQuestionWithOptionsViewModel.GetViewModel(questionVM, optionsVMs);
+            return ApiResponseHelper.Success(viewModel);
         }
     }
 }
