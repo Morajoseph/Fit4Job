@@ -19,7 +19,8 @@ namespace Fit4Job
             /******************************* Swagger & OpenAPI ******************************/
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(swagger => {
+            builder.Services.AddSwaggerGen(swagger =>
+            {
                 //This is to generate the Default UI of Swagger Documentation   
 
                 swagger.SwaggerDoc("v1", new OpenApiInfo
@@ -60,14 +61,14 @@ namespace Fit4Job
             // Configure Swagger UI
             //builder.Services.Configure<SwaggerUIOptions>(options =>
             //{
-                //options.DefaultModelsExpandDepth(-1); // Hide schemas section
-                //options.DocExpansion(DocExpansion.None); // Collapse all operations by default
-                //options.EnableDeepLinking();
-                //options.DisplayOperationId();
-                //options.EnableFilter();
-                //options.ShowExtensions();
-                //options.EnableValidator();
-                //options.SupportedSubmitMethods(SubmitMethod.Get, SubmitMethod.Post, SubmitMethod.Put, SubmitMethod.Delete, SubmitMethod.Patch);
+            //options.DefaultModelsExpandDepth(-1); // Hide schemas section
+            //options.DocExpansion(DocExpansion.None); // Collapse all operations by default
+            //options.EnableDeepLinking();
+            //options.DisplayOperationId();
+            //options.EnableFilter();
+            //options.ShowExtensions();
+            //options.EnableValidator();
+            //options.SupportedSubmitMethods(SubmitMethod.Get, SubmitMethod.Post, SubmitMethod.Put, SubmitMethod.Delete, SubmitMethod.Patch);
             //});
 
             /********************************************************************************/
@@ -138,7 +139,17 @@ namespace Fit4Job
 
             /********************** Cross-Origin Resource Sharing (CORS) ********************/
 
+            builder.Services.AddCors(options =>
+            {
+                // Allow all origins (Fro DEVELOPMENT & Testing ONLY)
+                options.AddPolicy("DevelopmentPolicy", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
 
+            });
 
 
             /********************************************************************************/
@@ -156,14 +167,17 @@ namespace Fit4Job
                 await SeedRolesAsync(roleManager);
             }
 
+            // Enable CORS - Allow all connections
+            app.UseCors("AllowAll");
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                
             }
-
+            app.UseSwagger();
+            app.UseSwaggerUI();
+   
 
             app.UseAuthorization();
             app.MapControllers();

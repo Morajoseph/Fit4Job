@@ -6,11 +6,16 @@
         {
 
         }
-
-        public async Task<IEnumerable<TrackQuestion>> GetQuestionsByTrackIdAsync(int trackId)
+        public async Task<IEnumerable<TrackQuestion>> GetActiveByTrackIdAsync(int trackId)
         {
             return await _context.TrackQuestions
                 .Where(q => q.TrackId == trackId && q.IsActive)
+                .ToListAsync();
+        }
+        public async Task<IEnumerable<TrackQuestion>> GetQuestionsByTrackIdAsync(int trackId)
+        {
+            return await _context.TrackQuestions
+                .Where(q => q.TrackId == trackId)
                 .OrderBy(q => q.Id)
                 .ToListAsync();
         }
@@ -44,9 +49,5 @@
                 .OrderByDescending(q => q.Id)
                 .FirstOrDefaultAsync();
         }
-
-
-
-
     }
 }

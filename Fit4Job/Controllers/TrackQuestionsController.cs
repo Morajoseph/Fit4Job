@@ -1,6 +1,5 @@
-﻿using Fit4Job.ViewModels.TracksViewModels;
-
-using Fit4Job.Enums;
+﻿using Fit4Job.DTOs.TrackQuestionsDTOs;
+using Fit4Job.DTOs.TracksDTOs;
 using Fit4Job.ViewModels.TracksViewModels;
 
 namespace Fit4Job.Controllers
@@ -20,8 +19,7 @@ namespace Fit4Job.Controllers
         }
         /* ****************************************** Endpoints ****************************************** */
 
-        //Get all track questions.
-
+        // 1 - Get all track questions.
         [HttpGet]
         public async Task<ApiResponse<IEnumerable<TrackQuestionViewModel>>> GetAllTrackQuestions()
         {
@@ -31,8 +29,7 @@ namespace Fit4Job.Controllers
         }
 
 
-        //Get a question by ID.
-
+        // 2 - Get a question by ID.
         [HttpGet("{id:int}")]
         public async Task<ApiResponse<TrackQuestionViewModel>> GetById(int id)
         {
@@ -45,8 +42,80 @@ namespace Fit4Job.Controllers
 
             return ApiResponseHelper.Success(viewModel);
         }
-        // track question soft delete
 
+
+        // 3 - Get only active questions for a track.
+        [HttpGet("Active/ByTrack/{id:int}")]
+        public async Task<ApiResponse<IEnumerable<TrackQuestionViewModel>>> GetActiveByTrackId(int trackId)
+        {
+            var track = await unitOfWork.TrackRepository.GetByIdAsync(trackId);
+            if (track == null)
+            {
+                return ApiResponseHelper.Error<IEnumerable<TrackQuestionViewModel>>(ErrorCode.BadRequest, "Invalid trackId");
+            }
+            var activeQuestions = await unitOfWork.TrackQuestionRepository.GetActiveByTrackIdAsync(trackId);
+            var data = activeQuestions.Select(q => TrackQuestionViewModel.GetViewModel(q));
+            return ApiResponseHelper.Success(data);
+        }
+
+        // 4 - Create a new track question.
+
+        [HttpPost]
+        public async Task<ApiResponse<TrackQuestionViewModel>> Create(CreateTrackQuestionDTO createTrackQuestionDTO)
+        {
+            if (createTrackQuestionDTO == null || !ModelState.IsValid)
+            {
+                return ApiResponseHelper.Error<TrackQuestionViewModel>(ErrorCode.BadRequest, "Invalid data");
+            }
+
+            var trackQuestion = createTrackQuestionDTO.GetTrackQuestion();
+
+
+            await unitOfWork.TrackQuestionRepository.AddAsync(trackQuestion);
+            await unitOfWork.CompleteAsync();
+            var trackQuestionViewModel = new TrackQuestionViewModel(trackQuestion);
+
+            return ApiResponseHelper.Success(trackQuestionViewModel, "Created successfully");
+        }
+
+        // 5 - Update an existing question.
+        [HttpPut("Update/{id:int}")]
+        public async Task<ApiResponse<TrackQuestionViewModel>> UpdateTracke(int id, EditTrackQuestionDTO editTrackQuestionDTO)
+        {
+            if (editTrackQuestionDTO == null || !ModelState.IsValid)
+            {
+                return ApiResponseHelper.Error<TrackQuestionViewModel>(ErrorCode.BadRequest, "Invalid data");
+            }
+
+            var trackQuestion = await unitOfWork.TrackQuestionRepository.GetByIdAsync(id);
+            if (trackQuestion == null)
+            {
+                return ApiResponseHelper.Error<TrackQuestionViewModel>(ErrorCode.NotFound, "Track not found");
+            }
+
+            if (id != trackQuestion.Id)
+            {
+                return ApiResponseHelper.Error<TrackQuestionViewModel>(ErrorCode.BadRequest, "ID mismatch");
+            }
+
+            editTrackQuestionDTO.UpdateTrackQuestion(trackQuestion);
+            try
+            {
+                unitOfWork.TrackQuestionRepository.Update(trackQuestion);
+                await unitOfWork.CompleteAsync();
+            }
+            catch (Exception ex)
+            {
+                return ApiResponseHelper.Error<TrackQuestionViewModel>(ErrorCode.InternalServerError, "An error occurred while updating the track");
+            }
+
+            var updatedViewModel = new TrackQuestionViewModel(trackQuestion);
+            return ApiResponseHelper.Success(updatedViewModel, "Track Updated successfully");
+        }
+
+
+
+        // 6 - track question soft delete
         [HttpDelete("Delete/{id:int}")]
 
         public async Task<ApiResponse<string>> SoftDeleteQuestion(int id)
@@ -74,61 +143,44 @@ namespace Fit4Job.Controllers
 
         //=======================================================================
 
-
+        // 7 - Get all questions for a specific track.
         [HttpGet("track/{trackId:int}")]
-        public async Task<ApiResponse<IEnumerable<TrackQuestionViewModel>>>GetQuestionsByTrackId(int trackId)
-
+        public async Task<ApiResponse<IEnumerable<TrackQuestionViewModel>>> GetQuestionsByTrackId(int trackId)
         {
             var track = await unitOfWork.TrackRepository.GetByIdAsync(trackId);
-            if(track == null)
+            if (track == null)
             {
                 return ApiResponseHelper.Error<IEnumerable<TrackQuestionViewModel>>(ErrorCode.BadRequest, "Invalid trackId");
-
             }
 
             var Questions = await unitOfWork.TrackQuestionRepository.GetQuestionsByTrackIdAsync(trackId);
-
-
             var data = Questions.Select(q => TrackQuestionViewModel.GetViewModel(q));
             return ApiResponseHelper.Success(data);
-
-
         }
 
 
         //=============================================================
 
-
+        // 8 -  Get questions using query params (type, level, etc.).
         [HttpGet("filter")]
         public async Task<ApiResponse<IEnumerable<TrackQuestionViewModel>>> GetQuestionByTypeAndLevel(int trackId, QuestionType questionType, QuestionLevel questionLevel)
         {
             if (trackId <= 0)
             {
-                return ApiResponseHelper.Error<IEnumerable<TrackQuestionViewModel>>(
-                    ErrorCode.BadRequest,
-                    "Invalid trackId"
-                );
+                return ApiResponseHelper.Error<IEnumerable<TrackQuestionViewModel>>(ErrorCode.BadRequest, "Invalid trackId");
             }
 
             var track = await unitOfWork.TrackRepository.GetByIdAsync(trackId);
             if (track == null)
             {
-                return ApiResponseHelper.Error<IEnumerable<TrackQuestionViewModel>>( ErrorCode.NotFound,"Track not found");
+                return ApiResponseHelper.Error<IEnumerable<TrackQuestionViewModel>>(ErrorCode.NotFound, "Track not found");
             }
 
-            var questions = await unitOfWork.TrackQuestionRepository.GetQuestionsByTrackIdAsync(trackId);
-
-            var filteredQuestions = questions.Where(q =>q.DeletedAt == null && q.QuestionType == questionType &&  q.QuestionLevel == questionLevel);
-
-           
+            var questions = await unitOfWork.TrackQuestionRepository.GetActiveByTrackIdAsync(trackId);
+            var filteredQuestions = questions
+                .Where(q => q.QuestionType == questionType && q.QuestionLevel == questionLevel);
             var data = filteredQuestions.Select(q => TrackQuestionViewModel.GetViewModel(q));
-
             return ApiResponseHelper.Success(data);
-        
-
-    }
-
-
-
+        }
     }
 }

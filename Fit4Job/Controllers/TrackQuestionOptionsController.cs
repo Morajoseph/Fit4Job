@@ -1,7 +1,5 @@
 ﻿using Fit4Job.DTOs.TrackQuestionOptionsDTOs;
 using Fit4Job.ViewModels.TrackQuestionOptionsViewModels;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Fit4Job.Controllers
 {
@@ -24,7 +22,7 @@ namespace Fit4Job.Controllers
 
         [HttpGet("{id:int}")]
 
-        public async Task<ApiResponse<TrackQuestionOptionViewModel>>GetById(int id)
+        public async Task<ApiResponse<TrackQuestionOptionViewModel>> GetById(int id)
         {
             var option = await unitOfWork.TrackQuestionOptionRepository.GetByIdAsync(id);
 
@@ -63,12 +61,11 @@ namespace Fit4Job.Controllers
         }
 
         //Creates a new question option in the system.
-        
-        [HttpPost("create")]
 
-        public async Task<ApiResponse<TrackQuestionOptionViewModel>>Create(CreateTrackQuestionOptionDTO dto)
+        [HttpPost("create")]
+        public async Task<ApiResponse<TrackQuestionOptionViewModel>> Create(CreateTrackQuestionOptionDTO dto)
         {
-            if(dto==null || !ModelState.IsValid)
+            if (dto == null || !ModelState.IsValid)
             {
                 return ApiResponseHelper.Error<TrackQuestionOptionViewModel>(ErrorCode.BadRequest, "invalid data");
             }
@@ -88,8 +85,6 @@ namespace Fit4Job.Controllers
 
             return ApiResponseHelper.Success(viewModel, "Option created successfully");
         }
-
-
 
 
     }
