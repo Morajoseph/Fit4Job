@@ -1,6 +1,6 @@
 ﻿namespace Fit4Job.DTOs.TrackQuestionOptionsDTOs
 {
-    public class CreateTrackQuestionOptionDTO
+    public class EditTrackQuestionOptionDTO
     {
         [Required(ErrorMessage = "Question ID is required")]
         [Range(1, int.MaxValue, ErrorMessage = "Please select a valid question")]
@@ -16,16 +16,12 @@
         [Required(ErrorMessage = "You must specify whether this option is correct")]
         public bool IsCorrect { get; set; }
 
-        public TrackQuestionOption ToModel()
+        public void UpdateModel(TrackQuestionOption questionOption)
         {
-            return new TrackQuestionOption
-            {
-                QuestionId = this.QuestionId,
-                OptionText = this.OptionText,
-                IsCorrect = this.IsCorrect,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+            questionOption.QuestionId = QuestionId;
+            questionOption.IsCorrect = this.IsCorrect;
+            questionOption.UpdatedAt = DateTime.UtcNow;
+            questionOption.OptionText = this.OptionText;
         }
     }
 }

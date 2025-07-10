@@ -215,7 +215,7 @@ namespace Fit4Job.Controllers
                 return ApiResponseHelper.Error<TrackQuestionWithOptionsViewModel>(ErrorCode.NotFound, "Question not found");
             }
 
-            var options = await unitOfWork.TrackQuestionOptionRepository.GetOptionsByQuestionIdAsync(question.Id);
+            var options = await unitOfWork.TrackQuestionOptionRepository.GetActiveOptionsByQuestionIdAsync(question.Id);
             var questionVM = new TrackQuestionViewModel(question);
             var optionsVMs = options.Select(o => TrackQuestionOptionViewModel.GetViewModel(o));
 

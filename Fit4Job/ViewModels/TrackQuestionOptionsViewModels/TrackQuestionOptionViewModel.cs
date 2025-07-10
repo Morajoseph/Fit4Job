@@ -11,7 +11,10 @@
         [Display(Name = "Option Text")]
         public string OptionText { get; set; } = string.Empty;
 
-        public TrackQuestionOptionViewModel() { }
+        public TrackQuestionOptionViewModel()
+        {
+
+        }
 
         public TrackQuestionOptionViewModel(TrackQuestionOption option)
         {
