@@ -15,6 +15,12 @@
         [Column(TypeName = "nvarchar(100)")]
         public string Name { get; set; } = string.Empty;
 
+        [Url(ErrorMessage = "Please enter a valid URL")]
+        [StringLength(500, ErrorMessage = "Icon URL cannot exceed 500 characters")]
+        [Column(TypeName = "varchar(500)")]
+        [Display(Name = "Icon URL")]
+        public string? IconUrl { get; set; }
+
         [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters")]
         [Column(TypeName = "nvarchar(1000)")]
         [Display(Name = "Category Description")]

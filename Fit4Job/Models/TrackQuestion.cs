@@ -22,19 +22,19 @@
         public string QuestionText { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Question level is required")]
-        [Column(TypeName = "varchar(20)")]
+        [Column(TypeName = "varchar(30)")]
         [Display(Name = "Question Level")]
         [EnumDataType(typeof(QuestionType))]
         public QuestionType QuestionType { get; set; }
 
         [Required]
-        [Column(TypeName = "varchar(20)")]
+        [Column(TypeName = "varchar(30)")]
         [Display(Name = "Question Level")]
         [EnumDataType(typeof(QuestionLevel))]
         public QuestionLevel QuestionLevel { get; set; }
 
         [Required(ErrorMessage = "Difficulty level is required")]
-        [Column(TypeName = "varchar(10)")]
+        [Column(TypeName = "varchar(30)")]
         [Display(Name = "Difficulty Level")]
         [EnumDataType(typeof(DifficultyLevel), ErrorMessage = "Please select a valid difficulty level")]
         public DifficultyLevel DifficultyLevel { get; set; }

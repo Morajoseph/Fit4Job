@@ -5,7 +5,6 @@
     [Index(nameof(CategoryId), Name = "IX_Tracks_CategoryId")]
     public class Track
     {
-
         [Key]
         [Display(Name = "Track ID")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

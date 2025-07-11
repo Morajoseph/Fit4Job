@@ -11,11 +11,9 @@
         [Key]
         public int Id { get; set; }
 
-
         [Required(ErrorMessage = "User ID is required")]
         [Display(Name = "User ID")]
         public int UserId { get; set; }
-
 
         [Required(ErrorMessage = "Amount is required")]
         [Column(TypeName = "decimal(18,2)")]
@@ -23,14 +21,12 @@
         [Display(Name = "Amount")]
         public decimal Amount { get; set; }
 
-
         [Required(ErrorMessage = "Currency is required")]
         [StringLength(3, MinimumLength = 3, ErrorMessage = "Currency must be exactly 3 characters")]
         [RegularExpression("^[A-Z]{3}$", ErrorMessage = "Currency must be a valid 3-letter uppercase code (e.g., USD, EUR)")]
         [Display(Name = "Currency")]
         [Column(TypeName = "varchar(3)")]
         public string Currency { get; set; } = "USD";
-
 
         [Required(ErrorMessage = "Payment method is required")]
         [Display(Name = "Payment Method")]

@@ -9,7 +9,6 @@
         [Display(Name = "Exam ID")]
         public int Id { get; set; }
 
-
         [Required(ErrorMessage = "Company ID is required")]
         [Display(Name = "Company ID")]
         public int CompanyId { get; set; }
@@ -20,18 +19,15 @@
         [Column(TypeName = "nvarchar(256)")]
         public string Title { get; set; } = null!;
 
-
         [Display(Name = "Description")]
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters")]
         [Column(TypeName = "nvarchar(500)")]
         public string? Description { get; set; }
 
-
         [Display(Name = "Instructions")]
         [StringLength(2000, ErrorMessage = "Instructions cannot exceed 2000 characters")]
         [Column(TypeName = "nvarchar(2000)")]
         public string? Instructions { get; set; }
-
 
         [Required(ErrorMessage = "Duration is required")]
         [Display(Name = "Duration (Minutes)")]
@@ -39,13 +35,11 @@
         [Column(TypeName = "int")]
         public int DurationMinutes { get; set; }
 
-
         [Required(ErrorMessage = "Total score is required")]
         [Range(0, 99999999.99, ErrorMessage = "Total score must be a positive value")]
         [Display(Name = "Total Score")]
         [Column(TypeName = "decimal(10,2)")]
         public decimal TotalScore { get; set; }
-
 
         [Required(ErrorMessage = "Passing score is required")]
         [Range(0, 99999999.99, ErrorMessage = "Passing score must be a positive value")]
@@ -53,28 +47,23 @@
         [Column(TypeName = "decimal(10,2)")]
         public decimal PassingScore { get; set; }
 
-
         [DataType(DataType.DateTime)]
         [Display(Name = "Start Date")]
         public DateTime? StartDate { get; set; }
 
-
         [DataType(DataType.DateTime)]
         [Display(Name = "End Date")]
         public DateTime? EndDate { get; set; }
-
 
         [Required(ErrorMessage = "Active status is required")]
         [Display(Name = "Is Active")]
         [Column(TypeName = "bit")]
         public bool IsActive { get; set; } = true;
 
-
         [Required(ErrorMessage = "Show results immediately setting is required")]
         [Display(Name = "Show Results Immediately")]
         [Column(TypeName = "bit")]
         public bool ShowResultsImmediately { get; set; } = false;
-
 
         [Required(ErrorMessage = "Created date is required")]
         [DataType(DataType.DateTime)]
@@ -86,12 +75,10 @@
         [Display(Name = "Updated At")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-
         [DataType(DataType.DateTime)]
         [Column(TypeName = "timestamp")]
         [Display(Name = "Deleted At")]
         public DateTime? DeletedAt { get; set; }
-
 
         // Computed properties
         [NotMapped]

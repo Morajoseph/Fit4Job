@@ -15,7 +15,6 @@
         [Column(TypeName = "nvarchar(255)")]
         public string Name { get; set; } = string.Empty;
 
-      
         [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters")]
         [Column(TypeName = "nvarchar(1000)")]
         [Display(Name = "Description")]
