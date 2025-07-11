@@ -7,7 +7,6 @@
 
         }
 
-
         public async Task<IEnumerable<TrackAttempt>> GetAttemptsByUserIdWithTrackAsync(int userId)
         {
             return await _context.TrackAttempts
@@ -16,7 +15,6 @@
                 .OrderByDescending(t => t.StartTime)
                 .ToListAsync();
         }
-
 
         public async Task<TrackAttempt?> GetActiveAttemptByUserIdAsync(int userId)
         {
@@ -32,14 +30,6 @@
                 .Where(a => a.UserId == userId)
                 .ToListAsync();
         }
-
-        //public async Task<TrackAttempt?>GetFirstAttemptAsync(int userId, int trackId)
-        //{
-        //    return await _context.TrackAttempts
-        //        .Where(a => a.UserId == userId && a.TrackId == trackId)
-        //        .OrderBy(a => a.StartTime)
-        //        .FirstOrDefaultAsync();
-        //}
 
         public async Task<int> CountCompletedAttemptsAsync(int userId, int trackId)
         {
@@ -59,9 +49,7 @@
         {
             return await _context.TrackAttempts
                 .Where(a => a.UserId == userId && a.TrackId == trackId)
-               // .OrderByDescending(a => a.StartTime) 
                 .ToListAsync();
         }
-
     }
 }

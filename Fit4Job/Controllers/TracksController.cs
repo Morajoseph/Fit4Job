@@ -28,7 +28,7 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(data);
         }
 
-        [HttpGet("Id/{id:int}")]
+        [HttpGet("{id:int}")]
         public async Task<ApiResponse<TrackViewModel>> GetById(int id)
         {
             var track = await unitOfWork.TrackRepository.GetByIdAsync(id);
@@ -39,8 +39,8 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(new TrackViewModel(track));
         }
 
+        [Authorize]
         [HttpPost("Create")]
-        //[Authorize]
         public async Task<ApiResponse<TrackViewModel>> Create(CreateTrackDTO createTrackDTO)
         {
             if (createTrackDTO == null || !ModelState.IsValid)
