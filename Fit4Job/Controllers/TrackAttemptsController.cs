@@ -1,6 +1,5 @@
 ﻿using Fit4Job.DTOs.TrackAttemptsDTOs;
 using Fit4Job.ViewModels.TrackAttemptsViewModels;
-using Fit4Job.ViewModels.TrackQuestionAnswerViewModel;
 using Fit4Job.ViewModels.UserBadgeViewModels;
 
 namespace Fit4Job.Controllers
@@ -69,15 +68,6 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(data);
         }
 
-
-        [HttpGet("{id:int}/answers")]
-        public async Task<ApiResponse<IEnumerable<TrackQuestionAnswerViewModel>>> GetAnswers(int id)
-        {
-            var answers = await unitOfWork.TrackQuestionAnswerRepository.GetAllAnswersByAttemptAsync(id);
-            var data = answers.Select(a => TrackQuestionAnswerViewModel.FromModel(a));
-            return ApiResponseHelper.Success(data);
-        }
-
         [HttpGet("{id:int}/badges")]
         public async Task<ApiResponse<IEnumerable<UserBadgeViewModels>>> GetBadges(int id)
         {
@@ -85,7 +75,6 @@ namespace Fit4Job.Controllers
             var data = badges.Select(b => UserBadgeViewModels.FromModel(b));
             return ApiResponseHelper.Success(data);
         }
-
 
         //update track attempt
 

@@ -1,8 +1,7 @@
-﻿namespace Fit4Job.ViewModels.TracksViewModels
+﻿namespace Fit4Job.ViewModels.BadgesViewModels
 {
     public class BadgeViewModel
     {
-
         [Display(Name = "Badge ID")]
         public int Id { get; set; }
 
@@ -23,6 +22,7 @@
 
         public BadgeViewModel()
         {
+
         }
 
         public BadgeViewModel(Badge badge)

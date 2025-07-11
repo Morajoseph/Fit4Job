@@ -1,4 +1,6 @@
 ﻿using Fit4Job.DTOs.TracksDTOs;
+using Fit4Job.ViewModels.BadgesViewModels;
+using Fit4Job.ViewModels.TrackQuestionsViewModels;
 using Fit4Job.ViewModels.TracksViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

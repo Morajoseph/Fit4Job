@@ -1,4 +1,4 @@
-﻿namespace Fit4Job.ViewModels.TracksViewModels
+﻿namespace Fit4Job.ViewModels.TrackQuestionsViewModels
 {
     public class TrackQuestionViewModel
     {
@@ -34,6 +34,7 @@
 
         public TrackQuestionViewModel()
         {
+
         }
 
         public TrackQuestionViewModel(TrackQuestion question)
