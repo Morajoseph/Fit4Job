@@ -46,14 +46,14 @@ namespace Fit4Job.Controllers
 
         // 3 - Get only active questions for a track.
         [HttpGet("active/by-track/{id:int}")]
-        public async Task<ApiResponse<IEnumerable<TrackQuestionViewModel>>> GetActiveByTrackId(int trackId)
+        public async Task<ApiResponse<IEnumerable<TrackQuestionViewModel>>> GetActiveByTrackId(int id)
         {
-            var track = await unitOfWork.TrackRepository.GetByIdAsync(trackId);
+            var track = await unitOfWork.TrackRepository.GetByIdAsync(id);
             if (track == null)
             {
                 return ApiResponseHelper.Error<IEnumerable<TrackQuestionViewModel>>(ErrorCode.BadRequest, "Invalid trackId");
             }
-            var activeQuestions = await unitOfWork.TrackQuestionRepository.GetActiveByTrackIdAsync(trackId);
+            var activeQuestions = await unitOfWork.TrackQuestionRepository.GetActiveByTrackIdAsync(id);
             var data = activeQuestions.Select(q => TrackQuestionViewModel.GetViewModel(q));
             return ApiResponseHelper.Success(data);
         }

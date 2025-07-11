@@ -2,10 +2,30 @@
 {
     public class LoginViewModel
     {
+        public int Id { get; set; }
         public string Token { get; set; }
         public string Email { get; set; }
         public string Username { get; set; }
-        public IList<string> Roles { get; set; }
+        public string Role { get; set; }
         public DateTime Expiration { get; set; }
+
+        public LoginViewModel()
+        {
+
+        }
+        public LoginViewModel((string Token, DateTime Expiration) token , ApplicationUser user )
+        {
+            Id = user.Id;
+            Email = user.Email!;
+            Token = token.Token;
+            Username = user.UserName!;
+            Role = user.Role.ToString();
+            Expiration = token.Expiration;
+        }
+
+        public static LoginViewModel GetViewModel((string Token, DateTime Expiration) token, ApplicationUser user)
+        {
+            return new LoginViewModel(token, user);
+        }
     }
 }

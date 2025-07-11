@@ -32,7 +32,7 @@ namespace Fit4Job.Controllers
         }
 
         // 2 - Retrieves only the options that are marked as correct for a specific question ID.
-        [HttpGet("correct/by-question/{questionId:int}")]
+        [HttpGet("correct/by-question/{id:int}")]
         public async Task<ApiResponse<IEnumerable<TrackQuestionOptionViewModel>>> GetCorrectOptionsByQuestionId(int id)
         {
             var question = await unitOfWork.TrackQuestionRepository.GetByIdAsync(id);

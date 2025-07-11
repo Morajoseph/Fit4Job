@@ -42,16 +42,7 @@
 
             // Generate JWT token
             var token = await GenerateJwtTokenAsync(user, loginDTO.RememberMe);
-
-
-            return ApiResponseHelper.Success(new LoginViewModel()
-            {
-                Token = token.Token,
-                Expiration = token.Expiration,
-                Email = user.Email!,
-                Username = user.UserName!,
-                Roles = await userManager.GetRolesAsync(user)
-            });
+            return ApiResponseHelper.Success(LoginViewModel.GetViewModel(token, user));
         }
 
         [HttpPost("Registration/Admin")]
