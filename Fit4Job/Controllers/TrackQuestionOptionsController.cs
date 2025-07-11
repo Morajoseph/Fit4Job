@@ -92,7 +92,7 @@ namespace Fit4Job.Controllers
             await unitOfWork.CompleteAsync();
 
             var updatedVM = new TrackQuestionOptionViewModel(questionOption);
-            return ApiResponseHelper.Success(updatedVM, "Track Updated successfully");
+            return ApiResponseHelper.Success(updatedVM, "Question option Updated successfully");
         }
 
         // 5 -  Performs a soft delete on a question option
