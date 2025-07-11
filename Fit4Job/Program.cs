@@ -1,3 +1,4 @@
+using Fit4Job.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -97,6 +98,8 @@ namespace Fit4Job
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            builder.Services.AddScoped<GlobalErrorHandlerMiddleware>();
+
             /********************************************************************************/
 
 
@@ -160,6 +163,7 @@ namespace Fit4Job
             /****************************** Application  Build ******************************/
             var app = builder.Build();
 
+            app.UseMiddleware<GlobalErrorHandlerMiddleware>();
 
             // Seed roles after building the app
             using (var scope = app.Services.CreateScope())
