@@ -25,7 +25,7 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(data);
         }
 
-        [HttpGet("Id/{id:int}")]
+        [HttpGet("{id:int}")]
         public async Task<ApiResponse<TrackAttemptViewModel>> GetById(int id)
         {
             var trackAttempt = await unitOfWork.TrackAttemptRepository.GetByIdAsync(id);
@@ -206,8 +206,7 @@ namespace Fit4Job.Controllers
             }
         }
 
-        //Summary of all attempts for dashboard
-
+        // Summary of all attempts for dashboard
         [HttpGet("summary/user/{userId:int}")]
         public async Task<ApiResponse<IEnumerable<TrackAttemptSummaryViewModel>>> GetSummaryByUserId(int userId)
         {
@@ -221,10 +220,7 @@ namespace Fit4Job.Controllers
         }
 
 
-
-
-        //Get current active (in-progress) attempt for user
-
+        // Get current active (in-progress) attempt for user
         [HttpGet("active/user/{userId:int}")]
         public async Task<ApiResponse<TrackAttemptViewModel>> GetActiveAttemptByUserId(int userId)
         {
@@ -242,7 +238,6 @@ namespace Fit4Job.Controllers
 
 
         //Update progress percentage & solved count
-
         [HttpPatch("{id:int}/progress")]
         public async Task<ApiResponse<TrackAttemptViewModel>> UpdateProgress(int id, [FromBody] UpdateTrackAttemptProgressDTO dto)
         {
