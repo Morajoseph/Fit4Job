@@ -36,7 +36,7 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(new TrackAttemptViewModel(trackAttempt));
         }
 
-        [HttpPost("Create")]
+        [HttpPost("create")]
         public async Task<ApiResponse<TrackAttemptViewModel>> Create(CreateTrackAttemptDTO createTrackAttemptDTO)
         {
             if (createTrackAttemptDTO == null || !ModelState.IsValid)
@@ -44,9 +44,13 @@ namespace Fit4Job.Controllers
                 return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.BadRequest, "Invalid data");
             }
 
-            var userIdString = userManager.GetUserId(User);
-            int userId = int.Parse(userIdString);
-            var trackAttempt = createTrackAttemptDTO.GetTrack(userId);
+            var user = await userManager.GetUserAsync(User);
+            if (user == null || user.Id != createTrackAttemptDTO.UserId)
+            {
+                return ApiResponseHelper.Error<TrackAttemptViewModel>(ErrorCode.Unauthorized, "Unauthorized");
+            }
+
+            var trackAttempt = createTrackAttemptDTO.GetTrack();
 
 
             await unitOfWork.TrackAttemptRepository.AddAsync(trackAttempt);
