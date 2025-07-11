@@ -67,13 +67,20 @@ namespace Fit4Job.Controllers
                 return ApiResponseHelper.Error<TrackQuestionViewModel>(ErrorCode.BadRequest, "Invalid data");
             }
 
-            var trackQuestion = createTrackQuestionDTO.GetTrackQuestion();
+            var track = await unitOfWork.TrackRepository.GetByIdAsync(createTrackQuestionDTO.TrackId);
+            if(track== null)
+            {
+                return ApiResponseHelper.Error<TrackQuestionViewModel>(ErrorCode.BadRequest, "Invalid TrackId data");
+            }
 
+
+            var trackQuestion = createTrackQuestionDTO.GetTrackQuestion();
+            track.TrackQuestionsCount++;
+            track.TrackTotalScore += trackQuestion.Points;
 
             await unitOfWork.TrackQuestionRepository.AddAsync(trackQuestion);
             await unitOfWork.CompleteAsync();
             var trackQuestionViewModel = new TrackQuestionViewModel(trackQuestion);
-
             return ApiResponseHelper.Success(trackQuestionViewModel, "Created successfully");
         }
 
