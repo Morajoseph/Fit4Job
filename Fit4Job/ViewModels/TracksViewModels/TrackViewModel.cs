@@ -1,4 +1,6 @@
-﻿namespace Fit4Job.ViewModels.TracksViewModels
+﻿using Fit4Job.ViewModels.ComplexViewModels;
+
+namespace Fit4Job.ViewModels.TracksViewModels
 {
     public class TrackViewModel
     {
@@ -25,6 +27,8 @@
 
         [Display(Name = "Track Total Score")]
         public decimal TrackTotalScore { get; set; }
+
+        public TrackQuestionsDetailsViewModel TrackDetails { get; set; }
 
         public TrackViewModel()
         {

@@ -23,6 +23,13 @@ namespace Fit4Job.Repositories.Implementations
                 .Where(t => t.Category.Name == categoryName)
                 .ToListAsync();
         }
+        public async Task<IEnumerable<Track>> GetAllTracksByCategoryIdWithQuestionsAsync(int categoryId)
+        {
+            return await _context.Tracks
+                .Where(t => t.CategoryId == categoryId && t.DeletedAt == null)
+                .Include(t => t.TrackQuestions)
+                .ToListAsync();
+        }
 
         public async Task<IEnumerable<Track>> GetAllTracksByCategoryIdAsync(int categoryId)
         {
@@ -100,5 +107,6 @@ namespace Fit4Job.Repositories.Implementations
                 .FirstOrDefaultAsync(t => t.Id == id && t.DeletedAt == null);
         }
 
+  
     }
 }

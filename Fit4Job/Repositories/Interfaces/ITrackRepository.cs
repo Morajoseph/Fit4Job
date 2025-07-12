@@ -6,6 +6,7 @@ namespace Fit4Job.Repositories.Interfaces
     {
         Task<Track> GetTrackByNameAsync(string trackName);
         Task<IEnumerable<Track>> GetAllTracksByCategoryIdAsync(int categoryId);
+        Task<IEnumerable<Track>> GetAllTracksByCategoryIdWithQuestionsAsync(int categoryId);
         Task<IEnumerable<Track>> GetAllTracksByCategoryAsync(string categoryName);
         Task<IEnumerable<Track>> GetPremiumTracksAsync();
         Task<IEnumerable<Track>> GetActiveTracksAsync();

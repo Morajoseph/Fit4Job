@@ -1,5 +1,6 @@
 ﻿using Fit4Job.DTOs.TracksDTOs;
 using Fit4Job.ViewModels.BadgesViewModels;
+using Fit4Job.ViewModels.ComplexViewModels;
 using Fit4Job.ViewModels.TrackQuestionsViewModels;
 using Fit4Job.ViewModels.TracksViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -39,6 +40,81 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(new TrackViewModel(track));
         }
 
+
+        [HttpGet("all")]
+        public async Task<ApiResponse<IEnumerable<TrackViewModel>>> GetAllIncludingDeleted()
+        {
+            var allTracks = await unitOfWork.TrackRepository.GetAllTracksIncludingDeletedAsync();
+            var data = allTracks.Select(t => TrackViewModel.GetViewModel(t));
+            return ApiResponseHelper.Success(data);
+        }
+
+        [HttpGet("search")]
+        public async Task<ApiResponse<IEnumerable<TrackViewModel>>> Search([FromQuery] TrackSearchDTO searchDTO)
+        {
+            var tracks = await unitOfWork.TrackRepository.SearchTracksAsync(searchDTO);
+            var data = tracks.Select(t => TrackViewModel.GetViewModel(t));
+            return ApiResponseHelper.Success(data);
+        }
+
+        [HttpGet("category/{categoryId:int}")]
+        public async Task<ApiResponse<IEnumerable<TrackViewModel>>> GetByCategory(int categoryId)
+        {
+            if (categoryId <= 0)
+            {
+                return ApiResponseHelper.Error<IEnumerable<TrackViewModel>>(ErrorCode.BadRequest, "Invalid CategoryId");
+            }
+
+            var tracks = await unitOfWork.TrackRepository.GetAllTracksByCategoryIdWithQuestionsAsync(categoryId);
+            //var data = tracks.Select(t => TrackViewModel.GetViewModel(t));
+
+            var data = tracks.Select(t =>
+            {
+                var viewModel = TrackViewModel.GetViewModel(t);
+                if (t.TrackQuestions != null)
+                {
+                    viewModel.TrackDetails = TrackQuestionsDetailsViewModel.GetViewModel(t.TrackQuestions);
+                }
+                return viewModel;
+            });
+
+            return ApiResponseHelper.Success(data);
+        }
+
+        //Get questions for a specific 
+        [HttpGet("questions/{id:int}")]
+        public async Task<ApiResponse<IEnumerable<TrackQuestionViewModel>>> GetQuestionsForTrack(int id)
+        {
+            var track = await unitOfWork.TrackRepository.GetTrackWithQuestionsAsync(id);
+
+            if (track == null)
+            {
+                return ApiResponseHelper.Error<IEnumerable<TrackQuestionViewModel>>(ErrorCode.NotFound, "Track not found");
+            }
+
+            var questions = track.TrackQuestions?
+                .Where(q => q.DeletedAt == null)
+                .Select(TrackQuestionViewModel.GetViewModel);
+
+
+            return ApiResponseHelper.Success(questions);
+        }
+
+        // Get track with category and creator details
+        [HttpGet("details/{id:int}")]
+        public async Task<ApiResponse<TrackDetailsViewModel>> GetTrackDetails(int id)
+        {
+            var track = await unitOfWork.TrackRepository.GetTrackWithDetailsAsync(id);
+
+            if (track == null)
+                return ApiResponseHelper.Error<TrackDetailsViewModel>(ErrorCode.NotFound, "Track not found");
+
+            var viewModel = TrackDetailsViewModel.GetViewModel(track);
+            return ApiResponseHelper.Success(viewModel);
+        }
+
+
+
         [Authorize]
         [HttpPost("Create")]
         public async Task<ApiResponse<TrackViewModel>> Create(CreateTrackDTO createTrackDTO)
@@ -62,7 +138,7 @@ namespace Fit4Job.Controllers
         }
 
         //update track
-        [HttpPut("Update/{id:int}")]
+        [HttpPut("update/{id:int}")]
         public async Task<ApiResponse<TrackViewModel>> UpdateTracke(int id, EditTrackDTO editTrackDTO)
         {
             if (editTrackDTO == null)
@@ -111,8 +187,7 @@ namespace Fit4Job.Controllers
 
 
         // DELETE: Soft Delete a track 
-        [HttpDelete("Delete/{id:int}")]
-
+        [HttpDelete("delete/{id:int}")]
         public async Task<ApiResponse<string>> SoftDelete(int id)
         {
             var track = await unitOfWork.TrackRepository.GetByIdAsync(id);
@@ -137,7 +212,7 @@ namespace Fit4Job.Controllers
         }
 
         // PATCH: Restore a soft-deleted 
-        [HttpPatch("Restore/{id:int}")]
+        [HttpPatch("restore/{id:int}")]
         public async Task<ApiResponse<TrackViewModel>> Restore(int id)
         {
             var track = await unitOfWork.TrackRepository.GetByIdAsync(id);
@@ -172,82 +247,22 @@ namespace Fit4Job.Controllers
 
         }
 
-        [HttpGet("All")]
-        public async Task<ApiResponse<IEnumerable<TrackViewModel>>> GetAllIncludingDeleted()
-        {
-            var allTracks = await unitOfWork.TrackRepository.GetAllTracksIncludingDeletedAsync();
-            var data = allTracks.Select(t => TrackViewModel.GetViewModel(t));
-            return ApiResponseHelper.Success(data);
-        }
-
-        [HttpGet("Search")]
-        public async Task<ApiResponse<IEnumerable<TrackViewModel>>> Search([FromQuery] TrackSearchDTO searchDTO)
-        {
-            var tracks = await unitOfWork.TrackRepository.SearchTracksAsync(searchDTO);
-            var data = tracks.Select(t => TrackViewModel.GetViewModel(t));
-            return ApiResponseHelper.Success(data);
-        }
-
-        [HttpGet("Category/{categoryId:int}")]
-        public async Task<ApiResponse<IEnumerable<TrackViewModel>>> GetByCategory(int categoryId)
-        {
-            if (categoryId <= 0)
-            {
-                return ApiResponseHelper.Error<IEnumerable<TrackViewModel>>(ErrorCode.BadRequest, "Invalid CategoryId");
-            }
-
-            var tracks = await unitOfWork.TrackRepository.GetAllTracksByCategoryIdAsync(categoryId);
-            var data = tracks.Select(t => TrackViewModel.GetViewModel(t));
-            return ApiResponseHelper.Success(data);
-        }
-
-        //Get questions for a specific 
-        [HttpGet("Questions/{id:int}")]
-        public async Task<ApiResponse<IEnumerable<TrackQuestionViewModel>>> GetQuestionsForTrack(int id)
-        {
-            var track = await unitOfWork.TrackRepository.GetTrackWithQuestionsAsync(id);
-
-            if (track == null)
-            {
-                return ApiResponseHelper.Error<IEnumerable<TrackQuestionViewModel>>(ErrorCode.NotFound, "Track not found");
-            }
-
-            var questions = track.TrackQuestions?
-                .Where(q => q.DeletedAt == null)
-                .Select(TrackQuestionViewModel.GetViewModel);
-
-
-            return ApiResponseHelper.Success(questions);
-        }
-
-
         //Get badges earned from this track
-        [HttpGet("Badges/{id:int}")]
-        public async Task<ApiResponse<IEnumerable<BadgeViewModel>>> GetBadgesByTrackId(int id)
-        {
-            var badges = await unitOfWork.TrackRepository.GetBadgesByTrackIdAsync(id);
+        //[HttpGet("badges/{id:int}")]
+        //public async Task<ApiResponse<IEnumerable<BadgeViewModel>>> GetBadgesByTrackId(int id)
+        //{
+        //    var badges = await unitOfWork.TrackRepository.GetBadgesByTrackIdAsync(id);
 
-            if (badges == null || !badges.Any())
-            {
-                return ApiResponseHelper.Error<IEnumerable<BadgeViewModel>>(ErrorCode.NotFound, "No badges found for this track");
-            }
+        //    if (badges == null || !badges.Any())
+        //    {
+        //        return ApiResponseHelper.Error<IEnumerable<BadgeViewModel>>(ErrorCode.NotFound, "No badges found for this track");
+        //    }
 
-            var data = badges.Select(BadgeViewModel.GetViewModel);
-            return ApiResponseHelper.Success(data);
-        }
+        //    var data = badges.Select(BadgeViewModel.GetViewModel);
+        //    return ApiResponseHelper.Success(data);
+        //}
 
-        // Get track with category and creator details
-        [HttpGet("Details/{id:int}")]
-        public async Task<ApiResponse<TrackDetailsViewModel>> GetTrackDetails(int id)
-        {
-            var track = await unitOfWork.TrackRepository.GetTrackWithDetailsAsync(id);
 
-            if (track == null)
-                return ApiResponseHelper.Error<TrackDetailsViewModel>(ErrorCode.NotFound, "Track not found");
-
-            var viewModel = TrackDetailsViewModel.GetViewModel(track);
-            return ApiResponseHelper.Success(viewModel);
-        }
 
     }
 }
