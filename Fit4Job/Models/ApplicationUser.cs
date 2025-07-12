@@ -54,6 +54,7 @@
         public virtual JobSeekerProfile? JobSeekerProfile { get; set; }
         public virtual ICollection<CompanyTaskSubmission>? CompanyTaskSubmissions { get; set; }
         public virtual ICollection<Track>? CreatedTracks { get; set; }
+        public virtual ICollection<JobApplication>? JobApplications { get; set; }
         public virtual ICollection<Payment>? Payments { get; set; }
         public virtual ICollection<UserSkill>? UserSkills { get; set; }
         public virtual ICollection<TrackAttempt>? TrackAttempts { get; set; }

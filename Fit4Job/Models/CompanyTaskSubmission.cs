@@ -20,6 +20,9 @@
         [Display(Name = "User ID")]
         public int UserId { get; set; }
 
+        [Required(ErrorMessage = "Job Application ID is required")]
+        [Display(Name = "Job Application ID")]
+        public int JobApplicationId { get; set; }
 
         [Column(TypeName = "nvarchar(max)")]
         [Display(Name = "Submission Notes")]
@@ -71,13 +74,13 @@
             }
         }
 
-
         // Navigation properties
         [ForeignKey("TaskId")]
         public virtual CompanyTask Task { get; set; } = null!;
 
-
         [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; } = null!;
+
+        public virtual JobApplication JobApplication { get; set; } = null!;
     }
 }

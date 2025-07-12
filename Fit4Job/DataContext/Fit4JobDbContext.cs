@@ -21,6 +21,8 @@
         public DbSet<CompanyProfile> CompanyProfiles { get; set; }
         public DbSet<CompanyTask> CompanyTasks { get; set; }
         public DbSet<CompanyTaskSubmission> CompanyTaskSubmissions { get; set; }
+        public DbSet<Job> Jobs { get; set; }
+        public DbSet<JobApplication> JobApplications { get; set; }
         public DbSet<JobSeekerProfile> JobSeekerProfiles { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Payment> Payments { get; set; }

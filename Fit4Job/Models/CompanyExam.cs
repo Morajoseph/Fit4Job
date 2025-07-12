@@ -13,6 +13,10 @@
         [Display(Name = "Company ID")]
         public int CompanyId { get; set; }
 
+        [Display(Name = "Job ID")]
+        [Required(ErrorMessage = "Job ID is required")]
+        public int JobId { get; set; }
+
         [Required(ErrorMessage = "Title is required")]
         [Display(Name = "Title")]
         [StringLength(256, MinimumLength = 5, ErrorMessage = "Title must be between 5 and 256 characters")]
@@ -116,6 +120,8 @@
         // Navigation properties
         [ForeignKey("CompanyId")]
         public virtual CompanyProfile Company { get; set; } = null!;
+        [ForeignKey("JobId")]
+        public virtual Job Job { get; set; } = null!;
         public virtual ICollection<CompanyExamAttempt>? Attempts { get; set; }
         public virtual ICollection<CompanyExamQuestion>? Questions { get; set; }
     }

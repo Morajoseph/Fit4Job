@@ -18,6 +18,9 @@
         [Display(Name = "Exam ID")]
         public int ExamId { get; set; }
 
+        [Required(ErrorMessage = "Job Application ID is required")]
+        [Display(Name = "Job Application ID")]
+        public int JobApplicationId { get; set; }
 
         [Required(ErrorMessage = "Start time is required")]
         [DataType(DataType.DateTime)]
@@ -85,7 +88,9 @@
 
         [ForeignKey("ExamId")]
         public virtual CompanyExam Exam { get; set; } = null!;
-
+        
         public virtual ICollection<CompanyExamQuestionAnswer>? Answers { get; set; }
+
+        public virtual JobApplication JobApplication { get; set; } = null!;
     }
 }

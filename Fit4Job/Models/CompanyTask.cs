@@ -15,6 +15,9 @@
         [Range(1, int.MaxValue, ErrorMessage = "Company ID must be a positive number")]
         public int CompanyId { get; set; }
 
+        [Display(Name = "Job ID")]
+        [Required(ErrorMessage = "Job ID is required")]
+        public int JobId { get; set; }
 
         [Required(ErrorMessage = "Task title is required")]
         [StringLength(255, MinimumLength = 5, ErrorMessage = "Task title must be between 5 and 255 characters")]
@@ -104,6 +107,8 @@
         // Navigation properties
         [ForeignKey("CompanyId")]
         public virtual CompanyProfile Company { get; set; } = null!;
+        [ForeignKey("JobId")]
+        public virtual Job Job { get; set; } = null!;
         public virtual ICollection<CompanyTaskSubmission>? Submissions { get; set; }
     }
 }
