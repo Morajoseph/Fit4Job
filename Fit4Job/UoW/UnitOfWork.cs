@@ -49,7 +49,9 @@
         public IUserBadgeRepository UserBadgeRepository { get; }
 
         public IUserSkillRepository UserSkillRepository { get; }
-        public IJobRepository JobRepository {  get; }
+
+        public IJobRepository JobRepository { get; }
+        
         public IJobApplicationRepository JobApplicationRepository { get; }
 
         public UnitOfWork(Fit4JobDbContext context)
@@ -78,7 +80,7 @@
             TrackRepository = new TrackRepository(_context);
             UserBadgeRepository = new UserBadgeRepository(_context);
             UserSkillRepository = new UserSkillRepository(_context);
-            JobRepository=new JobRepository(_context);
+            JobRepository = new JobRepository(_context);
             JobApplicationRepository = new JobApplicationRepository(_context);
         }
 

@@ -1,12 +1,11 @@
-﻿
-namespace Fit4Job.Repositories.Implementations
+﻿namespace Fit4Job.Repositories.Implementations
 {
     public class JobApplicationRepository : GenericRepository<JobApplication>, IJobApplicationRepository
     {
         public JobApplicationRepository(Fit4JobDbContext context) : base(context)
         {
-        }
 
+        }
 
         public async Task<IEnumerable<JobApplication>> GetJobsByUserIdAsync(int userId)
         {
