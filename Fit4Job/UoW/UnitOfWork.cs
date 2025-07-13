@@ -50,6 +50,7 @@
 
         public IUserSkillRepository UserSkillRepository { get; }
         public IJobRepository JobRepository {  get; }
+        public IJobApplicationRepository JobApplicationRepository { get; }
 
         public UnitOfWork(Fit4JobDbContext context)
         {
@@ -78,6 +79,7 @@
             UserBadgeRepository = new UserBadgeRepository(_context);
             UserSkillRepository = new UserSkillRepository(_context);
             JobRepository=new JobRepository(_context);
+            JobApplicationRepository = new JobApplicationRepository(_context);
         }
 
         public async Task<int> CompleteAsync()
