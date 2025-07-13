@@ -25,6 +25,7 @@
         ITrackRepository TrackRepository { get; }
         IUserBadgeRepository UserBadgeRepository { get; }
         IUserSkillRepository UserSkillRepository { get; }
+       IJobRepository JobRepository {  get; }
         Task<int> CompleteAsync();
         Task RollbackAsync();
     }
