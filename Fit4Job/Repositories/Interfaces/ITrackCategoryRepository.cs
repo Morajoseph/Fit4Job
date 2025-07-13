@@ -2,11 +2,7 @@
 {
     public interface ITrackCategoryRepository : IGenericRepository<TrackCategory>
     {
-        
-        
-        Task<IEnumerable<TrackCategory>> SearchByNameAndStatusAsync(string keyword, bool isActive);
         Task<IEnumerable<TrackCategory>> GetActiveCategoriesAsync();
-
-
+        Task<IEnumerable<TrackCategory>> SearchByNameAsync(string keyword);
     }
 }

@@ -7,10 +7,10 @@
 
         }
 
-        public async Task<IEnumerable<TrackCategory>> SearchByNameAndStatusAsync(string keyword, bool isActive)
+        public async Task<IEnumerable<TrackCategory>> SearchByNameAsync(string name)
         {
             return await _context.TrackCategories
-                .Where(tc => tc.Name.Contains(keyword) && (isActive ? tc.DeletedAt == null : tc.DeletedAt != null))
+                .Where(tc => tc.Name.Contains(name) && tc.DeletedAt == null)
                 .ToListAsync();
         }
 

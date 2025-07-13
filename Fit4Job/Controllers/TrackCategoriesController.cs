@@ -10,7 +10,7 @@
             this.unitOfWork = unitOfWork;
         }
 
-        // Get all active track categories (DeletedAt == null)
+        // Get all active categories (DeletedAt == null)
         [HttpGet]
         public async Task<ApiResponse<IEnumerable<TrackCategoryViewModel>>> GetAllActive()
         {
@@ -31,109 +31,6 @@
             return ApiResponseHelper.Success(new TrackCategoryViewModel(category));
         }
 
-        //  create track category
-        [HttpPost]
-        public async Task<ApiResponse<TrackCategoryViewModel>> Create(CreateTrackCategoryDTO createTrackCategoryDTO)
-        {
-            if (createTrackCategoryDTO == null || !ModelState.IsValid)
-            {
-                return ApiResponseHelper.Error<TrackCategoryViewModel>(ErrorCode.BadRequest, "Invalid data");
-            }
-
-            var trackCategory = new TrackCategory()
-            {
-                Name = createTrackCategoryDTO.Name,
-                Description = createTrackCategoryDTO.Description
-            };
-
-            await unitOfWork.TrackCategoryRepository.AddAsync(trackCategory);
-            await unitOfWork.CompleteAsync();
-            var createdVM = new TrackCategoryViewModel(trackCategory);
-
-            return ApiResponseHelper.Success(createdVM, "Created successfully");
-        }
-
-        // Update track category by Id
-        [HttpPut("{id:int}")]
-        public async Task<ApiResponse<TrackCategoryViewModel>> UpdateCategory(int id, EditTrackCategoryDTO editTrackCategoryDTO)
-        {
-
-            if (editTrackCategoryDTO == null)
-            {
-                return ApiResponseHelper.Error<TrackCategoryViewModel>(ErrorCode.BadRequest, "Request body is required");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return ApiResponseHelper.Error<TrackCategoryViewModel>(ErrorCode.BadRequest, "Invalid data");
-            }
-
-
-            var oldCategory = await unitOfWork.TrackCategoryRepository.GetByIdAsync(id);
-            if (oldCategory == null)
-            {
-                return ApiResponseHelper.Error<TrackCategoryViewModel>(ErrorCode.NotFound, "Category not found");
-            }
-
-
-            oldCategory.Name = editTrackCategoryDTO.Name;
-            oldCategory.Description = editTrackCategoryDTO.Description;
-            oldCategory.UpdatedAt = DateTime.UtcNow;
-
-            unitOfWork.TrackCategoryRepository.Update(oldCategory);
-            await unitOfWork.CompleteAsync();
-
-
-            var updatedVM = new TrackCategoryViewModel(oldCategory);
-            return ApiResponseHelper.Success(updatedVM, "updated successfully");
-        }
-
-        // DELETE: Soft Delete a track category
-        [HttpDelete("{id:int}")]
-        public async Task<ApiResponse<string>> SoftDelete(int id)
-        {
-            var category = await unitOfWork.TrackCategoryRepository.GetByIdAsync(id);
-            if (category == null)
-            {
-                return ApiResponseHelper.Error<string>(ErrorCode.NotFound, "Category not found");
-            }
-
-            if (category.DeletedAt != null)
-            {
-                return ApiResponseHelper.Error<string>(ErrorCode.BadRequest, "Category is already deleted");
-            }
-
-            category.DeletedAt = DateTime.UtcNow;
-            category.UpdatedAt = DateTime.UtcNow;
-            unitOfWork.TrackCategoryRepository.Update(category);
-            await unitOfWork.CompleteAsync();
-
-            return ApiResponseHelper.Success("Category deleted successfully");
-        }
-
-        // PATCH: Restore a soft-deleted track category
-        [HttpPatch("{id:int}/restore")]
-        public async Task<ApiResponse<string>> Restore(int id)
-        {
-            var category = await unitOfWork.TrackCategoryRepository.GetByIdAsync(id);
-            if (category == null)
-            {
-                return ApiResponseHelper.Error<string>(ErrorCode.NotFound, "Category not found");
-            }
-
-            if (category.DeletedAt == null)
-            {
-                return ApiResponseHelper.Error<string>(ErrorCode.BadRequest, "Category is not deleted");
-            }
-
-            category.DeletedAt = null;
-            category.UpdatedAt = DateTime.UtcNow;
-            unitOfWork.TrackCategoryRepository.Update(category);
-            await unitOfWork.CompleteAsync();
-
-            return ApiResponseHelper.Success("Category restored successfully");
-        }
-
         // Get all track categories
         [HttpGet("all")]
         public async Task<ApiResponse<IEnumerable<TrackCategoryViewModel>>> GetAllTrackCategories()
@@ -143,13 +40,99 @@
             return ApiResponseHelper.Success(data);
         }
 
-        // Get all track categories by search name,status
-        [HttpGet("search/{keyword}/{isActive}")]
-        public async Task<ApiResponse<IEnumerable<TrackCategoryViewModel>>> Search(string keyword, bool isActive)
+        // Get all track categories by search name
+        [HttpGet("search/{name}")]
+        public async Task<ApiResponse<IEnumerable<TrackCategoryViewModel>>> SearchByName(string name)
         {
-            var categories = await unitOfWork.TrackCategoryRepository.SearchByNameAndStatusAsync(keyword, isActive);
+            var categories = await unitOfWork.TrackCategoryRepository.SearchByNameAsync(name);
             var data = categories.Select(c => TrackCategoryViewModel.GetViewModel(c));
             return ApiResponseHelper.Success(data);
+        }
+
+        // create track category
+        [HttpPost]
+        public async Task<ApiResponse<TrackCategoryViewModel>> Create(CreateTrackCategoryDTO createCategoryDTO)
+        {
+            if (createCategoryDTO == null || !ModelState.IsValid)
+            {
+                return ApiResponseHelper.Error<TrackCategoryViewModel>(ErrorCode.BadRequest, "Invalid data");
+            }
+
+            var trackCategory = createCategoryDTO.ToEntity();
+            await unitOfWork.TrackCategoryRepository.AddAsync(trackCategory);
+            await unitOfWork.CompleteAsync();
+
+            var trackCategoryViewModel = TrackCategoryViewModel.GetViewModel(trackCategory);
+            return ApiResponseHelper.Success(trackCategoryViewModel, "Created successfully");
+        }
+
+        // Update track category by Id
+        [HttpPut("{id:int}")]
+        public async Task<ApiResponse<TrackCategoryViewModel>> UpdateCategory(int id, EditTrackCategoryDTO editTrackCategoryDTO)
+        {
+            if (editTrackCategoryDTO == null || !ModelState.IsValid)
+            {
+                return ApiResponseHelper.Error<TrackCategoryViewModel>(ErrorCode.BadRequest, "Invalid data");
+            }
+
+            var category = await unitOfWork.TrackCategoryRepository.GetByIdAsync(id);
+            if (category == null)
+            {
+                return ApiResponseHelper.Error<TrackCategoryViewModel>(ErrorCode.NotFound, "Category not found.");
+            }
+
+            editTrackCategoryDTO.UpdateEntity(category);
+            unitOfWork.TrackCategoryRepository.Update(category);
+            await unitOfWork.CompleteAsync();
+
+            var updatedVM = new TrackCategoryViewModel(category);
+            return ApiResponseHelper.Success(updatedVM, "updated successfully");
+        }
+
+        // Soft Delete a track category
+        [HttpDelete("{id:int}")]
+        public async Task<ApiResponse<bool>> SoftDelete(int id)
+        {
+            var category = await unitOfWork.TrackCategoryRepository.GetByIdAsync(id);
+            if (category == null)
+            {
+                return ApiResponseHelper.Error<bool>(ErrorCode.NotFound, "Category not found");
+            }
+
+            if (category.DeletedAt != null)
+            {
+                return ApiResponseHelper.Error<bool>(ErrorCode.BadRequest, "Category is already deleted");
+            }
+
+            category.DeletedAt = DateTime.UtcNow;
+            category.UpdatedAt = DateTime.UtcNow;
+            unitOfWork.TrackCategoryRepository.Update(category);
+            await unitOfWork.CompleteAsync();
+
+            return ApiResponseHelper.Success(true, "Category deleted successfully");
+        }
+
+        // Restore a soft-deleted track category
+        [HttpPatch("restore/{id:int}")]
+        public async Task<ApiResponse<bool>> Restore(int id)
+        {
+            var category = await unitOfWork.TrackCategoryRepository.GetByIdAsync(id);
+            if (category == null)
+            {
+                return ApiResponseHelper.Error<bool>(ErrorCode.NotFound, "Category not found");
+            }
+
+            if (category.DeletedAt == null)
+            {
+                return ApiResponseHelper.Error<bool>(ErrorCode.BadRequest, "Category is not deleted");
+            }
+            
+            category.DeletedAt = null;
+            category.UpdatedAt = DateTime.UtcNow;
+            unitOfWork.TrackCategoryRepository.Update(category);
+            await unitOfWork.CompleteAsync();
+
+            return ApiResponseHelper.Success(true, "Category restored successfully");
         }
     }
 }
