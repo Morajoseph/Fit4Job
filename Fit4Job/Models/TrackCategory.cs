@@ -11,7 +11,7 @@
 
         [Required]
         [StringLength(100)]
-        [Display(Name = "Track Name")]
+        [Display(Name = "Category Name")]
         [Column(TypeName = "nvarchar(100)")]
         public string Name { get; set; } = string.Empty;
 
@@ -25,6 +25,10 @@
         [Column(TypeName = "nvarchar(1000)")]
         [Display(Name = "Category Description")]
         public string? Description { get; set; }
+
+        [Display(Name = "Category Skills")]
+        [Column(TypeName = "nvarchar(max)")]
+        public string? Skills { get; set; } = string.Empty;
 
         [Required]
         [DataType(DataType.DateTime)]
@@ -43,6 +47,30 @@
         // Computed properties
         [NotMapped]
         public bool IsActive => DeletedAt == null;
+
+        [NotMapped]
+        [Display(Name = "Category Skills")]
+        public List<int> CategorySkills
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Skills))
+                    return new List<int>();
+
+                try
+                {
+                    return JsonSerializer.Deserialize<List<int>>(Skills) ?? new List<int>();
+                }
+                catch
+                {
+                    return new List<int>();
+                }
+            }
+            set
+            {
+                Skills = value?.Count > 0 ? JsonSerializer.Serialize(value) : null;
+            }
+        }
 
         // Navigation properties
         public virtual ICollection<Track>? Tracks { get; set; }
