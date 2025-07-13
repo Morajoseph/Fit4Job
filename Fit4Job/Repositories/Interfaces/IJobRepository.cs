@@ -13,7 +13,9 @@
             Task<IEnumerable<Job>> GetDeletedJobsAsync();
             Task<bool> SoftDeleteJobAsync(int jobId);
             Task<bool> RestoreJobAsync(int jobId);
-        }
+            Task<Job?> ActivateJobAsync(int jobId);
+
     }
+}
 
 

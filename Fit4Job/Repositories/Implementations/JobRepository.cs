@@ -84,5 +84,22 @@ namespace Fit4Job.Repositories.Implementations
             await _context.SaveChangesAsync();
             return true;
         }
+
+
+        public async Task<Job?> ActivateJobAsync(int jobId)
+        {
+            var job = await _context.Jobs.FindAsync(jobId);
+            if (job == null || job.DeletedAt != null)
+                return null;
+
+            job.IsActive = true;
+            job.UpdatedAt = DateTime.UtcNow;
+
+            _context.Jobs.Update(job);
+
+            return job;
+        }
+
+
     }
 }
