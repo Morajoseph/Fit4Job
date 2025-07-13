@@ -1,6 +1,4 @@
-﻿using Fit4Job.DTOs.TracksDTOs;
-
-namespace Fit4Job.Repositories.Implementations
+﻿namespace Fit4Job.Repositories.Implementations
 {
     public class TrackRepository : GenericRepository<Track>, ITrackRepository
     {
@@ -17,45 +15,12 @@ namespace Fit4Job.Repositories.Implementations
                   .ToListAsync();
         }
 
-        public async Task<IEnumerable<Track>> GetAllTracksByCategoryAsync(string categoryName)
-        {
-            return await _context.Tracks
-                .Where(t => t.Category.Name == categoryName)
-                .ToListAsync();
-        }
         public async Task<IEnumerable<Track>> GetAllTracksByCategoryIdWithQuestionsAsync(int categoryId)
         {
             return await _context.Tracks
                 .Where(t => t.CategoryId == categoryId && t.DeletedAt == null)
                 .Include(t => t.TrackQuestions)
                 .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Track>> GetAllTracksByCategoryIdAsync(int categoryId)
-        {
-            return await _context.Tracks
-                .Where(t => t.CategoryId == categoryId && t.DeletedAt == null)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Track>> GetPremiumTracksAsync()
-        {
-            return await _context.Tracks
-                .Where(t => t.IsPremium)
-                .ToListAsync();
-        }
-
-        public async Task<Track> GetTrackByNameAsync(string trackName)
-        {
-            return await _context.Tracks
-                .FirstOrDefaultAsync(t => t.Name == trackName);
-        }
-
-        public async Task<Track> GetTrackWithQuestionsAsync(int trackId)
-        {
-            return await _context.Tracks
-                .Include(t => t.TrackQuestions)
-                .FirstOrDefaultAsync(t => t.Id == trackId);
         }
 
         public async Task<IEnumerable<Track>> GetAllTracksIncludingDeletedAsync()
@@ -89,16 +54,6 @@ namespace Fit4Job.Repositories.Implementations
             return await query.ToListAsync();
         }
 
-
-        //
-        public async Task<IEnumerable<Badge>> GetBadgesByTrackIdAsync(int trackId)
-        {
-            return await _context.Badges
-                .Where(b => b.TrackId == trackId)
-                .ToListAsync();
-        }
-
-
         public async Task<Track?> GetTrackWithDetailsAsync(int id)
         {
             return await _context.Tracks
@@ -106,7 +61,5 @@ namespace Fit4Job.Repositories.Implementations
                 .Include(t => t.Creator)
                 .FirstOrDefaultAsync(t => t.Id == id && t.DeletedAt == null);
         }
-
-  
     }
 }

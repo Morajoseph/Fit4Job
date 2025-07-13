@@ -26,16 +26,7 @@
         [Display(Name = "Price")]
         public decimal? Price { get; set; } = 0;
 
-        [Required]
-        [Display(Name = "Track Questions")]
-        public int TrackQuestionsCount { get; set; } = 0;
-
-        [Required]
-        [Range(0, 99999999.99)]
-        [Display(Name = "Track Total Score")]
-        public decimal TrackTotalScore { get; set; }
-
-        public Track GetTrack(int userId)
+        public Track ToEntity(int userId)
         {
             return new Track()
             {
@@ -45,8 +36,6 @@
                 Description = this.Description,
                 IsPremium = this.IsPremium,
                 Price = this.Price,
-                TrackQuestionsCount = this.TrackQuestionsCount,
-                TrackTotalScore = this.TrackTotalScore
             };
         }
     }

@@ -28,7 +28,7 @@ namespace Fit4Job.ViewModels.TracksViewModels
         [Display(Name = "Track Total Score")]
         public decimal TrackTotalScore { get; set; }
 
-        public TrackQuestionsDetailsViewModel TrackDetails { get; set; }
+        public TrackQuestionsDetailsViewModel? TrackDetails { get; set; }
 
         public TrackViewModel()
         {

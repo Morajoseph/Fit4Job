@@ -2,6 +2,7 @@
 global using Fit4Job.Enums;
 global using Fit4Job.Models;
 global using Fit4Job.DataContext;
+global using Fit4Job.DTOs.TracksDTOs;
 global using Fit4Job.ViewModels.Responses;
 global using Fit4Job.Repositories.Generic;
 global using Fit4Job.DTOs.AuthorizationDTOs;
