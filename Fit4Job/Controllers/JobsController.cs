@@ -31,12 +31,9 @@ namespace Fit4Job.Controllers
             if (job.DeletedAt != null)
             {
                 return ApiResponseHelper.Error<string>(ErrorCode.BadRequest, "Job is already deleted.");
-
             }
             job.DeletedAt = DateTime.UtcNow;
             job.UpdatedAt = DateTime.UtcNow;
-
-
             _unitOfWork.JobRepository.Update(job);
             await _unitOfWork.CompleteAsync();
 
@@ -46,19 +43,24 @@ namespace Fit4Job.Controllers
         [HttpPatch("{id}/activate")]
         public async Task<ApiResponse<JobViewModel>> ActivateJob(int id)
         {
-            var job = await _unitOfWork.JobRepository.ActivateJobAsync(id);
+            var job = await _unitOfWork.JobRepository.GetByIdAsync(id);
             if (job == null)
+            {
                 return ApiResponseHelper.Error<JobViewModel>(ErrorCode.NotFound, "Job not found or deleted.");
+            }
 
+            if (job.DeletedAt == null)
+            {
+                return ApiResponseHelper.Error<JobViewModel>(ErrorCode.BadRequest, "Job is already deleted.");
+            }
+
+            job.DeletedAt = null;
+            job.UpdatedAt = DateTime.UtcNow;
+            _unitOfWork.JobRepository.Update(job);
             await _unitOfWork.CompleteAsync();
 
             var jobVm = new JobViewModel(job);
             return ApiResponseHelper.Success(jobVm);
         }
-
-
-
-
-
     }
 }

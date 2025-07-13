@@ -10,21 +10,15 @@
         public async Task<IEnumerable<Job>> GetActiveJobsAsync()
         {
             return await _context.Jobs
-                .Where(j => j.IsActive)
+                .Where(j => j.IsActive && j.DeletedAt == null)
+                .AsNoTracking()
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Job>> GetActiveJobsByTypeAsync(JobType jobType)
+        public async Task<IEnumerable<Job>> GetJobsByTypeAsync(JobType jobType)
         {
             return await _context.Jobs
                 .Where(j => j.JobType == jobType)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Job>> GetDeletedJobsAsync()
-        {
-            return await _context.Jobs
-                .Where(j => j.DeletedAt != null)
                 .ToListAsync();
         }
 
@@ -35,33 +29,22 @@
                 .ToListAsync();
         }
 
-
-
-        public async Task<IEnumerable<Job>> GetJobsByWorkLocationTypeAsync(WorkLocationType workLocationType)
-        {
-            return await _context.Jobs
-                .Where(j => j.WorkLocationType == workLocationType && j.DeletedAt == null)
-                .ToListAsync();
-        }
-
-
-        public async Task<IEnumerable<Job>> GetRecentJobsAsync(int count = 10)
+        public async Task<IEnumerable<Job>> GetRecentActiveJobsAsync(int count = 10)
         {
             return await _context.Jobs
                 .Where(j => j.IsActive && j.DeletedAt == null)
                 .OrderByDescending(j => j.CreatedAt)
                 .Take(count)
+                .AsNoTracking()
                 .ToListAsync();
         }
-
-
 
         public async Task<IEnumerable<Job>> SearchJobsAsync(string keyword)
         {
             keyword = keyword.ToLower();
             return await _context.Jobs
-                .Where(j => (j.Title.ToLower().Contains(keyword) || j.Summary.ToLower().Contains(keyword))
-                    && j.IsActive && j.DeletedAt == null)
+                .Where(j => (j.Title.ToLower().Contains(keyword) || j.Summary.ToLower().Contains(keyword)) && j.IsActive && j.DeletedAt == null)
+                .AsNoTracking()
                 .ToListAsync();
         }
 
@@ -72,7 +55,6 @@
             {
                 return false;
             }
-
             job.DeletedAt = DateTime.UtcNow;
             return true;
         }
@@ -84,27 +66,8 @@
             {
                 return false;
             }
-
             job.DeletedAt = null;
-
             return true;
         }
-
-
-        public async Task<Job?> ActivateJobAsync(int jobId)
-        {
-            var job = await _context.Jobs.FindAsync(jobId);
-            if (job == null || job.DeletedAt != null)
-                return null;
-
-            job.IsActive = true;
-            job.UpdatedAt = DateTime.UtcNow;
-
-            _context.Jobs.Update(job);
-
-            return job;
-        }
-
-
     }
 }
