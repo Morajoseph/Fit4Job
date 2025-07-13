@@ -1,5 +1,7 @@
-﻿using Fit4Job.UoW;
+﻿using Fit4Job.Models;
+using Fit4Job.UoW;
 using Fit4Job.ViewModels.JobsViewModels;
+using Fit4Job.ViewModels.TrackAttemptsViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fit4Job.Controllers
@@ -18,6 +20,46 @@ namespace Fit4Job.Controllers
             _userManager = userManager;
         }
         /* ****************************************** Endpoints ****************************************** */
+
+
+        //Retrieve all jobs.
+
+        [HttpGet]
+        public async Task<ApiResponse<IEnumerable<JobViewModel>>> GetAll()
+        {
+            var jobs = await _unitOfWork.JobRepository.GetAllAsync();
+            var data = jobs.Select(t => JobViewModel.GetViewModel(t));
+            return ApiResponseHelper.Success(data);
+        }
+
+        //Retrieve a specific job by its ID.
+
+        [HttpGet("{id:int}")]
+        public async Task<ApiResponse<JobViewModel>> GetById(int id)
+        {
+            var job = await _unitOfWork.JobRepository.GetByIdAsync(id);
+            if (job == null)
+            {
+                return ApiResponseHelper.Error<JobViewModel>(ErrorCode.NotFound, "Not Found or invalid ID");
+            }
+            return ApiResponseHelper.Success(new JobViewModel(job));
+        }
+
+        //Retrieve all jobs posted by a specific company.
+
+        [HttpGet("company/{companyId:int}")]
+        public async Task<ApiResponse<IEnumerable<JobViewModel>>> GetAllByCompanyID (int companyId)
+        {
+            var jobs = await _unitOfWork.JobRepository.GetJobsByCompanyIdAsync(companyId);
+            if (!jobs.Any())
+            {
+                return ApiResponseHelper.Error<IEnumerable<JobViewModel>>(ErrorCode.NotFound, "No jobs found for this company.");
+            }
+
+            
+            var data = jobs.Select(t => JobViewModel.GetViewModel(t));
+            return ApiResponseHelper.Success(data);
+        }
 
 
         [HttpDelete("{id:int}")]
