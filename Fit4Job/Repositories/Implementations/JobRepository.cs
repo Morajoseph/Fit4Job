@@ -1,6 +1,4 @@
-﻿
-
-namespace Fit4Job.Repositories.Implementations
+﻿namespace Fit4Job.Repositories.Implementations
 {
     public class JobRepository : GenericRepository<Job>, IJobRepository
     {
@@ -11,32 +9,39 @@ namespace Fit4Job.Repositories.Implementations
 
         public async Task<IEnumerable<Job>> GetActiveJobsAsync()
         {
-           return await _context.Jobs.Where(j=>j.IsActive).ToListAsync();
-
+            return await _context.Jobs
+                .Where(j => j.IsActive)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Job>> GetActiveJobsByTypeAsync(JobType jobType)
         {
-       return await _context.Jobs.Where(j=>j.JobType == jobType).ToListAsync();
+            return await _context.Jobs
+                .Where(j => j.JobType == jobType)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Job>> GetDeletedJobsAsync()
         {
-            return await _context.Jobs.Where(j => j.DeletedAt != null).ToListAsync();
+            return await _context.Jobs
+                .Where(j => j.DeletedAt != null)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Job>> GetJobsByCompanyIdAsync(int companyId)
         {
-            return await _context.Jobs.Where(j=>j.CompanyId ==companyId && j.DeletedAt == null).ToListAsync();
+            return await _context.Jobs
+                .Where(j => j.CompanyId == companyId && j.DeletedAt == null)
+                .ToListAsync();
         }
 
-     
+
 
         public async Task<IEnumerable<Job>> GetJobsByWorkLocationTypeAsync(WorkLocationType workLocationType)
         {
             return await _context.Jobs
-             .Where(j => j.WorkLocationType == workLocationType && j.DeletedAt == null)
-             .ToListAsync();
+                .Where(j => j.WorkLocationType == workLocationType && j.DeletedAt == null)
+                .ToListAsync();
         }
 
 
@@ -49,7 +54,7 @@ namespace Fit4Job.Repositories.Implementations
                 .ToListAsync();
         }
 
-       
+
 
         public async Task<IEnumerable<Job>> SearchJobsAsync(string keyword)
         {
@@ -64,11 +69,11 @@ namespace Fit4Job.Repositories.Implementations
         {
             var job = await _context.Jobs.FindAsync(jobId);
             if (job == null || job.DeletedAt != null)
+            {
                 return false;
+            }
 
             job.DeletedAt = DateTime.UtcNow;
-            _context.Jobs.Update(job);
-            await _context.SaveChangesAsync();
             return true;
         }
 
@@ -76,12 +81,12 @@ namespace Fit4Job.Repositories.Implementations
         {
             var job = await _context.Jobs.FindAsync(jobId);
             if (job == null || job.DeletedAt == null)
+            {
                 return false;
+            }
 
             job.DeletedAt = null;
-           
-            _context.Jobs.Update(job);
-            await _context.SaveChangesAsync();
+
             return true;
         }
 
