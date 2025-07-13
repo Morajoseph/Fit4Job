@@ -50,20 +50,20 @@
 
         [NotMapped]
         [Display(Name = "Category Skills")]
-        public List<int> CategorySkills
+        public List<string> CategorySkills
         {
             get
             {
                 if (string.IsNullOrEmpty(Skills))
-                    return new List<int>();
+                    return new List<string>();
 
                 try
                 {
-                    return JsonSerializer.Deserialize<List<int>>(Skills) ?? new List<int>();
+                    return JsonSerializer.Deserialize<List<string>>(Skills) ?? new List<string>();
                 }
                 catch
                 {
-                    return new List<int>();
+                    return new List<string>();
                 }
             }
             set
