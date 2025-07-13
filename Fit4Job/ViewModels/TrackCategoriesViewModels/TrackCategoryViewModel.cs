@@ -15,7 +15,7 @@
         public string? Description { get; set; }
 
         [Display(Name = "Category Skills")]
-        public List<int> CategorySkills { get; set; }
+        public List<string> CategorySkills { get; set; }
 
         public TrackCategoryViewModel()
         {
