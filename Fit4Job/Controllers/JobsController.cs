@@ -1,7 +1,10 @@
-﻿using Fit4Job.Models;
+﻿using Fit4Job.DTOs.JobsDTOs;
+using Fit4Job.DTOs.TracksDTOs;
+using Fit4Job.Models;
 using Fit4Job.UoW;
 using Fit4Job.ViewModels.JobsViewModels;
 using Fit4Job.ViewModels.TrackAttemptsViewModels;
+using Fit4Job.ViewModels.TracksViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fit4Job.Controllers
@@ -59,6 +62,57 @@ namespace Fit4Job.Controllers
             
             var data = jobs.Select(t => JobViewModel.GetViewModel(t));
             return ApiResponseHelper.Success(data);
+        }
+
+
+        /*
+                 POST /api/jobs
+
+                Description: Create a new job posting.
+
+                Request Body: Job object with all required fields.
+
+                PUT /api/jobs/{id}
+
+                Description: Update an existing job completely.
+
+                Parameters: id (required) - Job ID to update.
+         */
+
+        [HttpPost]
+        public async Task<ApiResponse<JobViewModel>> Create(CreateJobDTO createJobDTO)
+        {
+            if (createJobDTO == null || !ModelState.IsValid)
+            {
+                return ApiResponseHelper.Error<JobViewModel>(ErrorCode.BadRequest, "Invalid data");
+            }
+
+            var job = createJobDTO.ToEntity();
+            await _unitOfWork.JobRepository.AddAsync(job);
+            await _unitOfWork.CompleteAsync();
+
+            return ApiResponseHelper.Success(JobViewModel.GetViewModel(job), "Created successfully");
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<ApiResponse<JobViewModel>> Update(int id,EditJobDTO editJobDTO)
+        {
+            if (editJobDTO == null || !ModelState.IsValid)
+            {
+                return ApiResponseHelper.Error<JobViewModel>(ErrorCode.BadRequest, "Invalid data");
+            }
+
+            var job = await _unitOfWork.JobRepository.GetByIdAsync(id);
+            if (job == null)
+            {
+                return ApiResponseHelper.Error<JobViewModel>(ErrorCode.NotFound, "Job not found");
+            }
+
+            editJobDTO.UpdateEntity(job);
+            _unitOfWork.JobRepository.Update(job);
+            await _unitOfWork.CompleteAsync();
+
+            return ApiResponseHelper.Success(JobViewModel.GetViewModel(job), "Created successfully");
         }
 
 

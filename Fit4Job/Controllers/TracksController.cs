@@ -113,11 +113,7 @@ namespace Fit4Job.Controllers
         [HttpPut("{id:int}")]
         public async Task<ApiResponse<TrackViewModel>> UpdateTracke(int id, EditTrackDTO editTrackDTO)
         {
-            if (editTrackDTO == null)
-            {
-                return ApiResponseHelper.Error<TrackViewModel>(ErrorCode.BadRequest, "Invalid data");
-            }
-            if (!ModelState.IsValid)
+            if (editTrackDTO == null || !ModelState.IsValid)
             {
                 return ApiResponseHelper.Error<TrackViewModel>(ErrorCode.BadRequest, "Invalid data");
             }
