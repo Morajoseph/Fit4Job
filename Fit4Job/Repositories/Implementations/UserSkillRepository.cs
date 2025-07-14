@@ -11,7 +11,7 @@
         {
             return await _context.UserSkills
                 .Include(us => us.Skill)  
-                .Where(us => us.UserId == userId && us.DeletedAt == null)
+                .Where(us => us.UserId == userId )
                 .ToListAsync();
         }
 

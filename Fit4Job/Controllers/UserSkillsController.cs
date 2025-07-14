@@ -35,8 +35,14 @@ namespace Fit4Job.Controllers
                 return ApiResponseHelper.Error<IEnumerable<SkillViewModel>>(ErrorCode.NotFound, "No skills found for this user.");
             }
 
-            var data = skills.Select(t => SkillViewModel.GetViewModel(t.Skill));
+            var data = skills.Select(t =>
+            {
+                var vm = SkillViewModel.GetViewModel(t.Skill);
+                vm.IsActive = t.DeletedAt == null;
+                return vm;
+            });
             return ApiResponseHelper.Success(data);
+
         }
 
 
