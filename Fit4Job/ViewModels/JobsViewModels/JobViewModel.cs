@@ -39,6 +39,7 @@
 
         public JobViewModel(Job job)
         {
+            this.Id = job.Id;
             this.CompanyId = job.CompanyId ;
             this .Title = job.Title ;
             this.JobType = job.JobType;
