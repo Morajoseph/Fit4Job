@@ -1,4 +1,5 @@
-﻿using Fit4Job.Services.Interfaces;
+﻿using Fit4Job.DTOs.AuthorizationDTOs;
+using Fit4Job.Services.Interfaces;
 
 namespace Fit4Job.Controllers
 {
@@ -73,6 +74,24 @@ namespace Fit4Job.Controllers
                 return ApiResponseHelper.Error<bool>(ErrorCode.InvalidCredentials, $"Email verification failed: {details}");
             }
             return ApiResponseHelper.Success(true, "Email verified successfully.");
+        }
+
+        [HttpPost("Verification-Code/Resend")]
+        public async Task<ApiResponse<bool>> ResendVerificationCode(string email)
+        {
+            var user = await FindUserByEmailOrUsernameAsync(email);
+            if (user == null)
+            {
+                return ApiResponseHelper.Success(true);
+            }
+
+            var code = await EmailConfirmation(user, user.UserName ?? email);
+            if (code == null)
+            {
+                return ApiResponseHelper.Error<bool>(ErrorCode.UnknownError, "Failed to generate verification code.");
+            }
+
+            return ApiResponseHelper.Success(true);
         }
 
         [HttpPost("Registration/Admin")]
