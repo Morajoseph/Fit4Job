@@ -21,10 +21,32 @@
         [Display(Name = "Task Submission Id")]
         public int? TaskSubmissionId { get; set; }
 
+        [Required(ErrorMessage = "Job application status is required")]
+        [Display(Name = "Application Status", Description = "Current status of the job application")]
+        [EnumDataType(typeof(JobApplicationStatus), ErrorMessage = "Invalid job application status")]
+        public JobApplicationStatus Status { get; set; } = JobApplicationStatus.Incomplete;
+
+
         [Required]
         [DataType(DataType.DateTime)]
         [Display(Name = "Applied At")]
         public DateTime AppliedAt { get; set; } = DateTime.UtcNow;
+
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        [Display(Name = "Created At")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        [Display(Name = "Updated At")]
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+
+        [DataType(DataType.DateTime)]
+        [Display(Name = "Deleted At")]
+        public DateTime? DeletedAt { get; set; }
 
 
         // Navigation properties
