@@ -53,12 +53,12 @@
 
         [Display(Name = "Salary Range (Optional)")]
         [StringLength(50, ErrorMessage = "Salary range must not exceed 50 characters")]
-        [RegularExpression(@"^[\d,\$\s\-\.]+$", ErrorMessage = "Please enter a valid salary range (e.g., $80,000 - $120,000)")]
+        //[RegularExpression(@"^[\d,\$\s\-\.]+$", ErrorMessage = "Please enter a valid salary range (e.g., $80,000 - $120,000)")]
         public string? SalaryRange { get; set; }
 
         [Display(Name = "Years of Experience (Optional)")]
         [StringLength(30, ErrorMessage = "Experience range must not exceed 30 characters")]
-        [RegularExpression(@"^[\d\s\-\+years]+$", ErrorMessage = "Please enter a valid experience range (e.g., 3-5 years)")]
+        //[RegularExpression(@"^[\d\s\-\+years]+$", ErrorMessage = "Please enter a valid experience range (e.g., 3-5 years)")]
         public string? YearsOfExperience { get; set; }
 
         [Required]
