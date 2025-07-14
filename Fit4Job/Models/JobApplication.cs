@@ -26,12 +26,10 @@
         [EnumDataType(typeof(JobApplicationStatus), ErrorMessage = "Invalid job application status")]
         public JobApplicationStatus Status { get; set; } = JobApplicationStatus.Incomplete;
 
-
         [Required]
         [DataType(DataType.DateTime)]
         [Display(Name = "Applied At")]
         public DateTime AppliedAt { get; set; } = DateTime.UtcNow;
-
 
         [Required]
         [DataType(DataType.DateTime)]
@@ -43,11 +41,9 @@
         [Display(Name = "Updated At")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-
         [DataType(DataType.DateTime)]
         [Display(Name = "Deleted At")]
         public DateTime? DeletedAt { get; set; }
-
 
         // Navigation properties
 
