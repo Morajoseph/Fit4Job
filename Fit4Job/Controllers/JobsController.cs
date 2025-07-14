@@ -119,7 +119,7 @@ namespace Fit4Job.Controllers
 
             if (job.DeletedAt == null)
             {
-                return ApiResponseHelper.Error<JobViewModel>(ErrorCode.BadRequest, "Job is already deleted.");
+                return ApiResponseHelper.Error<JobViewModel>(ErrorCode.BadRequest, "Job is already active.");
             }
 
             job.DeletedAt = null;
