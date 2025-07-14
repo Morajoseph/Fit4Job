@@ -1,4 +1,7 @@
 using Fit4Job.Middlewares;
+using Fit4Job.Services;
+using Fit4Job.Services.Implementations;
+using Fit4Job.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -83,7 +86,12 @@ namespace Fit4Job
                 options.UseSqlServer(builder.Configuration.GetConnectionString("GlobalConnectionString"));
             });
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>()
+            builder.Services
+                .AddIdentity<ApplicationUser, IdentityRole<int>>(options =>
+                {
+                    options.SignIn.RequireConfirmedEmail = true;
+                    options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+                })
                 .AddEntityFrameworkStores<Fit4JobDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -99,6 +107,8 @@ namespace Fit4Job
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddScoped<GlobalErrorHandlerMiddleware>();
+
+            builder.Services.AddScoped<IEmailService, EmailService>();
 
             /********************************************************************************/
 

@@ -19,6 +19,7 @@
         RateLimitExceeded = 112,     // Too many requests
         EmailAlreadyExists = 120,    // Used in registration
         UsernameAlreadyExists = 121, // Used in registration
-        InvalidCredentials = 122     // Login failure
+        InvalidCredentials = 122,     // Login failure
+        EmailNotConfirmed = 123
     }
 }
