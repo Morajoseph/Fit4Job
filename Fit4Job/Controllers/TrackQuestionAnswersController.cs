@@ -90,7 +90,44 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(answerViewModel, "Answer Submited successfully");
         }
 
+        // 5 - Update an existing track question answer.
+        [HttpPut("{id:int}")]
+        public async Task<ApiResponse<TrackQuestionAnswerViewModel>> Update(int id, EditTrackQuestionAnswerDTO editQuestionAnswerDTO)
+        {
+            // Still Need to complet it's logic.
 
+            if (editQuestionAnswerDTO == null || !ModelState.IsValid)
+            {
+                return ApiResponseHelper.Error<TrackQuestionAnswerViewModel>(ErrorCode.BadRequest, "Invalid data");
+            }
+            var questionAnswer = await unitOfWork.TrackQuestionAnswerRepository.GetByIdAsync(id);
+            if(questionAnswer == null)
+            {
+                return ApiResponseHelper.Error<TrackQuestionAnswerViewModel>(ErrorCode.NotFound, "Question Answer not found");
+            }
+            editQuestionAnswerDTO.UpdateEntity(questionAnswer);
+            unitOfWork.TrackQuestionAnswerRepository.Update(questionAnswer);
+            await unitOfWork.CompleteAsync();
+
+            return ApiResponseHelper.Success(TrackQuestionAnswerViewModel.GetViewModel(questionAnswer), "Updated successfully");
+
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ApiResponse<bool>> Delete(int id)
+        {
+            // Still Need to complet it's logic.
+
+            var questionAnswer = await unitOfWork.TrackQuestionAnswerRepository.GetByIdAsync(id);
+            if(questionAnswer == null)
+            {
+                return ApiResponseHelper.Error<bool>(ErrorCode.NotFound, "Question Answer not found");
+            }
+            unitOfWork.TrackQuestionAnswerRepository.Delete(questionAnswer);
+            await unitOfWork.CompleteAsync();
+
+            return ApiResponseHelper.Success(true, "Deleted successfully");
+        }
 
         /* *************************************** Helper Methods **************************************** */
 

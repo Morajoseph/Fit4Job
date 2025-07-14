@@ -1,11 +1,5 @@
 ﻿using Fit4Job.DTOs.JobsDTOs;
-using Fit4Job.DTOs.TracksDTOs;
-using Fit4Job.Models;
-using Fit4Job.UoW;
 using Fit4Job.ViewModels.JobsViewModels;
-using Fit4Job.ViewModels.TrackAttemptsViewModels;
-using Fit4Job.ViewModels.TracksViewModels;
-using Microsoft.EntityFrameworkCore;
 
 namespace Fit4Job.Controllers
 {
@@ -22,10 +16,8 @@ namespace Fit4Job.Controllers
             _unitOfWork = unitOfWork;
             _userManager = userManager;
         }
+
         /* ****************************************** Endpoints ****************************************** */
-
-
-        //Retrieve all jobs.
 
         [HttpGet]
         public async Task<ApiResponse<IEnumerable<JobViewModel>>> GetAll()
@@ -34,8 +26,6 @@ namespace Fit4Job.Controllers
             var data = jobs.Select(t => JobViewModel.GetViewModel(t));
             return ApiResponseHelper.Success(data);
         }
-
-        //Retrieve a specific job by its ID.
 
         [HttpGet("{id:int}")]
         public async Task<ApiResponse<JobViewModel>> GetById(int id)
@@ -47,8 +37,6 @@ namespace Fit4Job.Controllers
             }
             return ApiResponseHelper.Success(new JobViewModel(job));
         }
-
-        //Retrieve all jobs posted by a specific company.
 
         [HttpGet("company/{companyId:int}")]
         public async Task<ApiResponse<IEnumerable<JobViewModel>>> GetAllByCompanyID (int companyId)
@@ -63,21 +51,6 @@ namespace Fit4Job.Controllers
             var data = jobs.Select(t => JobViewModel.GetViewModel(t));
             return ApiResponseHelper.Success(data);
         }
-
-
-        /*
-                 POST /api/jobs
-
-                Description: Create a new job posting.
-
-                Request Body: Job object with all required fields.
-
-                PUT /api/jobs/{id}
-
-                Description: Update an existing job completely.
-
-                Parameters: id (required) - Job ID to update.
-         */
 
         [HttpPost]
         public async Task<ApiResponse<JobViewModel>> Create(CreateJobDTO createJobDTO)
@@ -112,9 +85,8 @@ namespace Fit4Job.Controllers
             _unitOfWork.JobRepository.Update(job);
             await _unitOfWork.CompleteAsync();
 
-            return ApiResponseHelper.Success(JobViewModel.GetViewModel(job), "Created successfully");
+            return ApiResponseHelper.Success(JobViewModel.GetViewModel(job), "Updated successfully");
         }
-
 
         [HttpDelete("{id:int}")]
         public async Task<ApiResponse<string>> SoftDelete(int id)
