@@ -101,36 +101,121 @@ namespace Fit4Job.Controllers
 
 
 
-        //[HttpPut("{id}")]
-        //public async Task<ApiResponse<SkillViewModel>> UpdateSkill(int id, EditSkillDTO editSkillDTO)
-        //{
+        [HttpPut("{id}")]
+        public async Task<ApiResponse<SkillViewModel>> UpdateSkill(int id, EditSkillDTO editSkillDTO)
+        {
+            if (editSkillDTO == null || !ModelState.IsValid)
+            {
+                return ApiResponseHelper.Error<SkillViewModel>(ErrorCode.BadRequest, "Invalid data");
+            }
+
+            var skill = await _unitOfWork.SkillRepository.GetByIdAsync(id);
+            if (skill == null)
+            {
+                return ApiResponseHelper.Error<SkillViewModel>(ErrorCode.NotFound, "skill not found");
+            }
+
+            editSkillDTO.UpdateEntity(skill);
+            _unitOfWork.SkillRepository.Update(skill);
+            await _unitOfWork.CompleteAsync();
+
+            return ApiResponseHelper.Success(SkillViewModel.GetViewModel(skill), "Updated successfully");
+
+        }
 
 
 
 
-        //}
+
+        [HttpDelete("{id}")]
+        public async Task<ApiResponse<string>> DeleteSkill(int id)
+        {
+            var skill = await _unitOfWork.SkillRepository.GetByIdAsync(id);
+            if (skill == null)
+            {
+                return ApiResponseHelper.Error<string>(ErrorCode.NotFound, "skill not found.");
+            }
+            if (skill.DeletedAt != null)
+            {
+                return ApiResponseHelper.Error<string>(ErrorCode.BadRequest, "skill is already deleted.");
+            }
+            skill.DeletedAt = DateTime.UtcNow;
+
+            _unitOfWork.SkillRepository.Update(skill);
+            await _unitOfWork.CompleteAsync();
+
+            return ApiResponseHelper.Success("skill is deleted successfully.");
+
+        }
 
 
 
 
 
-        //[HttpDelete("{id}")]
-        //public async Task<ApiResponse<bool>> DeleteSkill(int id)
-        //{
+        [HttpPatch("{id}/activate")]
+        public async Task<ApiResponse<SkillViewModel>> ActivateSkill(int id)
+        {
+            var skill = await _unitOfWork.SkillRepository.GetByIdAsync(id);
+            if (skill == null)
+            {
+                return ApiResponseHelper.Error<SkillViewModel>(ErrorCode.NotFound, "skill not found or deleted.");
+            }
 
-        //}
+            if (skill.DeletedAt == null)
+            {
+                return ApiResponseHelper.Error<SkillViewModel>(ErrorCode.BadRequest, "skill is already active.");
+            }
 
-        //[HttpPost("{id}/activate")]
-        //public async Task<ApiResponse<bool>> ActivateSkill(int id)
-        //{
+            skill.DeletedAt = null;
+            _unitOfWork.SkillRepository.Update(skill);
+            await _unitOfWork.CompleteAsync();
 
-        //}
+            var skillVm = new SkillViewModel(skill);
+            return ApiResponseHelper.Success(skillVm);
 
-        //[HttpPost("{id}/deactivate")]
-        //public async Task<ApiResponse<bool>> DeactivateSkill(int id)
-        //{
+        }
 
-        //}
+
+
+
+
+
+
+
+        [HttpPatch("{id}/deactivate")]
+        public async Task<ApiResponse<SkillViewModel>> DeactivateSkill(int id)
+        {
+            var skill = await _unitOfWork.SkillRepository.GetByIdAsync(id);
+            if (skill == null)
+            {
+                return ApiResponseHelper.Error<SkillViewModel>(ErrorCode.NotFound, "Skill not found.");
+            }
+
+            if (skill.DeletedAt != null)
+            {
+                return ApiResponseHelper.Error<SkillViewModel>(ErrorCode.BadRequest, "Skill is already deactivated.");
+            }
+
+            skill.DeletedAt = DateTime.UtcNow; 
+            _unitOfWork.SkillRepository.Update(skill);
+            await _unitOfWork.CompleteAsync();
+
+            var skillVm = new SkillViewModel(skill);
+            return ApiResponseHelper.Success(skillVm);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 }
