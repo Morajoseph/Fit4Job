@@ -60,21 +60,21 @@ namespace Fit4Job.Controllers
         public async Task<ApiResponse<IEnumerable<SkillViewModel>>> SearchSkills(string keyword)
         {
             var skills = await _unitOfWork.SkillRepository.GetAllAsync();
-            var seachedSkills = skills.Where(s => s.Name.Contains(keyword)).ToList();
 
             if (!skills.Any())
             {
                 return ApiResponseHelper.Error<IEnumerable<SkillViewModel>>(ErrorCode.NotFound, "No skills found.");
             }
 
+            keyword = keyword.Trim();
 
-            var data = skills.Select(s => SkillViewModel.GetViewModel(s));
+            var seachedSkills = skills
+      .Where(s => s.Name != null && s.Name.ToLower().Contains(keyword.ToLower()))
+      .ToList();
+
+            var data = seachedSkills.Select(s => SkillViewModel.GetViewModel(s));
             return ApiResponseHelper.Success(data);
-
-
         }
-
-
 
 
 
