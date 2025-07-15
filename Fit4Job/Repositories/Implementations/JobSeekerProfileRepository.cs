@@ -7,6 +7,11 @@
 
         }
 
+        public async Task<JobSeekerProfile?> GetByUserIdAsync(int userId)
+        {
+            return await _context.JobSeekerProfiles
+                .FirstOrDefaultAsync(jp => jp.UserId == userId);
+        }
 
         public async Task<JobSeekerProfile?> GetProfileByUserIdAsync(int userId)
         {

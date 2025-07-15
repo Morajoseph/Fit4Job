@@ -6,7 +6,11 @@
         {
 
         }
-
+        public async Task<CompanyProfile?> GetByUserIdAsync(int userId)
+        {
+            return await _context.CompanyProfiles
+                .FirstOrDefaultAsync(ap => ap.UserId == userId);
+        }
         public async Task<CompanyProfile?> GetCompanyByUserIdAsync(int userId)
         {
             return await _context.CompanyProfiles.FirstOrDefaultAsync(c => c.UserId == userId);

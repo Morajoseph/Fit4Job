@@ -50,7 +50,7 @@ namespace Fit4Job.Controllers
             }
 
             var token = await GenerateJwtTokenAsync(user, loginDTO.RememberMe); // Generate JWT token
-            return ApiResponseHelper.Success(LoginViewModel.GetViewModel(token, user));
+            return ApiResponseHelper.Success(LoginViewModel.GetViewModel(token, user, await GetUserProfileId(user)));
         }
 
         [HttpPost("Verification")]
@@ -248,7 +248,7 @@ namespace Fit4Job.Controllers
             }
 
             var token = await GenerateJwtTokenAsync(user, loginDTO.RememberMe); // Generate JWT token
-            return ApiResponseHelper.Success(LoginViewModel.GetViewModel(token, user));
+            return ApiResponseHelper.Success(LoginViewModel.GetViewModel(token, user, await GetUserProfileId(user)));
         }
 
 
@@ -371,6 +371,26 @@ namespace Fit4Job.Controllers
             };
             await _unitOfWork.JobSeekerProfileRepository.AddAsync(jobSeeker);
             await _unitOfWork.CompleteAsync();
+        }
+        private async Task<int> GetUserProfileId(ApplicationUser user)
+        {
+            int profileId = 0;
+            if (user.Role == UserRole.Admin)
+            {
+                var adminProfile = await _unitOfWork.AdminProfileRepository.GetByUserIdAsync(user.Id);
+                profileId = adminProfile?.Id ?? 0;
+            }
+            else if (user.Role == UserRole.Company)
+            {
+                var companyProfile = await _unitOfWork.CompanyProfileRepository.GetByUserIdAsync(user.Id);
+                profileId = companyProfile?.Id ?? 0;
+            }
+            else if (user.Role == UserRole.JobSeeker)
+            {
+                var jobSeekerProfile = await _unitOfWork.JobSeekerProfileRepository.GetByUserIdAsync(user.Id);
+                profileId = jobSeekerProfile?.Id ?? 0;
+            }
+            return profileId;
         }
     }
 }
