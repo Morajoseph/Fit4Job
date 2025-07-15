@@ -119,7 +119,49 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success("task is deleted successfully.");
         }
 
-       
+        [HttpGet("available")]
+       // [Authorize(Roles = "JobSeeker")]
+        public async Task<ApiResponse<IEnumerable<CompanyTaskViewModel>>> GetAvailableTasks()
+        {
+            
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return ApiResponseHelper.Error<IEnumerable<CompanyTaskViewModel>>(ErrorCode.Unauthorized, "User not found");
+            }
+
+            var allJobApplications = await _unitOfWork.JobApplicationRepository.GetAllAsync();
+            var userJobApplications = allJobApplications.Where(ja => ja.UserId == currentUser.Id); 
+
+            var appliedJobIds = userJobApplications.Select(ja => ja.JobId).ToList();
+
+            if (!appliedJobIds.Any())
+            {
+                return ApiResponseHelper.Success(Enumerable.Empty<CompanyTaskViewModel>());
+            }
+
+          
+            var allTasks = await _unitOfWork.CompanyTaskRepository.GetAllAsync();
+            var availableTasks = allTasks.Where(ct =>
+                appliedJobIds.Contains(ct.JobId) &&
+                ct.DeletedAt == null &&
+                ct.IsActive &&
+                !ct.IsExpired);
+
+            var allSubmissions = await _unitOfWork.CompanyTaskSubmissionRepository.GetAllAsync();
+            var userSubmittedTasks = allSubmissions.Where(ts => ts.UserId == currentUser.Id);
+
+            var submittedTaskIds = userSubmittedTasks.Select(ts => ts.TaskId).ToList(); 
+
+            var filteredTasks = availableTasks
+                .Where(ct => !submittedTaskIds.Contains(ct.Id))
+                .OrderBy(ct => ct.Deadline)
+                .ToList();
+
+            var data = filteredTasks.Select(t => CompanyTaskViewModel.GetViewModel(t));
+
+            return ApiResponseHelper.Success(data);
+        }
 
     }
 }
