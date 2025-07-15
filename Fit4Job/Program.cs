@@ -109,6 +109,7 @@ namespace Fit4Job
             builder.Services.AddScoped<GlobalErrorHandlerMiddleware>();
 
             builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<ISkillsService, SkillsService>();
 
             /********************************************************************************/
 

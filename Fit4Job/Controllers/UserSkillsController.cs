@@ -64,7 +64,7 @@ namespace Fit4Job.Controllers
                     ErrorCode.NotFound, "Skill not found.");
             }
 
-            
+
             var existing = await _unitOfWork.UserSkillRepository
                 .GetActiveUserSkillAsync(userId, skillId);
             if (existing != null)
@@ -73,7 +73,7 @@ namespace Fit4Job.Controllers
                     ErrorCode.Conflict, "Skill is already added to the user.");
             }
 
-            
+
             var userSkill = new UserSkill
             {
                 UserId = userId,
@@ -84,7 +84,7 @@ namespace Fit4Job.Controllers
             await _unitOfWork.UserSkillRepository.AddAsync(userSkill);
             await _unitOfWork.CompleteAsync();
 
-           
+
             var result = SkillViewModel.GetViewModel(skill);
             return ApiResponseHelper.Success(result, "Skill added to user successfully.");
         }
@@ -101,7 +101,7 @@ namespace Fit4Job.Controllers
                     ErrorCode.NotFound, "User not found.");
             }
 
-            
+
             var skill = await _unitOfWork.SkillRepository.GetByIdAsync(skillId);
             if (skill == null)
             {
@@ -158,20 +158,19 @@ namespace Fit4Job.Controllers
                 return ApiResponseHelper.Error<bool>(ErrorCode.NotFound, "User not found.");
             }
 
-            
+
             var deletedUserSkill = await _unitOfWork.UserSkillRepository.GetDeletedUserSkillAsync(userId, skillId);
             if (deletedUserSkill == null)
             {
                 return ApiResponseHelper.Error<bool>(ErrorCode.NotFound, "No deleted skill found for this user.");
             }
 
-            
+
             deletedUserSkill.DeletedAt = null;
             _unitOfWork.UserSkillRepository.Update(deletedUserSkill);
             await _unitOfWork.CompleteAsync();
 
             return ApiResponseHelper.Success(true, "Skill restored for user successfully.");
-
         }
     }
 }
