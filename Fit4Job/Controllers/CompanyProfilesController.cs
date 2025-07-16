@@ -64,5 +64,30 @@ namespace Fit4Job.Controllers
 
 
 
+        [HttpPut("{id:int}")]
+        public async Task<ApiResponse<CompanyProfileViewModel>> Update(int id, EditCompanyProfileDTO editCompanyProfileDTO)
+        {
+            if (editCompanyProfileDTO == null || !ModelState.IsValid)
+            {
+                return ApiResponseHelper.Error<CompanyProfileViewModel>(ErrorCode.BadRequest, "Invalid data");
+            }
+
+            var companyProfile = await _unitOfWork.CompanyProfileRepository.GetByIdAsync(id);
+            if (companyProfile == null)
+            {
+                return ApiResponseHelper.Error<CompanyProfileViewModel>(ErrorCode.NotFound, "company not found");
+            }
+
+            editCompanyProfileDTO.UpdateEntity(companyProfile);
+            _unitOfWork.CompanyProfileRepository.Update(companyProfile);
+            await _unitOfWork.CompleteAsync();
+
+            return ApiResponseHelper.Success(CompanyProfileViewModel.GetViewModel(companyProfile), "Updated successfully");
+        }
+
+
+
+
+
     }
 }
