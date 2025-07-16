@@ -1,4 +1,6 @@
-﻿namespace Fit4Job.Repositories.Implementations
+﻿using Fit4Job.ViewModels.JobSeekerProfileViewModels;
+
+namespace Fit4Job.Repositories.Implementations
 {
     public class JobSeekerProfileRepository : GenericRepository<JobSeekerProfile>, IJobSeekerProfileRepository
     {
@@ -51,5 +53,55 @@
                 .Take(topN)
                 .ToListAsync();
         }
+
+        public async Task<PagedResultViewModel<JobSeekerProfile>> GetFilteredProfilesAsync(string? location, int? experienceYears, string? currentPosition, int page, int pageSize)
+        {
+            var query = _context.JobSeekerProfiles
+                .Include(p => p.User)
+                .Where(p => p.DeletedAt == null);
+
+            if (!string.IsNullOrEmpty(location))
+                query = query.Where(p => p.Location != null && p.Location.Contains(location));
+
+            if (experienceYears.HasValue)
+                query = query.Where(p => p.ExperienceYears >= experienceYears.Value);
+
+            if (!string.IsNullOrEmpty(currentPosition))
+                query = query.Where(p => p.CurrentPosition != null && p.CurrentPosition.Contains(currentPosition));
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(p => p.FirstName)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResultViewModel<JobSeekerProfile>
+            {
+                Items = items,
+                TotalCount = totalCount
+            };
+        }
+
+        public async Task<JobSeekerProfile?> GetWithUserByIdAsync(int id)
+        {
+            return await _context.JobSeekerProfiles
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task<JobSeekerProfile?> GetWithUserByUserIdAsync(int userId)
+        {
+            return await _context.JobSeekerProfiles
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.UserId == userId);
+        }
+
+
+
+
+
+
     }
 }
