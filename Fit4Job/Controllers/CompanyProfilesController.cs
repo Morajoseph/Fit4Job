@@ -24,7 +24,7 @@ namespace Fit4Job.Controllers
         public async Task<ApiResponse<IEnumerable<CompanyProfileViewModel>>> GetAllCompanyProfiles()
         {
 
-            var companyProfiles = await unitOfWork.CompanyProfileRepository.GetAllAsync();
+            var companyProfiles = await _unitOfWork.CompanyProfileRepository.GetAllAsync();
             var data = companyProfiles.Select(cp => CompanyProfileViewModel.GetViewModel(cp));
             return ApiResponseHelper.Success(data);
 
