@@ -1,6 +1,4 @@
-﻿using Fit4Job.Migrations;
-
-namespace Fit4Job.DTOs.JobApplicationsDTOs
+﻿namespace Fit4Job.DTOs.JobApplicationsDTOs
 {
     public class EditJobApplicationDTO
     {

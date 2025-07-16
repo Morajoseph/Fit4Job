@@ -177,7 +177,7 @@ namespace Fit4Job.Controllers
         }
 
         [HttpPost("Registration/JobSeeker")]
-        public async Task<ApiResponse<bool>> JobSeekerRegistration(JobSeekerRegistrationDTO registrationDTO)
+        public async Task<ApiResponse<bool>> JobSeekerRegistration([FromBody]JobSeekerRegistrationDTO registrationDTO)
         {
 
             if (!ModelState.IsValid)

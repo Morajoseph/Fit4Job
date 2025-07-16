@@ -21,5 +21,6 @@
         UsernameAlreadyExists = 121, // Used in registration
         InvalidCredentials = 122,     // Login failure
         EmailNotConfirmed = 123
+        
     }
 }

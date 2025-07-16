@@ -69,18 +69,15 @@
         [Column(TypeName = "bit")]
         public bool ShowResultsImmediately { get; set; } = false;
 
-        [Required(ErrorMessage = "Created date is required")]
         [DataType(DataType.DateTime)]
         [Display(Name = "Created At")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        [Required(ErrorMessage = "Updated date is required")]
         [DataType(DataType.DateTime)]
         [Display(Name = "Updated At")]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         [DataType(DataType.DateTime)]
-        [Column(TypeName = "timestamp")]
         [Display(Name = "Deleted At")]
         public DateTime? DeletedAt { get; set; }
 

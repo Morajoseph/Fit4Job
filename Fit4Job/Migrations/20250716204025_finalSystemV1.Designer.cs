@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fit4Job.Migrations
 {
     [DbContext(typeof(Fit4JobDbContext))]
-    [Migration("20250714013851_jobApplicationUpdate")]
-    partial class jobApplicationUpdate
+    [Migration("20250716204025_finalSystemV1")]
+    partial class finalSystemV1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -218,8 +218,8 @@ namespace Fit4Job.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<byte[]>("DeletedAt")
-                        .HasColumnType("timestamp");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
