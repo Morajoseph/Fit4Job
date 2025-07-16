@@ -89,5 +89,24 @@ namespace Fit4Job.Controllers
 
 
 
+
+        [HttpDelete("{id:int}")]
+        public async Task<ApiResponse<string>> SoftDelete(int id)
+        {
+            var companyExamQuestion = await _unitOfWork.CompanyExamQuestionRepository.GetByIdAsync(id);
+            if (companyExamQuestion == null)
+            {
+                return ApiResponseHelper.Error<string>(ErrorCode.NotFound, "company exam question  not found.");
+            }
+            if (companyExamQuestion.DeletedAt != null)
+            {
+                return ApiResponseHelper.Error<string>(ErrorCode.BadRequest, "company exam question  is already deleted.");
+            }
+            companyExamQuestion.DeletedAt = DateTime.UtcNow;
+            _unitOfWork.CompanyExamQuestionRepository.Update(companyExamQuestion);
+            await _unitOfWork.CompleteAsync();
+
+            return ApiResponseHelper.Success("company exam question is deleted successfully.");
+        }
     }
 }
