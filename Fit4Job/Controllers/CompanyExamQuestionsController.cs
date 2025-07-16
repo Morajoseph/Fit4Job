@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Fit4Job.DTOs.CompanyExamQuestionDTOs;
+using Fit4Job.DTOs.CompanyProfileDTOs;
+using Fit4Job.Models;
+using Fit4Job.ViewModels.CompanyExamQuestionViewModels;
+using Fit4Job.ViewModels.CompanyProfileViewModels;
 
 namespace Fit4Job.Controllers
 {
@@ -16,6 +19,54 @@ namespace Fit4Job.Controllers
             _unitOfWork = unitOfWork;
             _userManager = userManager;
         }
+
+
+
+        /* ****************************************** Endpoints ****************************************** */
+
+
+        [HttpGet]
+        public async Task<ApiResponse<IEnumerable<CompanyExamQuestionViewModel>>> GetAllCompanyExamQuestions()
+        {
+
+            var companyExamQuestions = await _unitOfWork.CompanyExamQuestionRepository.GetAllAsync();
+            var data = companyExamQuestions.Select(ceq => CompanyExamQuestionViewModel.GetViewModel(ceq));
+            return ApiResponseHelper.Success(data);
+
+        }
+
+
+        [HttpGet("{id:int}")]
+        public async Task<ApiResponse<CompanyExamQuestionViewModel>> GetById(int id)
+        {
+            var companyExamQuestion = await _unitOfWork.CompanyExamQuestionRepository.GetByIdAsync(id);
+            if (companyExamQuestion == null)
+            {
+                return ApiResponseHelper.Error<CompanyExamQuestionViewModel>(ErrorCode.NotFound, "Not Found or invalid ID");
+            }
+            return ApiResponseHelper.Success(new CompanyExamQuestionViewModel(companyExamQuestion));
+        }
+
+
+
+        [HttpPost]
+        public async Task<ApiResponse<CompanyExamQuestionViewModel>> Create(CreateCompanyExamQuestionDTO createCompanyExamQuestionDTO)
+        {
+            if (createCompanyExamQuestionDTO == null || !ModelState.IsValid)
+            {
+                return ApiResponseHelper.Error<CompanyExamQuestionViewModel>(ErrorCode.BadRequest, "Invalid data");
+            }
+
+            var companyExamQuestion = createCompanyExamQuestionDTO.ToEntity();
+            await _unitOfWork.CompanyExamQuestionRepository.AddAsync(companyExamQuestion);
+            await _unitOfWork.CompleteAsync();
+
+            return ApiResponseHelper.Success(CompanyExamQuestionViewModel.GetViewModel(companyExamQuestion), "Created successfully");
+        }
+
+
+
+
 
 
     }
