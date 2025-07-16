@@ -66,6 +66,26 @@ namespace Fit4Job.Controllers
 
 
 
+        [HttpPut("{id:int}")]
+        public async Task<ApiResponse<CompanyExamQuestionViewModel>> Update(int id, EditCompanyExamQuestionDTO editCompanyExamQuestionDTO)
+        {
+            if (editCompanyExamQuestionDTO == null || !ModelState.IsValid)
+            {
+                return ApiResponseHelper.Error<CompanyExamQuestionViewModel>(ErrorCode.BadRequest, "Invalid data");
+            }
+
+            var companyExamQuestion = await _unitOfWork.CompanyExamQuestionRepository.GetByIdAsync(id);
+            if (companyExamQuestion == null)
+            {
+                return ApiResponseHelper.Error<CompanyExamQuestionViewModel>(ErrorCode.NotFound, "company exam question not found");
+            }
+
+            editCompanyExamQuestionDTO.UpdateEntity(companyExamQuestion);
+            _unitOfWork.CompanyExamQuestionRepository.Update(companyExamQuestion);
+            await _unitOfWork.CompleteAsync();
+
+            return ApiResponseHelper.Success(CompanyExamQuestionViewModel.GetViewModel(companyExamQuestion), "Updated successfully");
+        }
 
 
 
