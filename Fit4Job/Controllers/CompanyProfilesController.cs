@@ -86,7 +86,25 @@ namespace Fit4Job.Controllers
         }
 
 
+        [HttpDelete("{id:int}")]
+        public async Task<ApiResponse<string>> SoftDelete(int id)
+        {
+            var companyProfile = await _unitOfWork.CompanyProfileRepository.GetByIdAsync(id);
+            if (companyProfile == null)
+            {
+                return ApiResponseHelper.Error<string>(ErrorCode.NotFound, "company not found.");
+            }
+            if (companyProfile.DeletedAt != null)
+            {
+                return ApiResponseHelper.Error<string>(ErrorCode.BadRequest, "company is already deleted.");
+            }
+            companyProfile.DeletedAt = DateTime.UtcNow;
+            companyProfile.UpdatedAt = DateTime.UtcNow;
+            _unitOfWork.CompanyProfileRepository.Update(companyProfile);
+            await _unitOfWork.CompleteAsync();
 
+            return ApiResponseHelper.Success("company is deleted successfully.");
+        }
 
 
     }
