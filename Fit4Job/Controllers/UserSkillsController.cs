@@ -1,5 +1,4 @@
-﻿using Fit4Job.Migrations;
-using Fit4Job.ViewModels.JobsViewModels;
+﻿using Fit4Job.ViewModels.JobsViewModels;
 using Fit4Job.ViewModels.Responses;
 using Fit4Job.ViewModels.SkillsViewModels;
 

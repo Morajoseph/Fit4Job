@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Fit4Job.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class finalSystemV1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,7 +32,8 @@ namespace Fit4Job.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProfilePictureURL = table.Column<string>(type: "nvarchar(2000)", maxLength: 500, nullable: true),
+                    ProfilePictureURL = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    CoverPictureURL = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Bio = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     Role = table.Column<string>(type: "varchar(20)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -82,7 +84,9 @@ namespace Fit4Job.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IconUrl = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Skills = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -404,50 +408,20 @@ namespace Fit4Job.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "company_exams",
+                name: "jobs",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CompanyId = table.Column<int>(type: "int", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Instructions = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
-                    DurationMinutes = table.Column<int>(type: "int", nullable: false),
-                    TotalScore = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    PassingScore = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    ShowResultsImmediately = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeletedAt = table.Column<byte[]>(type: "timestamp", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_company_exams", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_company_exams_company_profiles_CompanyId",
-                        column: x => x.CompanyId,
-                        principalTable: "company_profiles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "company_tasks",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CompanyId = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", maxLength: 4000, nullable: false),
-                    Requirements = table.Column<string>(type: "nvarchar(max)", maxLength: 4000, nullable: true),
-                    Deliverables = table.Column<string>(type: "nvarchar(max)", maxLength: 4000, nullable: true),
-                    Deadline = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EstimatedHours = table.Column<int>(type: "int", nullable: true),
+                    JobType = table.Column<string>(type: "varchar(20)", nullable: false),
+                    WorkLocationType = table.Column<string>(type: "varchar(20)", nullable: false),
+                    EducationLevel = table.Column<string>(type: "varchar(20)", nullable: true),
+                    Summary = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    Requirements = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    SalaryRange = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    YearsOfExperience = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -455,9 +429,9 @@ namespace Fit4Job.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_company_tasks", x => x.Id);
+                    table.PrimaryKey("PK_jobs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_company_tasks_company_profiles_CompanyId",
+                        name: "FK_jobs_company_profiles_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "company_profiles",
                         principalColumn: "Id",
@@ -504,9 +478,9 @@ namespace Fit4Job.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TrackId = table.Column<int>(type: "int", nullable: false),
                     QuestionText = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
-                    QuestionType = table.Column<string>(type: "varchar(20)", nullable: false),
-                    QuestionLevel = table.Column<string>(type: "varchar(20)", nullable: false),
-                    DifficultyLevel = table.Column<string>(type: "varchar(10)", nullable: false),
+                    QuestionType = table.Column<string>(type: "varchar(30)", nullable: false),
+                    QuestionLevel = table.Column<string>(type: "varchar(30)", nullable: false),
+                    DifficultyLevel = table.Column<string>(type: "varchar(30)", nullable: false),
                     Points = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
                     Explanation = table.Column<string>(type: "text", maxLength: 2000, nullable: true),
                     CodeSnippet = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
@@ -527,94 +501,76 @@ namespace Fit4Job.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "company_exam_attempts",
+                name: "company_exams",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    ExamId = table.Column<int>(type: "int", nullable: false),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Score = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    PercentageScore = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
-                    Status = table.Column<string>(type: "varchar(15)", nullable: false),
-                    Passed = table.Column<bool>(type: "bit", nullable: false),
+                    CompanyId = table.Column<int>(type: "int", nullable: false),
+                    JobId = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Instructions = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    DurationMinutes = table.Column<int>(type: "int", nullable: false),
+                    TotalScore = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    PassingScore = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    ShowResultsImmediately = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_company_exam_attempts", x => x.Id);
+                    table.PrimaryKey("PK_company_exams", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_company_exam_attempts_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        name: "FK_company_exams_company_profiles_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "company_profiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
-                        name: "FK_company_exam_attempts_company_exams_ExamId",
-                        column: x => x.ExamId,
-                        principalTable: "company_exams",
+                        name: "FK_company_exams_jobs_JobId",
+                        column: x => x.JobId,
+                        principalTable: "jobs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
-                name: "company_exam_questions",
+                name: "company_tasks",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ExamId = table.Column<int>(type: "int", nullable: false),
-                    QuestionText = table.Column<string>(type: "nvarchar(2000)", maxLength: 4000, nullable: false),
-                    QuestionType = table.Column<string>(type: "varchar(30)", nullable: false),
-                    Points = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
-                    Explanation = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
-                    CodeSnippet = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
-                    ExpectedOutput = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
-                    IsRequired = table.Column<bool>(type: "bit", nullable: false),
+                    CompanyId = table.Column<int>(type: "int", nullable: false),
+                    JobId = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", maxLength: 4000, nullable: false),
+                    Requirements = table.Column<string>(type: "nvarchar(max)", maxLength: 4000, nullable: true),
+                    Deliverables = table.Column<string>(type: "nvarchar(max)", maxLength: 4000, nullable: true),
+                    Deadline = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EstimatedHours = table.Column<int>(type: "int", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_company_exam_questions", x => x.Id);
+                    table.PrimaryKey("PK_company_tasks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_company_exam_questions_company_exams_ExamId",
-                        column: x => x.ExamId,
-                        principalTable: "company_exams",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "company_task_submissions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TaskId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    SubmissionNotes = table.Column<string>(type: "nvarchar(max)", maxLength: 4000, nullable: true),
-                    SubmissionLink = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    DemoLink = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_company_task_submissions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_company_task_submissions_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        name: "FK_company_tasks_company_profiles_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "company_profiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
-                        name: "FK_company_task_submissions_company_tasks_TaskId",
-                        column: x => x.TaskId,
-                        principalTable: "company_tasks",
+                        name: "FK_company_tasks_jobs_JobId",
+                        column: x => x.JobId,
+                        principalTable: "jobs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                 });
@@ -707,6 +663,136 @@ namespace Fit4Job.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "company_exam_attempts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    ExamId = table.Column<int>(type: "int", nullable: false),
+                    JobApplicationId = table.Column<int>(type: "int", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Score = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    PercentageScore = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
+                    Status = table.Column<string>(type: "varchar(15)", nullable: false),
+                    Passed = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_company_exam_attempts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_company_exam_attempts_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_company_exam_attempts_company_exams_ExamId",
+                        column: x => x.ExamId,
+                        principalTable: "company_exams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "company_exam_questions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExamId = table.Column<int>(type: "int", nullable: false),
+                    QuestionText = table.Column<string>(type: "nvarchar(2000)", maxLength: 4000, nullable: false),
+                    QuestionType = table.Column<string>(type: "varchar(30)", nullable: false),
+                    Points = table.Column<decimal>(type: "decimal(5,2)", nullable: false),
+                    Explanation = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    CodeSnippet = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    ExpectedOutput = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    IsRequired = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_company_exam_questions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_company_exam_questions_company_exams_ExamId",
+                        column: x => x.ExamId,
+                        principalTable: "company_exams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "company_task_submissions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TaskId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    JobApplicationId = table.Column<int>(type: "int", nullable: false),
+                    SubmissionNotes = table.Column<string>(type: "nvarchar(max)", maxLength: 4000, nullable: true),
+                    SubmissionLink = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    DemoLink = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_company_task_submissions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_company_task_submissions_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_company_task_submissions_company_tasks_TaskId",
+                        column: x => x.TaskId,
+                        principalTable: "company_tasks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "user_badges",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    BadgeId = table.Column<int>(type: "int", nullable: false),
+                    TrackAttemptId = table.Column<int>(type: "int", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    EarnedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_user_badges", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_user_badges_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_user_badges_badges_BadgeId",
+                        column: x => x.BadgeId,
+                        principalTable: "badges",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_user_badges_track_attempts_TrackAttemptId",
+                        column: x => x.TrackAttemptId,
+                        principalTable: "track_attempts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "company_exam_question_options",
                 columns: table => new
                 {
@@ -761,36 +847,44 @@ namespace Fit4Job.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "user_badges",
+                name: "JobApplications",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    BadgeId = table.Column<int>(type: "int", nullable: false),
-                    TrackAttemptId = table.Column<int>(type: "int", nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    EarnedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    JobId = table.Column<int>(type: "int", nullable: false),
+                    ExamAttemptId = table.Column<int>(type: "int", nullable: true),
+                    TaskSubmissionId = table.Column<int>(type: "int", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    AppliedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_user_badges", x => x.Id);
+                    table.PrimaryKey("PK_JobApplications", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_user_badges_AspNetUsers_UserId",
+                        name: "FK_JobApplications_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
-                        name: "FK_user_badges_badges_BadgeId",
-                        column: x => x.BadgeId,
-                        principalTable: "badges",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        name: "FK_JobApplications_company_exam_attempts_ExamAttemptId",
+                        column: x => x.ExamAttemptId,
+                        principalTable: "company_exam_attempts",
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_user_badges_track_attempts_TrackAttemptId",
-                        column: x => x.TrackAttemptId,
-                        principalTable: "track_attempts",
+                        name: "FK_JobApplications_company_task_submissions_TaskSubmissionId",
+                        column: x => x.TaskSubmissionId,
+                        principalTable: "company_task_submissions",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_JobApplications_jobs_JobId",
+                        column: x => x.JobId,
+                        principalTable: "jobs",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                 });
@@ -902,6 +996,12 @@ namespace Fit4Job.Migrations
                 column: "QuestionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_company_exams_JobId",
+                table: "company_exams",
+                column: "JobId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CompanyExams_CompanyId",
                 table: "company_exams",
                 column: "CompanyId");
@@ -939,6 +1039,12 @@ namespace Fit4Job.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_company_tasks_JobId",
+                table: "company_tasks",
+                column: "JobId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CompanyTasks_CompanyId",
                 table: "company_tasks",
                 column: "CompanyId");
@@ -953,6 +1059,41 @@ namespace Fit4Job.Migrations
                 table: "job_seeker_profiles",
                 column: "UserId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JobApplications_ExamAttemptId",
+                table: "JobApplications",
+                column: "ExamAttemptId",
+                unique: true,
+                filter: "[ExamAttemptId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JobApplications_JobId",
+                table: "JobApplications",
+                column: "JobId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JobApplications_TaskSubmissionId",
+                table: "JobApplications",
+                column: "TaskSubmissionId",
+                unique: true,
+                filter: "[TaskSubmissionId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_JobApplications_UserId_JobId",
+                table: "JobApplications",
+                columns: new[] { "UserId", "JobId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Jobs_CompanyId",
+                table: "jobs",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Jobs_IsActive_DeletedAt",
+                table: "jobs",
+                columns: new[] { "IsActive", "DeletedAt" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_UserId",
@@ -1120,10 +1261,10 @@ namespace Fit4Job.Migrations
                 name: "company_exam_questions_answers");
 
             migrationBuilder.DropTable(
-                name: "company_task_submissions");
+                name: "job_seeker_profiles");
 
             migrationBuilder.DropTable(
-                name: "job_seeker_profiles");
+                name: "JobApplications");
 
             migrationBuilder.DropTable(
                 name: "notifications");
@@ -1147,13 +1288,13 @@ namespace Fit4Job.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "company_exam_attempts");
-
-            migrationBuilder.DropTable(
                 name: "company_exam_questions");
 
             migrationBuilder.DropTable(
-                name: "company_tasks");
+                name: "company_exam_attempts");
+
+            migrationBuilder.DropTable(
+                name: "company_task_submissions");
 
             migrationBuilder.DropTable(
                 name: "track_questions");
@@ -1168,19 +1309,25 @@ namespace Fit4Job.Migrations
                 name: "company_exams");
 
             migrationBuilder.DropTable(
+                name: "company_tasks");
+
+            migrationBuilder.DropTable(
                 name: "track_attempts");
 
             migrationBuilder.DropTable(
-                name: "company_profiles");
+                name: "jobs");
 
             migrationBuilder.DropTable(
                 name: "tracks");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "company_profiles");
 
             migrationBuilder.DropTable(
                 name: "track_categories");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }
