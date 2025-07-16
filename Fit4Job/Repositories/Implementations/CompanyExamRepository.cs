@@ -1,10 +1,58 @@
-﻿namespace Fit4Job.Repositories.Implementations
+﻿using Fit4Job.DTOs.CompanyExamsDto;
+
+namespace Fit4Job.Repositories.Implementations
 {
     public class CompanyExamRepository : GenericRepository<CompanyExam>, ICompanyExamRepository
     {
         public CompanyExamRepository(Fit4JobDbContext context) : base(context)
         {
 
+        }
+
+        public async Task<CompanyExam?> GetExamWithDetailsAsync(int id)
+        {
+            return await _context.CompanyExams
+                .Include(e => e.Company)
+                .Include(e => e.Job)
+                .FirstOrDefaultAsync(e => e.Id == id && e.DeletedAt == null);
+        }
+
+        public async Task<IEnumerable<CompanyExam>> SearchCompanyExamsAsync(CompanyExamSearchDTO companyExamSearchDTO)
+        {
+            var query = _context.CompanyExams
+                .Include(e => e.Company)
+                .Include(e => e.Job)
+                .Where(e => e.DeletedAt == null)
+                .AsQueryable();
+
+            if (companyExamSearchDTO.CompanyId.HasValue)
+            {
+                query = query.Where(e => e.CompanyId == companyExamSearchDTO.CompanyId.Value);
+            }
+
+            if (companyExamSearchDTO.JobId.HasValue)
+            {
+                query = query.Where(e => e.JobId == companyExamSearchDTO.JobId.Value);
+            }
+
+            if (companyExamSearchDTO.IsActive.HasValue)
+            {
+                query = query.Where(e => e.IsActive == companyExamSearchDTO.IsActive.Value);
+            }
+
+            if (companyExamSearchDTO.StartDate.HasValue)
+            {
+                query = query.Where(e => e.StartDate == null || e.StartDate >= companyExamSearchDTO.StartDate.Value);
+            }
+
+            if (companyExamSearchDTO.EndDate.HasValue)
+            {
+                query = query.Where(e => e.EndDate == null || e.EndDate <= companyExamSearchDTO.EndDate.Value);
+            }
+
+            return await query
+                .OrderByDescending(e => e.CreatedAt)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<CompanyExam>> GetActiveExamsByCompanyIdAsync(int companyId)

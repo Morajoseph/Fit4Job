@@ -1,0 +1,85 @@
+﻿namespace Fit4Job.ViewModels.CompanyExamsViewModel
+{
+    public class CompanyExamViewModel
+    {
+
+        [Display(Name = "Exam ID")]
+        public int Id { get; set; }
+
+        [Display(Name = "Company ID")]
+        public int CompanyId { get; set; }
+
+        [Display(Name = "Job ID")]
+        public int JobId { get; set; }
+
+        [Display(Name = "Title")]
+        public string Title { get; set; } = null!;
+
+        [Display(Name = "Description")]
+        public string? Description { get; set; }
+
+        [Display(Name = "Instructions")]
+        public string? Instructions { get; set; }
+
+        [Display(Name = "Duration (Minutes)")]
+        public int DurationMinutes { get; set; }
+
+        [Display(Name = "Total Score")]
+        public decimal TotalScore { get; set; }
+
+        [Display(Name = "Passing Score")]
+        public decimal PassingScore { get; set; }
+
+        [Display(Name = "Start Date")]
+        public DateTime? StartDate { get; set; }
+
+        [Display(Name = "End Date")]
+        public DateTime? EndDate { get; set; }
+
+        [Display(Name = "Is Active")]
+        public bool IsActive { get; set; }
+
+        [Display(Name = "Show Results Immediately")]
+        public bool ShowResultsImmediately { get; set; }
+
+        
+
+        //-------------
+        public bool IsAvailable { get; set; }
+
+        public bool HasEnded { get; set; }
+
+        public bool HasStarted { get; set; }
+
+        public bool IsScheduled { get; set; }
+
+        public CompanyExamViewModel() { }
+
+        public CompanyExamViewModel(CompanyExam exam)
+        {
+            Id = exam.Id;
+            CompanyId = exam.CompanyId;
+            JobId = exam.JobId;
+            Title = exam.Title;
+            Description = exam.Description;
+            Instructions = exam.Instructions;
+            DurationMinutes = exam.DurationMinutes;
+            TotalScore = exam.TotalScore;
+            PassingScore = exam.PassingScore;
+            StartDate = exam.StartDate;
+            EndDate = exam.EndDate;
+            IsActive = exam.IsActive;
+            ShowResultsImmediately = exam.ShowResultsImmediately;
+           
+            IsAvailable = exam.IsAvailable;
+            HasEnded = exam.HasEnded;
+            HasStarted = exam.HasStarted;
+            IsScheduled = exam.IsScheduled;
+        }
+
+        public static CompanyExamViewModel GetViewModel(CompanyExam exam)
+        {
+            return new CompanyExamViewModel(exam);
+        }
+    }
+}
