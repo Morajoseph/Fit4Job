@@ -62,7 +62,7 @@ namespace Fit4Job.Controllers
         public async Task<ApiResponse<IEnumerable<CompanyExamViewModel>>> GetAllCompanyExamsByCompanyId(int companyId)
         {
 
-            var companyExams = await unitOfWork.CompanyExamRepository.GetAvailableExamsByCompanyIdAsync(companyId);
+            var companyExams = await unitOfWork.CompanyExamRepository.GetActiveExamsByCompanyIdAsync(companyId);
             var data = companyExams.Select(t => CompanyExamViewModel.GetViewModel(t));
             return ApiResponseHelper.Success(data);
         }

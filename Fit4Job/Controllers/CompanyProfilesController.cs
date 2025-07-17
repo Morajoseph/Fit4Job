@@ -1,7 +1,10 @@
 ﻿using Fit4Job.DTOs.CompanyProfileDTOs;
 using Fit4Job.DTOs.JobsDTOs;
+using Fit4Job.Models;
+using Fit4Job.ViewModels.CompanyExamQuestionViewModels;
 using Fit4Job.ViewModels.CompanyProfileViewModels;
 using Fit4Job.ViewModels.JobsViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 
 namespace Fit4Job.Controllers
@@ -105,6 +108,55 @@ namespace Fit4Job.Controllers
 
             return ApiResponseHelper.Success("company is deleted successfully.");
         }
+        [HttpGet("pending")]
+      //  [Authorize(Roles = "Admin")]
+        public async Task<ApiResponse<IEnumerable<CompanyProfileViewModel>>> GetPendingCompanyProfiles()
+        {
+            var pendingCompanies = await _unitOfWork.CompanyProfileRepository.GetPendingCompaniesAsync();
+
+            if (!pendingCompanies.Any())
+            {
+                return ApiResponseHelper.Error<IEnumerable<CompanyProfileViewModel>>(ErrorCode.NotFound, "No pending companies found");
+            }
+
+            var data = pendingCompanies.Select(CompanyProfileViewModel.GetViewModel);
+            return ApiResponseHelper.Success(data, "Pending companies retrieved successfully");
+        }
+
+
+
+
+        [HttpGet("current")]
+     // [Authorize(Roles = "Company")]
+        public async Task<ApiResponse<CompanyProfileViewModel>> GetCurrentCompanyProfile()
+        {
+           
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return ApiResponseHelper.Error<CompanyProfileViewModel>( ErrorCode.Unauthorized, "Invalid user authentication");
+            }
+
+
+            var companyProfile = await _unitOfWork.CompanyProfileRepository.GetByUserIdAsync(userId);
+
+            if (companyProfile == null)
+            {
+                return ApiResponseHelper.Error<CompanyProfileViewModel>(
+                    ErrorCode.NotFound, "Company profile not found");
+            }
+
+           
+            if (!companyProfile.IsActive)
+            {
+                return ApiResponseHelper.Error<CompanyProfileViewModel>( ErrorCode.NotFound, "Company profile is no longer active");
+            }
+
+            var viewModel = CompanyProfileViewModel.GetViewModel(companyProfile);
+            return ApiResponseHelper.Success(viewModel, "Company profile retrieved successfully");
+        }
+
+
 
 
     }

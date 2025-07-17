@@ -7,5 +7,6 @@
         Task<IEnumerable<CompanyProfile>> GetCompaniesByStatusAsync(CompanyStatus status);
         Task<IEnumerable<CompanyProfile>> SearchCompaniesByNameAsync(string name);
         Task<IEnumerable<CompanyProfile>> GetCompaniesByIndustryAsync(string industry);
+        Task<IEnumerable<CompanyProfile>> GetPendingCompaniesAsync();
     }
 }

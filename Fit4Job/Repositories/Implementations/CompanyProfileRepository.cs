@@ -39,5 +39,12 @@
                 .OrderBy(c => c.CompanyName)
                 .ToListAsync();
         }
+        public async Task<IEnumerable<CompanyProfile>> GetPendingCompaniesAsync()
+        {
+            return await _context.CompanyProfiles
+                .Where(c => c.Status == CompanyStatus.Pending && c.DeletedAt == null)
+                .OrderByDescending(c => c.CreatedAt)
+                .ToListAsync();
+        }
     }
 }
