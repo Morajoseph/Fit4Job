@@ -1,6 +1,6 @@
-﻿namespace Fit4Job.DTOs.TrackQuestionAnswersDTOs
+﻿namespace Fit4Job.DTOs.CompanyExamQuestionAnswersDTOs
 {
-    public class TrackQuestionAnswerDTO
+    public class CreateCompanyExamQuestionAnswerDTO
     {
         [Display(Name = "Attempt ID")]
         [Required(ErrorMessage = "Attempt ID is required")]
@@ -17,9 +17,9 @@
         [MaxLength(2000, ErrorMessage = "Text answer cannot exceed 2,000 characters")]
         public string? TextAnswer { get; set; }
 
-        public TrackQuestionAnswer GetModel()
+        public CompanyExamQuestionAnswer ToEntity()
         {
-            return new TrackQuestionAnswer()
+            return new CompanyExamQuestionAnswer()
             {
                 AttemptId = this.AttemptId,
                 QuestionId = this.QuestionId,
