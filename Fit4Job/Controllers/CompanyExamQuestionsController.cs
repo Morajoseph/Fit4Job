@@ -111,5 +111,21 @@ namespace Fit4Job.Controllers
 
 
 
+        [HttpGet("exam/{examId:int}")]
+        public async Task<ApiResponse<IEnumerable<CompanyExamQuestionViewModel>>> GetQuestionsByExamId(int examId)
+        {
+            var questions = await _unitOfWork.CompanyExamQuestionRepository.GetByExamIdAsync(examId);
+
+            if (!questions.Any())
+            {
+            return ApiResponseHelper.Error<IEnumerable<CompanyExamQuestionViewModel>>( ErrorCode.NotFound, "No questions found for this exam");
+            }
+
+            var data = questions.Select(CompanyExamQuestionViewModel.GetViewModel);
+            return ApiResponseHelper.Success(data, "Questions retrieved successfully");
+        }
+
+
+
     }
 }
