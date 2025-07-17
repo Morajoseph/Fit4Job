@@ -110,6 +110,7 @@ namespace Fit4Job
 
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<IProfileService, ProfileService>();
             builder.Services.AddScoped<ISkillsService, SkillsService>();
 
             /********************************************************************************/

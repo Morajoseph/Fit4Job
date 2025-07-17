@@ -5,14 +5,16 @@
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
+        private readonly IProfileService _profileService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public AuthenticationService(IUnitOfWork unitOfWork, IConfiguration configuration, IEmailService emailService, UserManager<ApplicationUser> userManager)
+        public AuthenticationService(IUnitOfWork unitOfWork, IConfiguration configuration, IEmailService emailService, IProfileService profileService, UserManager<ApplicationUser> userManager)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _emailService = emailService;
             _configuration = configuration;
+            _profileService = profileService;
         }
 
         public async Task<ApiResponse<bool>> AdminRegistration(AdminRegistrationDTO registrationDTO)
@@ -43,8 +45,8 @@
 
             await _userManager.AddToRoleAsync(newUser, "Admin");
             int userId = newUser.Id;
+            await _profileService.CreateAdminProfile(registrationDTO, userId);
 
-            await CreateAdminProfile(registrationDTO, userId);
             var code = await EmailConfirmation(newUser, registrationDTO.FirstName + ' ' + registrationDTO.LastName);
 
             return ApiResponseHelper.Success(true);
@@ -79,7 +81,8 @@
 
             await _userManager.AddToRoleAsync(newUser, "Company");
             int userId = newUser.Id;
-            await CreateCompanyProfile(registrationDTO, userId);
+            await _profileService.CreateCompanyProfile(registrationDTO, userId);
+
             var code = await EmailConfirmation(newUser, registrationDTO.CompanyName);
 
             return ApiResponseHelper.Success(true);
@@ -130,7 +133,7 @@
 
             await _userManager.AddToRoleAsync(newUser, "JobSeeker");
             int userId = newUser.Id;
-            await CreateJobSeekerProfile(registrationDTO, userId);
+            await _profileService.CreateJobSeekerProfile(registrationDTO, userId);
 
             var code = await EmailConfirmation(newUser, registrationDTO.FirstName + ' ' + registrationDTO.LastName);
 
@@ -176,7 +179,6 @@
 
             return ApiResponseHelper.Success(true);
         }
-
 
         /* ****************************************** Helper Methods ****************************************** */
 
@@ -266,38 +268,6 @@
                 $"\n\nTo complete your account setup, please use the following verification code: {confirmationCode}" +
                 "\n\nBest regards," +
                 "\n\nThe Fit4Job Team";
-        }
-        private async Task CreateAdminProfile(AdminRegistrationDTO registrationDTO, int userId)
-        {
-            AdminProfile admin = new AdminProfile()
-            {
-                UserId = userId,
-                FirstName = registrationDTO.FirstName,
-                LastName = registrationDTO.LastName,
-            };
-            await _unitOfWork.AdminProfileRepository.AddAsync(admin);
-            await _unitOfWork.CompleteAsync();
-        }
-        private async Task CreateCompanyProfile(CompanyRegistrationDTO registrationDTO, int userId)
-        {
-            CompanyProfile company = new CompanyProfile()
-            {
-                UserId = userId,
-                CompanyName = registrationDTO.CompanyName,
-            };
-            await _unitOfWork.CompanyProfileRepository.AddAsync(company);
-            await _unitOfWork.CompleteAsync();
-        }
-        private async Task CreateJobSeekerProfile(JobSeekerRegistrationDTO registrationDTO, int userId)
-        {
-            JobSeekerProfile jobSeeker = new JobSeekerProfile()
-            {
-                UserId = userId,
-                FirstName = registrationDTO.FirstName,
-                LastName = registrationDTO.LastName,
-            };
-            await _unitOfWork.JobSeekerProfileRepository.AddAsync(jobSeeker);
-            await _unitOfWork.CompleteAsync();
         }
         private async Task<int> GetUserProfileId(ApplicationUser user)
         {
