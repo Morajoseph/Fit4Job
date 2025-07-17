@@ -63,7 +63,7 @@
                 Role = UserRole.Company,
                 Email = registrationDTO.Email,
                 UserName = registrationDTO.UserName
-            };s
+            };
 
 
             var result = await _userManager.CreateAsync(newUser, registrationDTO.Password);
@@ -82,7 +82,8 @@
             await CreateCompanyProfile(registrationDTO, userId);
             var code = await EmailConfirmation(newUser, registrationDTO.CompanyName);
 
-            return ApiResponseHelper.Success(true)        }
+            return ApiResponseHelper.Success(true);
+        }
 
         public async Task<ApiResponse<bool>> EmailVerification(VerificationDTO verificationDTO)
         {
@@ -133,7 +134,7 @@
 
             var code = await EmailConfirmation(newUser, registrationDTO.FirstName + ' ' + registrationDTO.LastName);
 
-            return ApiResponseHelper.Success<bool>(true);
+            return ApiResponseHelper.Success(true);
         }
 
         public async Task<ApiResponse<LoginViewModel>> Login(LoginDTO loginDTO)
@@ -178,7 +179,7 @@
 
 
         /* ****************************************** Helper Methods ****************************************** */
-        
+
         private async Task<ApplicationUser?> FindUserByEmailOrUsernameAsync(string emailOrUsername)
         {
             var user = await _userManager.FindByEmailAsync(emailOrUsername); // Try to find by email first
