@@ -61,7 +61,7 @@ namespace Fit4Job.Controllers
 
         // 4 - Create a new track question answer 
         [HttpPost("submit")]
-        public async Task<ApiResponse<TrackQuestionAnswerViewModel>> Create(TrackQuestionAnswerDTO createAnswerDTO)
+        public async Task<ApiResponse<TrackQuestionAnswerViewModel>> Create(CreateTrackQuestionAnswerDTO createAnswerDTO)
         {
             // Validation 
             if (createAnswerDTO == null || !ModelState.IsValid)
@@ -131,7 +131,7 @@ namespace Fit4Job.Controllers
 
         /* *************************************** Helper Methods **************************************** */
 
-        private async Task<TrackQuestionAnswer> ProcessQuestionAnswerAsync(TrackQuestion question, TrackAttempt attempt, TrackQuestionAnswerDTO answerDTO)
+        private async Task<TrackQuestionAnswer> ProcessQuestionAnswerAsync(TrackQuestion question, TrackAttempt attempt, CreateTrackQuestionAnswerDTO answerDTO)
         {
             bool isCorrect;
             decimal pointsEarned = 0.00m;
@@ -165,14 +165,14 @@ namespace Fit4Job.Controllers
             return trackQuestionAnswer;
         }
 
-        private static bool IsValidSingleChoiceAnswer(TrackQuestionAnswerDTO answerDTO)
+        private static bool IsValidSingleChoiceAnswer(CreateTrackQuestionAnswerDTO answerDTO)
         {
             return answerDTO?.SelectedOptions != null &&
                    answerDTO.SelectedOptions.Count == 1 &&
                    answerDTO.SelectedOptions[0] > 0;
         }
 
-        private async Task<bool> ProcessSingleChoiceQuestionAsync(int questionId, TrackQuestionAnswerDTO answerDTO)
+        private async Task<bool> ProcessSingleChoiceQuestionAsync(int questionId, CreateTrackQuestionAnswerDTO answerDTO)
         {
             if (!IsValidSingleChoiceAnswer(answerDTO))
             {
@@ -190,7 +190,7 @@ namespace Fit4Job.Controllers
             return isCorrect;
         }
 
-        private async Task<bool> ProcessMultipleChoiceQuestionsAsync(int questionId, TrackQuestionAnswerDTO answerDTO)
+        private async Task<bool> ProcessMultipleChoiceQuestionsAsync(int questionId, CreateTrackQuestionAnswerDTO answerDTO)
         {
             var correctOptions = await unitOfWork.TrackQuestionOptionRepository.GetCorrectOptionsAsync(questionId);
             if (correctOptions.Count() == 0)
@@ -209,7 +209,7 @@ namespace Fit4Job.Controllers
             return true;
         }
 
-        private async Task<bool> ProcessWrittenQuestionsAsync(int questionId, TrackQuestionAnswerDTO answerDTO)
+        private async Task<bool> ProcessWrittenQuestionsAsync(int questionId, CreateTrackQuestionAnswerDTO answerDTO)
         {
             var correctOptions = await unitOfWork.TrackQuestionOptionRepository.GetCorrectOptionsAsync(questionId);
             if(correctOptions.Count() == 0)
