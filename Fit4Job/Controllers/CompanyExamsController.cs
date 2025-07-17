@@ -29,7 +29,7 @@ namespace Fit4Job.Controllers
         // Get all exams with filtering options(by company, job, status, date range)
 
         [HttpGet("search")]
-        public async Task<ApiResponse<IEnumerable<CompanyExamViewModel>>> Search([FromQuery]CompanyExamSearchDTO companyExamSearchDTO)
+        public async Task<ApiResponse<IEnumerable<CompanyExamViewModel>>> Search([FromQuery] CompanyExamSearchDTO companyExamSearchDTO)
         {
             var exams = await unitOfWork.CompanyExamRepository.SearchCompanyExamsAsync(companyExamSearchDTO);
             var data = exams.Select(e => CompanyExamViewModel.GetViewModel(e));
@@ -49,7 +49,7 @@ namespace Fit4Job.Controllers
 
             if (companyExam == null)
             {
-                return ApiResponseHelper.Error<CompanyExamViewModel>(ErrorCode.NotFound, "CompanyExam not found");
+                return ApiResponseHelper.Error<CompanyExamViewModel>(ErrorCode.NotFound, "Exam not found");
             }
 
             var viewModel = CompanyExamViewModel.GetViewModel(companyExam);
@@ -61,7 +61,6 @@ namespace Fit4Job.Controllers
         [HttpGet("company/{companyId:int}")]
         public async Task<ApiResponse<IEnumerable<CompanyExamViewModel>>> GetAllCompanyExamsByCompanyId(int companyId)
         {
-
             var companyExams = await unitOfWork.CompanyExamRepository.GetActiveExamsByCompanyIdAsync(companyId);
             var data = companyExams.Select(t => CompanyExamViewModel.GetViewModel(t));
             return ApiResponseHelper.Success(data);
@@ -131,7 +130,7 @@ namespace Fit4Job.Controllers
         //Activate/deactivate an exam
 
         [HttpPost("{id:int}/activate")]
-        public async Task<ApiResponse<bool>>ToggleActiveCompanyExamById(int id)
+        public async Task<ApiResponse<bool>> ToggleActiveCompanyExamById(int id)
         {
             var companyExam = await unitOfWork.CompanyExamRepository.GetByIdAsync(id);
             if (companyExam == null)
@@ -146,14 +145,12 @@ namespace Fit4Job.Controllers
             companyExam.IsActive = !companyExam.IsActive;
             companyExam.UpdatedAt = DateTime.UtcNow;
 
-           unitOfWork.CompanyExamRepository.Update(companyExam);
+            unitOfWork.CompanyExamRepository.Update(companyExam);
             await unitOfWork.CompleteAsync();
 
-            var message=companyExam.IsActive?"Exam activated successfully" : "Exam deactivated successfully";
+            var message = companyExam.IsActive ? "Exam activated successfully" : "Exam deactivated successfully";
             return ApiResponseHelper.Success(companyExam.IsActive, message);
 
         }
-
-
     }
 }

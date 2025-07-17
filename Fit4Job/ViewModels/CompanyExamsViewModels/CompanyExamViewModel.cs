@@ -30,30 +30,16 @@
         [Display(Name = "Passing Score")]
         public decimal PassingScore { get; set; }
 
-        [Display(Name = "Start Date")]
-        public DateTime? StartDate { get; set; }
-
-        [Display(Name = "End Date")]
-        public DateTime? EndDate { get; set; }
-
         [Display(Name = "Is Active")]
         public bool IsActive { get; set; }
 
         [Display(Name = "Show Results Immediately")]
         public bool ShowResultsImmediately { get; set; }
 
-        
-
-        //-------------
-        public bool IsAvailable { get; set; }
-
-        public bool HasEnded { get; set; }
-
-        public bool HasStarted { get; set; }
-
-        public bool IsScheduled { get; set; }
-
-        public CompanyExamViewModel() { }
+        public CompanyExamViewModel() 
+        {
+            
+        }
 
         public CompanyExamViewModel(CompanyExam exam)
         {
@@ -66,15 +52,8 @@
             DurationMinutes = exam.DurationMinutes;
             TotalScore = exam.TotalScore;
             PassingScore = exam.PassingScore;
-            StartDate = exam.StartDate;
-            EndDate = exam.EndDate;
             IsActive = exam.IsActive;
             ShowResultsImmediately = exam.ShowResultsImmediately;
-           
-            IsAvailable = exam.IsAvailable;
-            HasEnded = exam.HasEnded;
-            HasStarted = exam.HasStarted;
-            IsScheduled = exam.IsScheduled;
         }
 
         public static CompanyExamViewModel GetViewModel(CompanyExam exam)

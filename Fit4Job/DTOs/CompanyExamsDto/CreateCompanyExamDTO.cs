@@ -2,18 +2,18 @@
 {
     public class CreateCompanyExamDto
     {
-        [Required(ErrorMessage = "Company ID is required")]
         [Display(Name = "Company ID")]
+        [Required(ErrorMessage = "Company ID is required")]
         [Range(1, int.MaxValue, ErrorMessage = "Company ID must be a positive value")]
         public int CompanyId { get; set; }
 
-        [Required(ErrorMessage = "Job ID is required")]
         [Display(Name = "Job ID")]
+        [Required(ErrorMessage = "Job ID is required")]
         [Range(1, int.MaxValue, ErrorMessage = "Job ID must be a positive value")]
         public int JobId { get; set; }
 
-        [Required(ErrorMessage = "Title is required")]
         [Display(Name = "Title")]
+        [Required(ErrorMessage = "Title is required")]
         [StringLength(256, MinimumLength = 5, ErrorMessage = "Title must be between 5 and 256 characters")]
         public string Title { get; set; } = string.Empty;
 
@@ -30,21 +30,10 @@
         [Range(1, 600, ErrorMessage = "Duration must be between 1 and 600 minutes")]
         public int DurationMinutes { get; set; }
 
-        [Required(ErrorMessage = "Total score is required")]
-        [Display(Name = "Total Score")]
-        [Range(0, 99999999.99, ErrorMessage = "Total score must be a positive value")]
-        public decimal TotalScore { get; set; }
-
         [Required(ErrorMessage = "Passing score is required")]
         [Display(Name = "Passing Score")]
-        [Range(0, 99999999.99, ErrorMessage = "Passing score must be a positive value")]
-        public decimal PassingScore { get; set; }
-
-        [Display(Name = "Start Date")]
-        public DateTime? StartDate { get; set; }
-
-        [Display(Name = "End Date")]
-        public DateTime? EndDate { get; set; }
+        [Range(0, 100, ErrorMessage = "Passing score must be a positive value")]
+        public decimal PassingScore { get; set; } = 0.00m;
 
         [Display(Name = "Show Results Immediately")]
         public bool ShowResultsImmediately { get; set; } = false;
@@ -59,10 +48,8 @@
                 Description = this.Description,
                 Instructions = this.Instructions,
                 DurationMinutes = this.DurationMinutes,
-                TotalScore = this.TotalScore,
+                TotalScore = 0,
                 PassingScore = this.PassingScore,
-                StartDate = this.StartDate,
-                EndDate = this.EndDate,
                 ShowResultsImmediately = this.ShowResultsImmediately,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
