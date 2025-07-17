@@ -50,23 +50,6 @@ namespace Fit4Job.Controllers
 
 
 
-        [HttpPost]
-        public async Task<ApiResponse<CompanyProfileViewModel>> Create(CreateCompanyProfileDTO createCompanyProfileDTO)
-        {
-            if (createCompanyProfileDTO == null || !ModelState.IsValid)
-            {
-                return ApiResponseHelper.Error<CompanyProfileViewModel>(ErrorCode.BadRequest, "Invalid data");
-            }
-
-            var companyProfile = createCompanyProfileDTO.ToEntity();
-            await _unitOfWork.CompanyProfileRepository.AddAsync(companyProfile);
-            await _unitOfWork.CompleteAsync();
-
-            return ApiResponseHelper.Success(CompanyProfileViewModel.GetViewModel(companyProfile), "Created successfully");
-        }
-
-
-
         [HttpPut("{id:int}")]
         public async Task<ApiResponse<CompanyProfileViewModel>> Update(int id, EditCompanyProfileDTO editCompanyProfileDTO)
         {
