@@ -1,4 +1,7 @@
-﻿namespace Fit4Job.Controllers
+﻿using Fit4Job.DTOs.CompanyExamAttemptsDTOs;
+using Fit4Job.ViewModels.CompanyExamAttemptsViewModels;
+
+namespace Fit4Job.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -16,18 +19,52 @@
         }
         /* ****************************************** Endpoints ****************************************** */
 
+        [HttpGet]
+        public async Task<ApiResponse<IEnumerable<CompanyExamAttemptViewModel>>> GetAll()
+        {
+            var companyExamAttempts = await _unitOfWork.CompanyExamAttemptRepository.GetAllAsync();
+            var data = companyExamAttempts.Select(ea => CompanyExamAttemptViewModel.GetViewModel(ea));
+            return ApiResponseHelper.Success(data);
+        }
 
-        /*
-            GET /api/companyexamattempts - Get all attempts with filtering (by user, exam, status)
-            GET /api/companyexamattempts/{id} - Get specific attempt details
-            GET /api/companyexamattempts/exam/{examId} - Get all attempts for a specific exam
-            GET /api/companyexamattempts/{id}/results - Get attempt results and score
-            POST /api/companyexamattempts - Start a new exam attempt
-            PUT /api/companyexamattempts/{id} - Update attempt (mainly for ending exam)
-            POST /api/companyexamattempts/{id}/submit - Submit/complete an exam attempt --- Ask Yousry first
-         */
+        [HttpGet("{id:int}")]
+        public async Task<ApiResponse<CompanyExamAttemptViewModel>> GetById(int id)
+        {
+            var companyExamAttempt = await _unitOfWork.CompanyExamAttemptRepository.GetByIdAsync(id);
+            if (companyExamAttempt == null)
+            {
+                return ApiResponseHelper.Error<CompanyExamAttemptViewModel>(ErrorCode.NotFound, "Not Found or invalid ID");
+            }
+            return ApiResponseHelper.Success(CompanyExamAttemptViewModel.GetViewModel(companyExamAttempt));
+        }
 
+        [HttpGet("exam/{examId:int}")]
+        public async Task<ApiResponse<IEnumerable<CompanyExamAttemptViewModel>>> GetAllByExam(int examId)
+        {
+            var companyExamAttempts = await _unitOfWork.CompanyExamAttemptRepository.GetAttemptsByExamIdAsync(examId);
+            if (companyExamAttempts == null)
+            {
+                return ApiResponseHelper.Error<IEnumerable<CompanyExamAttemptViewModel>>(ErrorCode.NotFound, "Not Found or invalid ID");
+            }
+            var data = companyExamAttempts.Select(ea => CompanyExamAttemptViewModel.GetViewModel(ea));
+            return ApiResponseHelper.Success(data);
+        }
 
+        [HttpPost]
+        public async Task<ApiResponse<CompanyExamAttemptViewModel>> Create(CreateCompanyExamAttemptDTO examAttemptDTO)
+        {
+            if (examAttemptDTO == null || !ModelState.IsValid)
+            {
+                return ApiResponseHelper.Error<CompanyExamAttemptViewModel>(ErrorCode.BadRequest, "Invalid data");
+            }
+            
+            // Validate the exam exists
+            // You can also check if the user is authorized to start an exam attempt
 
+            var examAttempt = examAttemptDTO.ToEntity();
+            await _unitOfWork.CompanyExamAttemptRepository.AddAsync(examAttempt);
+            await _unitOfWork.CompleteAsync();
+            return ApiResponseHelper.Success(CompanyExamAttemptViewModel.GetViewModel(examAttempt), "Created successfully");
+        }
     }
 }
