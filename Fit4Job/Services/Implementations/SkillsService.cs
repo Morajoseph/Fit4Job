@@ -1,5 +1,4 @@
 ﻿using Fit4Job.DTOs.SkillsDTOs;
-using Fit4Job.Services.Interfaces;
 using Fit4Job.ViewModels.SkillsViewModels;
 
 namespace Fit4Job.Services.Implementations
