@@ -36,15 +36,31 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(new JobApplicationViewModel(job));
         }
 
+        [HttpGet("job/{JobId:int}/user/{userId:int}")]
+        public async Task<ApiResponse<JobApplicationViewModel>> GetJobApplicationForUser(int JobId, int userId)
+        {
+            var jobApplication = await _unitOfWork.JobApplicationRepository.GetByUserAndJobAsync(JobId, userId);
+            if (jobApplication == null)
+            {
+                return ApiResponseHelper.Error<JobApplicationViewModel>(ErrorCode.NotFound, "Job Application not found for this user and job.");
+            }
+            return ApiResponseHelper.Success(JobApplicationViewModel.GetViewModel(jobApplication), "Job Application found successfully.");
+        }
         [HttpPost]
-        public async Task<ApiResponse<JobApplicationViewModel>> Create(CreateJobApplicationDTO createJobApplicationDTO )
+        public async Task<ApiResponse<JobApplicationViewModel>> Create(CreateJobApplicationDTO createJobApplicationDTO)
         {
             if (createJobApplicationDTO == null || !ModelState.IsValid)
             {
                 return ApiResponseHelper.Error<JobApplicationViewModel>(ErrorCode.BadRequest, "Invalid data");
             }
 
-            var jobApplication = createJobApplicationDTO.ToEntity();
+            var jobApplication = await _unitOfWork.JobApplicationRepository.GetByUserAndJobAsync(createJobApplicationDTO.JobId, createJobApplicationDTO.UserId);
+            if( jobApplication != null)
+            {
+                return ApiResponseHelper.Error<JobApplicationViewModel>(ErrorCode.Conflict, "You have already applied for this job.");
+            }
+
+            jobApplication = createJobApplicationDTO.ToEntity();
             await _unitOfWork.JobApplicationRepository.AddAsync(jobApplication);
             await _unitOfWork.CompleteAsync();
 

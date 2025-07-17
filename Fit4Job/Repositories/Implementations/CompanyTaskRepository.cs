@@ -6,6 +6,12 @@
         {
 
         }
+        public async Task<CompanyTask?> GetByJobIdAsync(int jobId)
+        {
+            return await _context.CompanyTasks
+                .Where(t => t.JobId == jobId)
+                .FirstOrDefaultAsync();
+        }
         public async Task<IEnumerable<CompanyTask>> GetTasksByCompanyIdAsync(int companyId)
         {
             return await _context.CompanyTasks
@@ -29,5 +35,7 @@
                 .OrderBy(t => t.Deadline)
                 .ToListAsync();
         }
+
+
     }
 }

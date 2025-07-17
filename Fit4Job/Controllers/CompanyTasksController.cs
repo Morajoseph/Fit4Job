@@ -1,12 +1,6 @@
-﻿using System.IO.Pipelines;
-using System.Threading.Tasks;
-using Fit4Job.DTOs.CompanyTasksDTOs;
-using Fit4Job.DTOs.JobsDTOs;
-using Fit4Job.Models;
+﻿using Fit4Job.DTOs.CompanyTasksDTOs;
 using Fit4Job.ViewModels.CompanyTasksViewModels;
-using Fit4Job.ViewModels.JobsViewModels;
-using Fit4Job.ViewModels.SkillsViewModels;
-using Microsoft.AspNetCore.Authorization;
+
 
 namespace Fit4Job.Controllers
 {
@@ -22,8 +16,6 @@ namespace Fit4Job.Controllers
             _unitOfWork = unitOfWork;
             _userManager = userManager;
         }
-
-
 
 
         [HttpGet]
@@ -46,32 +38,38 @@ namespace Fit4Job.Controllers
                 return ApiResponseHelper.Error<CompanyTaskViewModel>(ErrorCode.NotFound, "Not Found or invalid ID");
 
             }
-
             return ApiResponseHelper.Success(new CompanyTaskViewModel(task));
+        }
 
+
+        [HttpGet("job/{jobId:int}")]
+        public async Task<ApiResponse<CompanyTaskViewModel>> GetByJobId(int jobId)
+        {
+            var task = await _unitOfWork.CompanyTaskRepository.GetByJobIdAsync(jobId);
+            if (task == null)
+            {
+                return ApiResponseHelper.Error<CompanyTaskViewModel>(ErrorCode.NotFound, "Not Found or invalid ID");
+            }
+            return ApiResponseHelper.Success(new CompanyTaskViewModel(task));
         }
 
         [HttpPost]
-        public async Task<ApiResponse<CompanyTaskViewModel>>Create(CreateCompanyTaskDTO createCompanyTaskDTO)
+        public async Task<ApiResponse<CompanyTaskViewModel>> Create(CreateCompanyTaskDTO createCompanyTaskDTO)
         {
 
             if (createCompanyTaskDTO == null || !ModelState.IsValid)
             {
-
                 return ApiResponseHelper.Error<CompanyTaskViewModel>(ErrorCode.BadRequest, "Invalid data");
-
             }
 
             var task = createCompanyTaskDTO.ToEntity();
-             _unitOfWork.CompanyTaskRepository.Update(task);
+            _unitOfWork.CompanyTaskRepository.Update(task);
             await _unitOfWork.CompleteAsync();
 
             return ApiResponseHelper.Success(CompanyTaskViewModel.GetViewModel(task), "Created successfully");
 
 
         }
-
-
 
 
         [HttpPut("{id:int}")]
@@ -96,9 +94,6 @@ namespace Fit4Job.Controllers
         }
 
 
-
-
-
         [HttpDelete("{id:int}")]
         public async Task<ApiResponse<string>> SoftDelete(int id)
         {
@@ -120,10 +115,10 @@ namespace Fit4Job.Controllers
         }
 
         [HttpGet("available")]
-       // [Authorize(Roles = "JobSeeker")]
+        // [Authorize(Roles = "JobSeeker")]
         public async Task<ApiResponse<IEnumerable<CompanyTaskViewModel>>> GetAvailableTasks()
         {
-            
+
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser == null)
             {
@@ -131,7 +126,7 @@ namespace Fit4Job.Controllers
             }
 
             var allJobApplications = await _unitOfWork.JobApplicationRepository.GetAllAsync();
-            var userJobApplications = allJobApplications.Where(ja => ja.UserId == currentUser.Id); 
+            var userJobApplications = allJobApplications.Where(ja => ja.UserId == currentUser.Id);
 
             var appliedJobIds = userJobApplications.Select(ja => ja.JobId).ToList();
 
@@ -140,7 +135,7 @@ namespace Fit4Job.Controllers
                 return ApiResponseHelper.Success(Enumerable.Empty<CompanyTaskViewModel>());
             }
 
-          
+
             var allTasks = await _unitOfWork.CompanyTaskRepository.GetAllAsync();
             var availableTasks = allTasks.Where(ct =>
                 appliedJobIds.Contains(ct.JobId) &&
@@ -151,7 +146,7 @@ namespace Fit4Job.Controllers
             var allSubmissions = await _unitOfWork.CompanyTaskSubmissionRepository.GetAllAsync();
             var userSubmittedTasks = allSubmissions.Where(ts => ts.UserId == currentUser.Id);
 
-            var submittedTaskIds = userSubmittedTasks.Select(ts => ts.TaskId).ToList(); 
+            var submittedTaskIds = userSubmittedTasks.Select(ts => ts.TaskId).ToList();
 
             var filteredTasks = availableTasks
                 .Where(ct => !submittedTaskIds.Contains(ct.Id))
@@ -162,6 +157,5 @@ namespace Fit4Job.Controllers
 
             return ApiResponseHelper.Success(data);
         }
-
     }
 }

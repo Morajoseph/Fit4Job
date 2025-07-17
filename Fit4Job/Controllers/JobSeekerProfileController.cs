@@ -1,11 +1,6 @@
 ﻿using Fit4Job.DTOs.JobSeekerProfileDTOs;
-using Fit4Job.ViewModels.JobSeekerProfileViewModels;
-using Fit4Job.ViewModels.Responses;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-
+using Fit4Job.ViewModels.JobSeekerProfileViewModels;
 
 namespace Fit4Job.Controllers
 {
@@ -16,7 +11,6 @@ namespace Fit4Job.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
 
-
         public JobSeekerProfileController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
         {
             _unitOfWork = unitOfWork;
@@ -26,7 +20,7 @@ namespace Fit4Job.Controllers
 
         // GET: /api/JobSeekerProfile
         [HttpGet]
-      //  [Authorize(Roles = "Admin")]
+        //  [Authorize(Roles = "Admin")]
         public async Task<ApiResponse<PagedResultViewModel<JobSeekerProfileViewModel>>> GetAll(
             [FromQuery] string? location,
             [FromQuery] int? experienceYears,
@@ -47,8 +41,8 @@ namespace Fit4Job.Controllers
         }
 
         // GET: /api/JobSeekerProfile/{id}
+        [Authorize]
         [HttpGet("{id:int}")]
-       [Authorize]
         public async Task<ApiResponse<JobSeekerProfileViewModel>> GetById(int id)
         {
             var profile = await _unitOfWork.JobSeekerProfileRepository.GetWithUserByIdAsync(id);
@@ -87,7 +81,7 @@ namespace Fit4Job.Controllers
 
         // PUT: /api/JobSeekerProfile/{id}
         [HttpPut("{id:int}")]
-       [Authorize(Roles = "Admin,JobSeeker")]
+        [Authorize(Roles = "Admin,JobSeeker")]
         public async Task<ApiResponse<bool>> Update(int id, [FromBody] JobSeekerProfileUpdateDto UpdateDto)
         {
             var profile = await _unitOfWork.JobSeekerProfileRepository.GetByIdAsync(id);
@@ -98,7 +92,7 @@ namespace Fit4Job.Controllers
             var currentUserId = user.Id;
 
             var userRoles = await _userManager.GetRolesAsync(user);
-            bool isAdmin = userRoles.Contains("Admin"); 
+            bool isAdmin = userRoles.Contains("Admin");
 
             if (!isAdmin && profile.UserId != currentUserId)
                 return ApiResponseHelper.Error<bool>(ErrorCode.Forbidden, "Unauthorized to update this profile.");
@@ -210,4 +204,3 @@ namespace Fit4Job.Controllers
         }
     }
 }
-

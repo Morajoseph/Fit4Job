@@ -71,11 +71,39 @@ namespace Fit4Job.Controllers
         {
             if (createTaskSubmission == null || !ModelState.IsValid)
             {
-                return ApiResponseHelper.Error<CompanyTaskSubmissionViewModel>(ErrorCode.BadRequest, "Invalid data");
+                return ApiResponseHelper.Error<CompanyTaskSubmissionViewModel>(ErrorCode.BadRequest, "Invalid data.");
+            }
+
+            // validation 
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.Id != createTaskSubmission.UserId)
+            {
+                return ApiResponseHelper.Error<CompanyTaskSubmissionViewModel>(ErrorCode.Unauthorized, "User not found or unauthorized");
+            }
+
+            var task = await _unitOfWork.CompanyTaskRepository.GetByIdAsync(createTaskSubmission.TaskId);
+            if (task == null)
+            {
+                return ApiResponseHelper.Error<CompanyTaskSubmissionViewModel>(ErrorCode.NotFound, "Task not found");
+            }
+
+            var jobApplication = await _unitOfWork.JobApplicationRepository.GetByIdAsync(createTaskSubmission.JobApplicationId);
+            if (jobApplication == null)
+            {
+                return ApiResponseHelper.Error<CompanyTaskSubmissionViewModel>(ErrorCode.NotFound, "Job Application not found.\nYou Need to apply at this job first then submit.");
+            }
+            else if (jobApplication.UserId != user.Id)
+            {
+                return ApiResponseHelper.Error<CompanyTaskSubmissionViewModel>(ErrorCode.Forbidden, "You can only submit tasks for your own job applications.");
             }
 
             var taskSubmission = createTaskSubmission.ToEntity();
             await _unitOfWork.CompanyTaskSubmissionRepository.AddAsync(taskSubmission);
+            
+            jobApplication.TaskSubmissionId = taskSubmission.Id;
+            jobApplication.Status = JobApplicationStatus.UnderReview;
+            _unitOfWork.JobApplicationRepository.Update(jobApplication);
+            
             await _unitOfWork.CompleteAsync();
 
             return ApiResponseHelper.Success(CompanyTaskSubmissionViewModel.GetViewModel(taskSubmission), "Task submited.");
@@ -95,7 +123,7 @@ namespace Fit4Job.Controllers
                 return ApiResponseHelper.Error<CompanyTaskSubmissionViewModel>(ErrorCode.NotFound, "Job not found");
             }
             var user = await _userManager.GetUserAsync(User);
-            if (user== null || taskSubmission.UserId != user.Id)
+            if (user == null || taskSubmission.UserId != user.Id)
             {
                 return ApiResponseHelper.Error<CompanyTaskSubmissionViewModel>(ErrorCode.Forbidden, "You can only edit your own submissions.");
             }
