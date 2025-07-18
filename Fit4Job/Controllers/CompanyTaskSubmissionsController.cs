@@ -1,6 +1,5 @@
 ﻿using Fit4Job.DTOs.CompanyTasksDTOs;
 using Fit4Job.ViewModels.CompanyTasksViewModels;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Fit4Job.Controllers
 {
@@ -99,11 +98,11 @@ namespace Fit4Job.Controllers
 
             var taskSubmission = createTaskSubmission.ToEntity();
             await _unitOfWork.CompanyTaskSubmissionRepository.AddAsync(taskSubmission);
-            
+            await _unitOfWork.CompleteAsync();
+
             jobApplication.TaskSubmissionId = taskSubmission.Id;
             jobApplication.Status = JobApplicationStatus.UnderReview;
             _unitOfWork.JobApplicationRepository.Update(jobApplication);
-            
             await _unitOfWork.CompleteAsync();
 
             return ApiResponseHelper.Success(CompanyTaskSubmissionViewModel.GetViewModel(taskSubmission), "Task submited.");

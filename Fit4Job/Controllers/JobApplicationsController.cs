@@ -1,5 +1,6 @@
 ﻿using Fit4Job.DTOs.JobApplicationsDTOs;
 using Fit4Job.ViewModels.JobApplicationsViewModels;
+using Microsoft.Data.SqlClient;
 
 namespace Fit4Job.Controllers
 {
@@ -46,6 +47,7 @@ namespace Fit4Job.Controllers
             }
             return ApiResponseHelper.Success(JobApplicationViewModel.GetViewModel(jobApplication), "Job Application found successfully.");
         }
+        
         [HttpPost]
         public async Task<ApiResponse<JobApplicationViewModel>> Create(CreateJobApplicationDTO createJobApplicationDTO)
         {
@@ -53,18 +55,30 @@ namespace Fit4Job.Controllers
             {
                 return ApiResponseHelper.Error<JobApplicationViewModel>(ErrorCode.BadRequest, "Invalid data");
             }
+            
+            var job = await _unitOfWork.JobRepository.GetByIdAsync(createJobApplicationDTO.JobId);
+            if (job == null)
+            {
+                return ApiResponseHelper.Error<JobApplicationViewModel>(ErrorCode.NotFound, "Job not found or invalid ID");
+            }
 
-            var jobApplication = await _unitOfWork.JobApplicationRepository.GetByUserAndJobAsync(createJobApplicationDTO.JobId, createJobApplicationDTO.UserId);
-            if( jobApplication != null)
+            var user = await _unitOfWork.ApplicationUserRepository.GetByIdAsync(createJobApplicationDTO.UserId);
+            if(user == null)
+            {
+                return ApiResponseHelper.Error<JobApplicationViewModel>(ErrorCode.NotFound, "User not found or invalid ID");
+            }
+
+            try
+            {
+                var jobApplication = createJobApplicationDTO.ToEntity();
+                await _unitOfWork.JobApplicationRepository.AddAsync(jobApplication);
+                await _unitOfWork.CompleteAsync();
+                return ApiResponseHelper.Success(JobApplicationViewModel.GetViewModel(jobApplication), "Your Job Application received successfully");
+            }
+            catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlEx && sqlEx.Number == 2601)
             {
                 return ApiResponseHelper.Error<JobApplicationViewModel>(ErrorCode.Conflict, "You have already applied for this job.");
             }
-
-            jobApplication = createJobApplicationDTO.ToEntity();
-            await _unitOfWork.JobApplicationRepository.AddAsync(jobApplication);
-            await _unitOfWork.CompleteAsync();
-
-            return ApiResponseHelper.Success(JobApplicationViewModel.GetViewModel(jobApplication), "Created successfully");
         }
 
         [HttpPut("{id:int}")]

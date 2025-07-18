@@ -2,7 +2,6 @@
 {
     public class CreateJobApplicationDTO
     {
-
         [Display(Name = "User ID")]
         [Required(ErrorMessage = "User ID is required")]
         public int UserId { get; set; }
@@ -17,7 +16,7 @@
             {
                 JobId = this.JobId,
                 UserId = this.UserId,
-                Status = JobApplicationStatus.UnderReview
+                Status = JobApplicationStatus.Incomplete
             };
         }
     }

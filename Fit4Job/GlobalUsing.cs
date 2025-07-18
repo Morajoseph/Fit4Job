@@ -11,8 +11,10 @@ global using Fit4Job.Repositories.Interfaces;
 global using Fit4Job.DTOs.TrackCategoriesDTOs;
 global using Fit4Job.Services.Implementations;
 global using Fit4Job.ViewModels.AuthViewModels;
+global using Fit4Job.DTOs.CompanyExamAttemptsDTOs;
 global using Fit4Job.Repositories.Implementations;
 global using Fit4Job.ViewModels.TrackCategoriesViewModels;
+global using Fit4Job.ViewModels.CompanyExamAttemptsViewModels;
 
 
 global using Microsoft.AspNetCore.Mvc;
@@ -20,6 +22,7 @@ global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Identity;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.IdentityModel.Tokens;
+global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.EntityFrameworkCore.Storage;
 global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 

@@ -180,6 +180,25 @@
             return ApiResponseHelper.Success(true);
         }
 
+        public async Task<ApiResponse<LoginViewModel>> LoginTest(LoginDTO loginDTO)
+        {
+            var user = await FindUserByEmailOrUsernameAsync(loginDTO.EmailOrUsername);
+
+            if (user == null)
+            {
+                return ApiResponseHelper.Error<LoginViewModel>(ErrorCode.InvalidCredentials, "Invalid Credentials.");
+            }
+
+            var isPasswordValid = await _userManager.CheckPasswordAsync(user, loginDTO.Password);
+            if (!isPasswordValid)
+            {
+                return ApiResponseHelper.Error<LoginViewModel>(ErrorCode.InvalidCredentials, "Invalid email/Username or password");
+            }
+
+            var token = await GenerateJwtTokenAsync(user, loginDTO.RememberMe); // Generate JWT token
+            return ApiResponseHelper.Success(LoginViewModel.GetViewModel(token, user, await GetUserProfileId(user)));
+        }
+
         /* ****************************************** Helper Methods ****************************************** */
 
         private async Task<ApplicationUser?> FindUserByEmailOrUsernameAsync(string emailOrUsername)

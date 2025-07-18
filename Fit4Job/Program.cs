@@ -1,12 +1,7 @@
 using Fit4Job.Middlewares;
-using Fit4Job.Services;
-using Fit4Job.Services.Implementations;
-using Fit4Job.Services.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerUI;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+
 
 namespace Fit4Job
 {
@@ -109,6 +104,7 @@ namespace Fit4Job
             builder.Services.AddScoped<GlobalErrorHandlerMiddleware>();
 
             builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+            builder.Services.AddScoped<ICompanyExamAttemptService, CompanyExamAttemptService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IProfileService, ProfileService>();
             builder.Services.AddScoped<ISkillsService, SkillsService>();

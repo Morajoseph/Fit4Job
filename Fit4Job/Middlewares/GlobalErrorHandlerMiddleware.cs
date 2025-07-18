@@ -13,7 +13,7 @@
                 // Error log here !!
 
                 ///
-                var response = ApiResponseHelper.Error<bool>(ErrorCode.UnknownError , ex.Message);
+                var response = ApiResponseHelper.Error<bool>(ErrorCode.UnknownError, "Message : " + ex.Message + "\nInnerException :" + ex.InnerException);
                 await context.Response.WriteAsJsonAsync(response);
             }
         }

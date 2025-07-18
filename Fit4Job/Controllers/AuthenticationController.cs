@@ -78,5 +78,18 @@
 
             return await _authenticationService.JobSeekerRegistration(registrationDTO);
         }
+
+        /* ************************************** Endpoints For Test ************************************* */
+
+        [HttpPost("Test/Login")]
+        public async Task<ApiResponse<LoginViewModel>> TestLogin(LoginDTO loginDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return ApiResponseHelper.Error<LoginViewModel>(ErrorCode.InvalidCredentials, "Invalid email/Username or password");
+            }
+            return await _authenticationService.LoginTest(loginDTO);
+        }
+
     }
 }

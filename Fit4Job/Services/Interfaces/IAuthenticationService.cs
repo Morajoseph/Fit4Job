@@ -7,6 +7,7 @@
         Task<ApiResponse<bool>> JobSeekerRegistration(JobSeekerRegistrationDTO registrationDTO);
         Task<ApiResponse<bool>> EmailVerification(VerificationDTO verificationDTO);
         Task<ApiResponse<LoginViewModel>> Login(LoginDTO loginDTO);
+        Task<ApiResponse<LoginViewModel>> LoginTest(LoginDTO loginDTO);
         Task<ApiResponse<bool>> ResendVerificationCode(string emailOrUsername);
     }
 }
