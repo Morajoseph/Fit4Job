@@ -1,6 +1,6 @@
 ﻿using Fit4Job.DTOs.JobApplicationsDTOs;
-using Fit4Job.ViewModels.JobApplicationsViewModels;
 using Microsoft.Data.SqlClient;
+using Fit4Job.ViewModels.JobApplicationsViewModels;
 
 namespace Fit4Job.Controllers
 {
@@ -22,6 +22,14 @@ namespace Fit4Job.Controllers
         public async Task<ApiResponse<IEnumerable<JobApplicationViewModel>>> GetAll()
         {
             var jobs = await _unitOfWork.JobApplicationRepository.GetAllAsync();
+            var data = jobs.Select(t => JobApplicationViewModel.GetViewModel(t));
+            return ApiResponseHelper.Success(data);
+        }
+
+        [HttpGet("job/{JobId:int}")]
+        public async Task<ApiResponse<IEnumerable<JobApplicationViewModel>>> GetAllForJob(int JobId)
+        {
+            var jobs = await _unitOfWork.JobApplicationRepository.GetAllForJobIdAsync(JobId);
             var data = jobs.Select(t => JobApplicationViewModel.GetViewModel(t));
             return ApiResponseHelper.Success(data);
         }
@@ -101,7 +109,6 @@ namespace Fit4Job.Controllers
 
             return ApiResponseHelper.Success(JobApplicationViewModel.GetViewModel(jobApplication), "Updated successfully");
         }
-
 
         [HttpDelete("{id:int}")]
         public async Task<ApiResponse<bool>> SoftDelete(int id)

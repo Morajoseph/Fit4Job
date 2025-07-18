@@ -45,5 +45,13 @@
             return await _context.JobApplications
                 .AnyAsync(a => a.UserId == userId && a.JobId == jobId);
         }
+
+        public async Task<IEnumerable<JobApplication>> GetAllForJobIdAsync(int jobId)
+        {
+            return await _context.JobApplications
+              .Where(a => a.JobId == jobId)
+              .Include(a => a.User)
+              .ToListAsync();
+        }
     }
 }
