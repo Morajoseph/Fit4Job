@@ -4,6 +4,7 @@
     {
         Task<IEnumerable<CompanyExamAttempt>> GetAttemptsByExamIdAsync(int examId);
         Task<CompanyExamAttempt?> GetAttemptWithAnswersAsync(int attemptId);
+        Task<CompanyExamAttempt?> GetByJobApplicationIdAsync(int jobApplicationId);
         Task<CompanyExamAttempt?> GetAttemptWithFullDetailsAsync(int attemptId);
         Task<IEnumerable<CompanyExamAttempt>> GetTopPerformersAsync(int examId, int topCount = 10);
         Task<bool> SoftDeleteAsync(int attemptId);

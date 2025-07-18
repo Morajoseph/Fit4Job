@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Net.Mail;
-using Fit4Job.Services.Interfaces;
 
 namespace Fit4Job.Services.Implementations
 {

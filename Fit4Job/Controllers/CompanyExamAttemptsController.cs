@@ -57,14 +57,43 @@ namespace Fit4Job.Controllers
             {
                 return ApiResponseHelper.Error<CompanyExamAttemptViewModel>(ErrorCode.BadRequest, "Invalid data");
             }
-            
-            // Validate the exam exists
-            // You can also check if the user is authorized to start an exam attempt
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || examAttemptDTO.UserId != user.Id)
+            {
+                return ApiResponseHelper.Error<CompanyExamAttemptViewModel>(ErrorCode.Unauthorized, "User not found or unauthorized");
+            }
+            var exam = await _unitOfWork.CompanyExamRepository.GetByIdAsync(examAttemptDTO.ExamId);
+            if (exam == null)
+            {
+                return ApiResponseHelper.Error<CompanyExamAttemptViewModel>(ErrorCode.NotFound, "Exam not found or invalid ID");
+            }
+
+            var jobApplication = await _unitOfWork.JobApplicationRepository.GetByIdAsync(examAttemptDTO.JobApplicationId);
+            if (jobApplication == null)
+            {
+                return ApiResponseHelper.Error<CompanyExamAttemptViewModel>(ErrorCode.NotFound, "Job Application not found or invalid ID");
+            }
+            else if (jobApplication.UserId != user.Id)
+            {
+                return ApiResponseHelper.Error<CompanyExamAttemptViewModel>(ErrorCode.Unauthorized, "You are not authorized to start an exam attempt for this job application");
+            }
+
+            // Check if an exam attempt already exists for this job application
+            var existingAttempt = await _unitOfWork.CompanyExamAttemptRepository.GetByJobApplicationIdAsync(examAttemptDTO.JobApplicationId);
+            if(existingAttempt != null)
+            {
+                return ApiResponseHelper.Error<CompanyExamAttemptViewModel>(ErrorCode.Conflict, "An exam attempt already exists for this job application");
+            }
 
             var examAttempt = examAttemptDTO.ToEntity();
             await _unitOfWork.CompanyExamAttemptRepository.AddAsync(examAttempt);
+            jobApplication.ExamAttemptId = examAttempt.Id; // Link the exam attempt to the job application
+            jobApplication.Status = JobApplicationStatus.UnderReview; // Update the job application status
+            _unitOfWork.JobApplicationRepository.Update(jobApplication);
+            
             await _unitOfWork.CompleteAsync();
-            return ApiResponseHelper.Success(CompanyExamAttemptViewModel.GetViewModel(examAttempt), "Created successfully");
+            return ApiResponseHelper.Success(CompanyExamAttemptViewModel.GetViewModel(examAttempt), "Exam Attempt Created successfully");
         }
     }
 }

@@ -1,8 +1,5 @@
 ﻿using Fit4Job.DTOs.CompanyExamQuestionDTOs;
-using Fit4Job.DTOs.CompanyProfileDTOs;
-using Fit4Job.Models;
 using Fit4Job.ViewModels.CompanyExamQuestionViewModels;
-using Fit4Job.ViewModels.CompanyProfileViewModels;
 
 namespace Fit4Job.Controllers
 {
@@ -10,7 +7,6 @@ namespace Fit4Job.Controllers
     [ApiController]
     public class CompanyExamQuestionsController : ControllerBase
     {
-
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -20,10 +16,7 @@ namespace Fit4Job.Controllers
             _userManager = userManager;
         }
 
-
-
         /* ****************************************** Endpoints ****************************************** */
-
 
         [HttpGet]
         public async Task<ApiResponse<IEnumerable<CompanyExamQuestionViewModel>>> GetAllCompanyExamQuestions()
@@ -35,7 +28,6 @@ namespace Fit4Job.Controllers
 
         }
 
-
         [HttpGet("{id:int}")]
         public async Task<ApiResponse<CompanyExamQuestionViewModel>> GetById(int id)
         {
@@ -46,8 +38,6 @@ namespace Fit4Job.Controllers
             }
             return ApiResponseHelper.Success(new CompanyExamQuestionViewModel(companyExamQuestion));
         }
-
-
 
         [HttpPost]
         public async Task<ApiResponse<CompanyExamQuestionViewModel>> Create(CreateCompanyExamQuestionDTO createCompanyExamQuestionDTO)
@@ -63,8 +53,6 @@ namespace Fit4Job.Controllers
 
             return ApiResponseHelper.Success(CompanyExamQuestionViewModel.GetViewModel(companyExamQuestion), "Created successfully");
         }
-
-
 
         [HttpPut("{id:int}")]
         public async Task<ApiResponse<CompanyExamQuestionViewModel>> Update(int id, EditCompanyExamQuestionDTO editCompanyExamQuestionDTO)
@@ -87,9 +75,6 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(CompanyExamQuestionViewModel.GetViewModel(companyExamQuestion), "Updated successfully");
         }
 
-
-
-
         [HttpDelete("{id:int}")]
         public async Task<ApiResponse<string>> SoftDelete(int id)
         {
@@ -109,8 +94,6 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success("company exam question is deleted successfully.");
         }
 
-
-
         [HttpGet("exam/{examId:int}")]
         public async Task<ApiResponse<IEnumerable<CompanyExamQuestionViewModel>>> GetQuestionsByExamId(int examId)
         {
@@ -118,14 +101,11 @@ namespace Fit4Job.Controllers
 
             if (!questions.Any())
             {
-            return ApiResponseHelper.Error<IEnumerable<CompanyExamQuestionViewModel>>( ErrorCode.NotFound, "No questions found for this exam");
+                return ApiResponseHelper.Error<IEnumerable<CompanyExamQuestionViewModel>>(ErrorCode.NotFound, "No questions found for this exam");
             }
 
             var data = questions.Select(CompanyExamQuestionViewModel.GetViewModel);
             return ApiResponseHelper.Success(data, "Questions retrieved successfully");
         }
-
-
-
     }
 }

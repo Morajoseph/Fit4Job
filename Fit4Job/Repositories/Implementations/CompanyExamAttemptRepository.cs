@@ -32,6 +32,13 @@
                 .FirstOrDefaultAsync(a => a.Id == attemptId && a.DeletedAt == null);
         }
 
+        public Task<CompanyExamAttempt?> GetByJobApplicationIdAsync(int jobApplicationId)
+        {
+            return _context.CompanyExamAttempts
+                .Where(a => a.JobApplicationId == jobApplicationId && a.DeletedAt == null)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<IEnumerable<CompanyExamAttempt>> GetTopPerformersAsync(int examId, int topCount = 10)
         {
             return await _context.CompanyExamAttempts
@@ -112,5 +119,6 @@
                 .OrderByDescending(a => a.CreatedAt)
                 .ToListAsync();
         }
+
     }
 }
