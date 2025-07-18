@@ -2,23 +2,57 @@
 {
     public class JobSeekerProfileViewModel
     {
+        [Display(Name = "Job Seeker Profile ID")]
         public int Id { get; set; }
+
+        [Display(Name = "User ID")]
         public int UserId { get; set; }
 
-        public string FullName { get; set; } = string.Empty;
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; } = string.Empty;
+
+        [Display(Name = "CV File URL")]
         public string? CvFileUrl { get; set; }
+
+        [Display(Name = "LinkedIn URL")]
         public string? LinkedinUrl { get; set; }
+
+        [Display(Name = "GitHub URL")]
         public string? GithubUrl { get; set; }
+
+        [Display(Name = "Portfolio URL")]
         public string? PortfolioUrl { get; set; }
-        public int ExperienceYears { get; set; }
+
+        [Display(Name = "Years of Experience")]
+        public int ExperienceYears { get; set; } = 0;
+
+        [Display(Name = "Current Position")]
         public string? CurrentPosition { get; set; }
+
+        [Display(Name = "Expected Salary In USD")]
         public decimal? ExpectedSalary { get; set; }
-        public int UserCredit { get; set; }
+
+        [Display(Name = "Location")]
         public string? Location { get; set; }
-
         public string Email { get; set; } = string.Empty;
+        public string FullName { get; set; } = string.Empty;
 
-        public static JobSeekerProfileViewModel FromEntity(JobSeekerProfile profile)
+        [Display(Name = "Profile Picture URL")]
+        public string? ProfilePictureURL { get; set; }
+
+        [Display(Name = "Cover Picture URL")]
+        public string? CoverPictureURL { get; set; }
+
+        [Display(Name = "Bio")]
+        public string? Bio { get; set; }
+
+        [Display(Name = "Role")]
+        public UserRole Role { get; set; }
+
+        public static JobSeekerProfileViewModel GetViewModel(JobSeekerProfile profile)
         {
             return new JobSeekerProfileViewModel
             {
@@ -32,9 +66,12 @@
                 ExperienceYears = profile.ExperienceYears,
                 CurrentPosition = profile.CurrentPosition,
                 ExpectedSalary = profile.ExpectedSalary,
-                UserCredit = profile.UserCredit,
                 Location = profile.Location,
-                Email = profile.User?.Email ?? ""
+                Email = profile.User?.Email ?? "",
+                ProfilePictureURL = profile.User?.ProfilePictureURL,
+                CoverPictureURL = profile.User?.CoverPictureURL,
+                Bio = profile.User?.Bio,
+                Role = profile.User?.Role ?? UserRole.JobSeeker
             };
         }
     }

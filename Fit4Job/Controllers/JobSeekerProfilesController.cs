@@ -31,7 +31,7 @@ namespace Fit4Job.Controllers
 
             var result = new PagedResultViewModel<JobSeekerProfileViewModel>
             {
-                Items = pagedProfiles.Items.Select(JobSeekerProfileViewModel.FromEntity),
+                Items = pagedProfiles.Items.Select(JobSeekerProfileViewModel.GetViewModel),
                 TotalCount = pagedProfiles.TotalCount
             };
 
@@ -45,22 +45,16 @@ namespace Fit4Job.Controllers
         {
             var profile = await _unitOfWork.JobSeekerProfileRepository.GetWithUserByIdAsync(id);
             if (profile == null || profile.DeletedAt != null)
+            {
                 return ApiResponseHelper.Error<JobSeekerProfileViewModel>(ErrorCode.NotFound, "Profile not found.");
+            }
 
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
+            {
                 return ApiResponseHelper.Error<JobSeekerProfileViewModel>(ErrorCode.Unauthorized, "User not authenticated.");
-            var currentUserId = user.Id;
-
-            var userRoles = await _userManager.GetRolesAsync(user);
-            bool isAdmin = userRoles.Contains("Admin");
-            bool isCompany = userRoles.Contains("Company");
-
-
-            if (!(isAdmin || isCompany || profile.UserId == user.Id))
-                return ApiResponseHelper.Error<JobSeekerProfileViewModel>(ErrorCode.Forbidden, "Access denied.");
-
-            return ApiResponseHelper.Success(JobSeekerProfileViewModel.FromEntity(profile));
+            }
+            return ApiResponseHelper.Success(JobSeekerProfileViewModel.GetViewModel(profile));
         }
 
         // GET: /api/JobSeekerProfile/current
@@ -68,32 +62,41 @@ namespace Fit4Job.Controllers
         [Authorize(Roles = "JobSeeker")]
         public async Task<ApiResponse<JobSeekerProfileViewModel>> GetCurrent()
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var profile = await _unitOfWork.JobSeekerProfileRepository.GetWithUserByUserIdAsync(userId);
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return ApiResponseHelper.Error<JobSeekerProfileViewModel>(ErrorCode.Unauthorized, "User not authenticated.");
+            }
 
-            if (profile == null || profile.DeletedAt != null)
+            var profile = await _unitOfWork.JobSeekerProfileRepository.GetWithUserByUserIdAsync(user.Id);
+            if (profile == null)
+            {
                 return ApiResponseHelper.Error<JobSeekerProfileViewModel>(ErrorCode.NotFound, "Profile not found.");
+            }
 
-            return ApiResponseHelper.Success(JobSeekerProfileViewModel.FromEntity(profile));
+            return ApiResponseHelper.Success(JobSeekerProfileViewModel.GetViewModel(profile));
         }
 
-        // PUT: /api/JobSeekerProfile/{id}
         [HttpPut("{id:int}")]
         [Authorize(Roles = "Admin,JobSeeker")]
         public async Task<ApiResponse<bool>> Update(int id, [FromBody] JobSeekerProfileUpdateDto UpdateDto)
         {
             var profile = await _unitOfWork.JobSeekerProfileRepository.GetByIdAsync(id);
             if (profile == null || profile.DeletedAt != null)
+            {
                 return ApiResponseHelper.Error<bool>(ErrorCode.NotFound, "Profile not found.");
+            }
 
             var user = await _userManager.GetUserAsync(User);
-            var currentUserId = user.Id;
-
-            var userRoles = await _userManager.GetRolesAsync(user);
-            bool isAdmin = userRoles.Contains("Admin");
-
-            if (!isAdmin && profile.UserId != currentUserId)
+            if (user == null)
+            {
+                return ApiResponseHelper.Error<bool>(ErrorCode.Unauthorized, "User not authenticated.");
+            }
+            else if (profile.UserId != user.Id)
+            {
                 return ApiResponseHelper.Error<bool>(ErrorCode.Forbidden, "Unauthorized to update this profile.");
+            }
+
 
             if (UpdateDto.FirstName != null)
                 profile.FirstName = UpdateDto.FirstName;
@@ -132,10 +135,9 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(true, "Profile updated successfully.");
         }
 
-
         [Authorize(Roles = "JobSeeker")]
         [HttpPut("profile/picture/{profileId:int}")]
-        public async Task<ApiResponse<bool>> UpdateProfilePicture(int profileId ,IFormFile profilePicture)
+        public async Task<ApiResponse<bool>> UpdateProfilePicture(int profileId, IFormFile profilePicture)
         {
             if (profilePicture == null || profilePicture.Length == 0)
             {
@@ -168,7 +170,7 @@ namespace Fit4Job.Controllers
                 return ApiResponseHelper.Error<bool>(ErrorCode.Unauthorized, "User not authenticated.");
             }
 
-            if(profile.UserId != user.Id)
+            if (profile.UserId != user.Id)
             {
                 return ApiResponseHelper.Error<bool>(ErrorCode.Forbidden, "You are not authorized to update this profile picture.");
             }
@@ -189,8 +191,6 @@ namespace Fit4Job.Controllers
 
             return ApiResponseHelper.Success(true, "Profile Picture Updated.");
         }
-
-
 
         [Authorize(Roles = "JobSeeker")]
         [HttpPut("cover/picture/{profileId:int}")]
@@ -249,8 +249,6 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(true, "Cover Picture Updated.");
         }
 
-
-        // DELETE: /api/JobSeekerProfile/{id}
         [HttpDelete("{id:int}")]
         [Authorize(Roles = "Admin")]
         public async Task<ApiResponse<bool>> SoftDelete(int id)
@@ -266,7 +264,6 @@ namespace Fit4Job.Controllers
             return ApiResponseHelper.Success(true, "Profile deleted successfully.");
         }
 
-        // POST: /api/JobSeekerProfile/current/cv
         [HttpPost("current/cv")]
         [Authorize(Roles = "JobSeeker")]
         public async Task<ApiResponse<JobSeekerProfileViewModel>> UploadCV(IFormFile file)
@@ -294,10 +291,9 @@ namespace Fit4Job.Controllers
             _unitOfWork.JobSeekerProfileRepository.Update(profile);
             await _unitOfWork.CompleteAsync();
 
-            return ApiResponseHelper.Success(JobSeekerProfileViewModel.FromEntity(profile), "CV uploaded.");
+            return ApiResponseHelper.Success(JobSeekerProfileViewModel.GetViewModel(profile), "CV uploaded.");
         }
 
-        // DELETE: /api/JobSeekerProfile/current/cv
         [HttpDelete("current/cv")]
         [Authorize(Roles = "JobSeeker")]
         public async Task<ApiResponse<bool>> DeleteCV()
@@ -318,7 +314,5 @@ namespace Fit4Job.Controllers
 
             return ApiResponseHelper.Success(true, "CV removed.");
         }
-
-       
     }
 }
