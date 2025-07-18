@@ -6,14 +6,19 @@
         {
 
         }
+
         public async Task<CompanyProfile?> GetByUserIdAsync(int userId)
         {
             return await _context.CompanyProfiles
+                .Include(cp => cp.User)
                 .FirstOrDefaultAsync(ap => ap.UserId == userId);
         }
+
         public async Task<CompanyProfile?> GetCompanyByUserIdAsync(int userId)
         {
-            return await _context.CompanyProfiles.FirstOrDefaultAsync(c => c.UserId == userId);
+            return await _context.CompanyProfiles
+                .Include(cp => cp.User)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
         }
 
         public async Task<IEnumerable<CompanyProfile>> GetCompaniesByStatusAsync(CompanyStatus status)

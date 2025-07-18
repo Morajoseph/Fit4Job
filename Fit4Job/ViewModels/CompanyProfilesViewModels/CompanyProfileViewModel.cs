@@ -1,5 +1,4 @@
-﻿
-namespace Fit4Job.ViewModels.CompanyProfileViewModels
+﻿namespace Fit4Job.ViewModels.CompanyProfileViewModels
 {
     public class CompanyProfileViewModel
     {
@@ -8,6 +7,21 @@ namespace Fit4Job.ViewModels.CompanyProfileViewModels
 
         [Display(Name = "User ID", Description = "Reference to the associated user account")]
         public int UserId { get; set; }
+
+        [Display(Name = "Profile Picture URL")]
+        public string? ProfilePictureURL { get; set; }
+
+        [Display(Name = "Cover Picture URL")]
+        public string? CoverPictureURL { get; set; }
+
+        [Display(Name = "Bio")]
+        public string? Bio { get; set; }
+
+        [Display(Name = "Role")]
+        public UserRole Role { get; set; }
+
+        [Display(Name = "Email")]
+        public string Email { get; set; } = string.Empty;
 
         [Display(Name = "Company Name", Description = "Official name of the company")]
         public string CompanyName { get; set; } = string.Empty;
@@ -33,30 +47,10 @@ namespace Fit4Job.ViewModels.CompanyProfileViewModels
         [Display(Name = "Status", Description = "Current approval status of the company profile")]
         public CompanyStatus Status { get; set; }
 
-        [Display(Name = "Created At")]
-        public DateTime CreatedAt { get; set; }
-
-        [Display(Name = "Updated At")]
-        public DateTime UpdatedAt { get; set; }
-
-        [Display(Name = "Deleted At")]
-        public DateTime? DeletedAt { get; set; }
-
-        // Helper properties
-        [Display(Name = "Is Active")]
-        public bool IsActive { get; set; }
-
-        [Display(Name = "Is Approved")]
-        public bool IsApproved { get; set; }
-
-        [Display(Name = "Is Pending")]
-        public bool IsPending { get; set; }
-
-        [Display(Name = "Company Age")]
-        public int? CompanyAge { get; set; }
 
         public CompanyProfileViewModel()
         {
+
         }
 
         public CompanyProfileViewModel(CompanyProfile companyProfile)
@@ -71,15 +65,11 @@ namespace Fit4Job.ViewModels.CompanyProfileViewModels
             CompanySize = companyProfile.CompanySize;
             FoundingYear = companyProfile.FoundingYear;
             Status = companyProfile.Status;
-            CreatedAt = companyProfile.CreatedAt;
-            UpdatedAt = companyProfile.UpdatedAt;
-            DeletedAt = companyProfile.DeletedAt;
-
-            // Map helper properties
-            IsActive = companyProfile.IsActive;
-            IsApproved = companyProfile.IsApproved;
-            IsPending = companyProfile.IsPending;
-            CompanyAge = companyProfile.CompanyAge;
+            ProfilePictureURL = companyProfile.User?.ProfilePictureURL;
+            CoverPictureURL = companyProfile.User?.CoverPictureURL;
+            Bio = companyProfile.User?.Bio;
+            Role = companyProfile.User?.Role ?? UserRole.Company; 
+            Email = companyProfile.User?.Email ?? string.Empty;
         }
 
         public static CompanyProfileViewModel GetViewModel(CompanyProfile companyProfile)

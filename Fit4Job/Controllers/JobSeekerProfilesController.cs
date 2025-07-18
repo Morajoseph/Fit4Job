@@ -242,7 +242,7 @@ namespace Fit4Job.Controllers
                 await coverPicture.CopyToAsync(stream);
             }
 
-            user.CoverPictureURL = $"/uploads/ProfilePictures/{fileName}";
+            user.CoverPictureURL = $"/uploads/CoverPictures/{fileName}";
             _unitOfWork.ApplicationUserRepository.Update(user);
             await _unitOfWork.CompleteAsync();
 
