@@ -191,6 +191,65 @@ namespace Fit4Job.Controllers
         }
 
 
+
+        [Authorize(Roles = "JobSeeker")]
+        [HttpPut("cover/picture/{profileId:int}")]
+        public async Task<ApiResponse<bool>> UpdateCoverPicture(int profileId, IFormFile coverPicture)
+        {
+            if (coverPicture == null || coverPicture.Length == 0)
+            {
+                return ApiResponseHelper.Error<bool>(ErrorCode.BadRequest, "Profile Picture is required.");
+            }
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+            var extension = Path.GetExtension(coverPicture.FileName)?.ToLowerInvariant();
+
+            if (string.IsNullOrEmpty(extension) || !allowedExtensions.Contains(extension))
+            {
+                return ApiResponseHelper.Error<bool>(ErrorCode.BadRequest, "Invalid file type. Only JPG, PNG, GIF, and WebP files are allowed.");
+            }
+
+            if (coverPicture.Length > 5 * 1024 * 1024) // 5MB limit
+            {
+                return ApiResponseHelper.Error<bool>(ErrorCode.BadRequest, "File size must be less than 5MB.");
+            }
+
+
+            var profile = await _unitOfWork.JobSeekerProfileRepository.GetByIdAsync(profileId);
+            if (profile == null || profile.DeletedAt != null)
+            {
+                return ApiResponseHelper.Error<bool>(ErrorCode.NotFound, "Profile not found.");
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return ApiResponseHelper.Error<bool>(ErrorCode.Unauthorized, "User not authenticated.");
+            }
+
+            if (profile.UserId != user.Id)
+            {
+                return ApiResponseHelper.Error<bool>(ErrorCode.Forbidden, "You are not authorized to update this profile picture.");
+            }
+
+            var fileName = $"{Guid.NewGuid()}_{coverPicture.FileName}";
+            var uploadDir = Path.Combine("wwwroot", "uploads", "CoverPictures");
+            Directory.CreateDirectory(uploadDir);
+            var filePath = Path.Combine(uploadDir, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await coverPicture.CopyToAsync(stream);
+            }
+
+            user.CoverPictureURL = $"/uploads/ProfilePictures/{fileName}";
+            _unitOfWork.ApplicationUserRepository.Update(user);
+            await _unitOfWork.CompleteAsync();
+
+            return ApiResponseHelper.Success(true, "Cover Picture Updated.");
+        }
+
+
         // DELETE: /api/JobSeekerProfile/{id}
         [HttpDelete("{id:int}")]
         [Authorize(Roles = "Admin")]
