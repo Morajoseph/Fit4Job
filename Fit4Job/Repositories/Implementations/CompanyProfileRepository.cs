@@ -7,6 +7,20 @@
 
         }
 
+        public override async Task<CompanyProfile?> GetByIdAsync(int id)
+        {
+            return await _context.CompanyProfiles
+                .Include(cp => cp.User)
+                .FirstOrDefaultAsync(cp => cp.Id == id);
+        }
+        public override async Task<IEnumerable<CompanyProfile>> GetAllAsync()
+        {
+            return await _context.CompanyProfiles
+                .Include(cp => cp.User)
+                .OrderBy(cp => cp.CompanyName)
+                .ToListAsync();
+        }
+
         public async Task<CompanyProfile?> GetByUserIdAsync(int userId)
         {
             return await _context.CompanyProfiles

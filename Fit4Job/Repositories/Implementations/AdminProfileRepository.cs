@@ -6,6 +6,21 @@
         {
 
         }
+
+        public override async Task<AdminProfile?> GetByIdAsync(int id)
+        {
+            return await _context.AdminProfiles
+                .Include(ap => ap.User)
+                .FirstOrDefaultAsync(ap => ap.Id == id);
+        }
+
+        public override async Task<IEnumerable<AdminProfile>> GetAllAsync()
+        {
+            return await _context.AdminProfiles
+                .Include(ap => ap.User)
+                .OrderBy(ap => ap.User.Email)
+                .ToListAsync();
+        }
         public async Task<AdminProfile?> GetByUserIdAsync(int userId)
         {
             return await _context.AdminProfiles

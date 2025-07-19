@@ -9,6 +9,21 @@ namespace Fit4Job.Repositories.Implementations
 
         }
 
+        public override async Task<JobSeekerProfile?> GetByIdAsync(int id)
+        {
+            return await _context.JobSeekerProfiles
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public override async Task<IEnumerable<JobSeekerProfile>> GetAllAsync()
+        {
+            return await _context.JobSeekerProfiles
+                .Include(p => p.User)
+                .OrderBy(p => p.FirstName)
+                .ToListAsync();
+        }
+
         public async Task<JobSeekerProfile?> GetByUserIdAsync(int userId)
         {
             return await _context.JobSeekerProfiles
