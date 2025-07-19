@@ -3,8 +3,9 @@ using Fit4Job.ViewModels.CompanyExamQuestionAnswersViewModels;
 
 namespace Fit4Job.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
+    [Route("api/[controller]")]
     public class CompanyExamQuestionAnswersController : ControllerBase
     {
         /* ********************************************* DI ********************************************** */
