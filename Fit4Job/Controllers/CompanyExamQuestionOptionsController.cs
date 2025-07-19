@@ -30,15 +30,15 @@ namespace Fit4Job.Controllers
         }
         
         [HttpGet("question/{questionId:int}")]
-        public async Task<ApiResponse<IEnumerable<CompanyExamQuestionOptionViewModel>>> GetOptionsByQuestionId(int id)
+        public async Task<ApiResponse<IEnumerable<CompanyExamQuestionOptionViewModel>>> GetOptionsByQuestionId(int questionId)
         {
-            var question = await _unitOfWork.CompanyExamQuestionRepository.GetByIdAsync(id);
+            var question = await _unitOfWork.CompanyExamQuestionRepository.GetByIdAsync(questionId);
             if (question == null)
             {
                 return ApiResponseHelper.Error<IEnumerable<CompanyExamQuestionOptionViewModel>>(ErrorCode.NotFound, "Question not found.");
             }
 
-            var options = await _unitOfWork.CompanyExamQuestionOptionRepository.GetOptionsByQuestionIdAsync(id);
+            var options = await _unitOfWork.CompanyExamQuestionOptionRepository.GetOptionsByQuestionIdAsync(questionId);
 
             var data = options.Select(o => CompanyExamQuestionOptionViewModel.GetViewModel(o));
             return ApiResponseHelper.Success(data);
