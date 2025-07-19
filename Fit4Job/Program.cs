@@ -173,6 +173,8 @@ namespace Fit4Job
             var app = builder.Build();
 
             app.UseMiddleware<GlobalErrorHandlerMiddleware>();
+            app.UseStaticFiles();
+
 
             // Seed roles after building the app
             using (var scope = app.Services.CreateScope())
