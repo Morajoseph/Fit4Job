@@ -1,19 +1,17 @@
-﻿using Fit4Job.DTOs.CompanyProfileDTOs;
-using Fit4Job.ViewModels.CompanyProfileViewModels;
-
-namespace Fit4Job.Controllers
+﻿namespace Fit4Job.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class CompanyProfilesController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IProfileService _profileService;
         private readonly UserManager<ApplicationUser> _userManager;
-
-        public CompanyProfilesController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
+        public CompanyProfilesController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IProfileService profileService)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _profileService = profileService;
         }
 
         /* ****************************************** Endpoints ****************************************** */
@@ -62,25 +60,6 @@ namespace Fit4Job.Controllers
         [HttpPut("profile/picture/{profileId:int}")]
         public async Task<ApiResponse<bool>> UpdateProfilePicture(int profileId, IFormFile companyProfilePicture)
         {
-            if (companyProfilePicture == null || companyProfilePicture.Length == 0)
-            {
-                return ApiResponseHelper.Error<bool>(ErrorCode.BadRequest, "Company Profile Picture is required.");
-            }
-
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
-            var extension = Path.GetExtension(companyProfilePicture.FileName)?.ToLowerInvariant();
-
-            if (string.IsNullOrEmpty(extension) || !allowedExtensions.Contains(extension))
-            {
-                return ApiResponseHelper.Error<bool>(ErrorCode.BadRequest, "Invalid file type. Only JPG, PNG, GIF, and WebP files are allowed.");
-            }
-
-            if (companyProfilePicture.Length > 5 * 1024 * 1024) // 5MB limit
-            {
-                return ApiResponseHelper.Error<bool>(ErrorCode.BadRequest, "File size must be less than 5MB.");
-            }
-
-
             var profile = await _unitOfWork.CompanyProfileRepository.GetByIdAsync(profileId);
             if (profile == null || profile.DeletedAt != null)
             {
@@ -98,46 +77,13 @@ namespace Fit4Job.Controllers
                 return ApiResponseHelper.Error<bool>(ErrorCode.Forbidden, "You are not authorized to update this profile picture.");
             }
 
-            var fileName = $"{Guid.NewGuid()}_{companyProfilePicture.FileName}";
-            var uploadDir = Path.Combine("wwwroot", "uploads", "ProfilePictures");
-            Directory.CreateDirectory(uploadDir);
-            var filePath = Path.Combine(uploadDir, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await companyProfilePicture.CopyToAsync(stream);
-            }
-
-            user.ProfilePictureURL = $"/uploads/ProfilePictures/{fileName}";
-            _unitOfWork.ApplicationUserRepository.Update(user);
-            await _unitOfWork.CompleteAsync();
-
-            return ApiResponseHelper.Success(true, "Profile Picture Updated.");
+            return await _profileService.UpdateProfilePicture(companyProfilePicture, user);
         }
 
         [Authorize(Roles = "Company")]
         [HttpPut("cover/picture/{profileId:int}")]
         public async Task<ApiResponse<bool>> UpdateCoverPicture(int profileId, IFormFile companyCoverPicture)
         {
-            if (companyCoverPicture == null || companyCoverPicture.Length == 0)
-            {
-                return ApiResponseHelper.Error<bool>(ErrorCode.BadRequest, "Profile Picture is required.");
-            }
-
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
-            var extension = Path.GetExtension(companyCoverPicture.FileName)?.ToLowerInvariant();
-
-            if (string.IsNullOrEmpty(extension) || !allowedExtensions.Contains(extension))
-            {
-                return ApiResponseHelper.Error<bool>(ErrorCode.BadRequest, "Invalid file type. Only JPG, PNG, GIF, and WebP files are allowed.");
-            }
-
-            if (companyCoverPicture.Length > 5 * 1024 * 1024) // 5MB limit
-            {
-                return ApiResponseHelper.Error<bool>(ErrorCode.BadRequest, "File size must be less than 5MB.");
-            }
-
-
             var profile = await _unitOfWork.CompanyProfileRepository.GetByIdAsync(profileId);
             if (profile == null || profile.DeletedAt != null)
             {
@@ -155,21 +101,7 @@ namespace Fit4Job.Controllers
                 return ApiResponseHelper.Error<bool>(ErrorCode.Forbidden, "You are not authorized to update this profile picture.");
             }
 
-            var fileName = $"{Guid.NewGuid()}_{companyCoverPicture.FileName}";
-            var uploadDir = Path.Combine("wwwroot", "uploads", "CoverPictures");
-            Directory.CreateDirectory(uploadDir);
-            var filePath = Path.Combine(uploadDir, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await companyCoverPicture.CopyToAsync(stream);
-            }
-
-            user.CoverPictureURL = $"/uploads/CoverPictures/{fileName}";
-            _unitOfWork.ApplicationUserRepository.Update(user);
-            await _unitOfWork.CompleteAsync();
-
-            return ApiResponseHelper.Success(true, "Cover Picture Updated.");
+            return await _profileService.UpdateCoverPicture(companyCoverPicture, user);
         }
 
         [Authorize(Roles = "Admin")]

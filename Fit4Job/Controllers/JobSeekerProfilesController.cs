@@ -1,20 +1,18 @@
-﻿using Fit4Job.DTOs.JobSeekerProfileDTOs;
-using Fit4Job.ViewModels.JobSeekerProfileViewModels;
-using static System.Net.Mime.MediaTypeNames;
-
-namespace Fit4Job.Controllers
+﻿namespace Fit4Job.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class JobSeekerProfilesController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IProfileService _profileService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public JobSeekerProfilesController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
+        public JobSeekerProfilesController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IProfileService profileService)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _profileService = profileService;
         }
 
         // GET: /api/JobSeekerProfile
@@ -139,25 +137,6 @@ namespace Fit4Job.Controllers
         [HttpPut("profile/picture/{profileId:int}")]
         public async Task<ApiResponse<bool>> UpdateProfilePicture(int profileId, IFormFile profilePicture)
         {
-            if (profilePicture == null || profilePicture.Length == 0)
-            {
-                return ApiResponseHelper.Error<bool>(ErrorCode.BadRequest, "Profile Picture is required.");
-            }
-
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
-            var extension = Path.GetExtension(profilePicture.FileName)?.ToLowerInvariant();
-
-            if (string.IsNullOrEmpty(extension) || !allowedExtensions.Contains(extension))
-            {
-                return ApiResponseHelper.Error<bool>(ErrorCode.BadRequest, "Invalid file type. Only JPG, PNG, GIF, and WebP files are allowed.");
-            }
-
-            if (profilePicture.Length > 5 * 1024 * 1024) // 5MB limit
-            {
-                return ApiResponseHelper.Error<bool>(ErrorCode.BadRequest, "File size must be less than 5MB.");
-            }
-
-
             var profile = await _unitOfWork.JobSeekerProfileRepository.GetByIdAsync(profileId);
             if (profile == null || profile.DeletedAt != null)
             {
@@ -175,46 +154,14 @@ namespace Fit4Job.Controllers
                 return ApiResponseHelper.Error<bool>(ErrorCode.Forbidden, "You are not authorized to update this profile picture.");
             }
 
-            var fileName = $"{Guid.NewGuid()}_{profilePicture.FileName}";
-            var uploadDir = Path.Combine("wwwroot", "uploads", "ProfilePictures");
-            Directory.CreateDirectory(uploadDir);
-            var filePath = Path.Combine(uploadDir, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await profilePicture.CopyToAsync(stream);
-            }
-
-            user.ProfilePictureURL = $"/uploads/ProfilePictures/{fileName}";
-            _unitOfWork.ApplicationUserRepository.Update(user);
-            await _unitOfWork.CompleteAsync();
-
-            return ApiResponseHelper.Success(true, "Profile Picture Updated.");
+            return await _profileService.UpdateProfilePicture(profilePicture, user);
         }
 
         [Authorize(Roles = "JobSeeker")]
         [HttpPut("cover/picture/{profileId:int}")]
         public async Task<ApiResponse<bool>> UpdateCoverPicture(int profileId, IFormFile coverPicture)
         {
-            if (coverPicture == null || coverPicture.Length == 0)
-            {
-                return ApiResponseHelper.Error<bool>(ErrorCode.BadRequest, "Profile Picture is required.");
-            }
-
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
-            var extension = Path.GetExtension(coverPicture.FileName)?.ToLowerInvariant();
-
-            if (string.IsNullOrEmpty(extension) || !allowedExtensions.Contains(extension))
-            {
-                return ApiResponseHelper.Error<bool>(ErrorCode.BadRequest, "Invalid file type. Only JPG, PNG, GIF, and WebP files are allowed.");
-            }
-
-            if (coverPicture.Length > 5 * 1024 * 1024) // 5MB limit
-            {
-                return ApiResponseHelper.Error<bool>(ErrorCode.BadRequest, "File size must be less than 5MB.");
-            }
-
-
+            // validation Data
             var profile = await _unitOfWork.JobSeekerProfileRepository.GetByIdAsync(profileId);
             if (profile == null || profile.DeletedAt != null)
             {
@@ -226,27 +173,12 @@ namespace Fit4Job.Controllers
             {
                 return ApiResponseHelper.Error<bool>(ErrorCode.Unauthorized, "User not authenticated.");
             }
-
-            if (profile.UserId != user.Id)
+            else if (profile.UserId != user.Id)
             {
                 return ApiResponseHelper.Error<bool>(ErrorCode.Forbidden, "You are not authorized to update this profile picture.");
             }
 
-            var fileName = $"{Guid.NewGuid()}_{coverPicture.FileName}";
-            var uploadDir = Path.Combine("wwwroot", "uploads", "CoverPictures");
-            Directory.CreateDirectory(uploadDir);
-            var filePath = Path.Combine(uploadDir, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await coverPicture.CopyToAsync(stream);
-            }
-
-            user.CoverPictureURL = $"/uploads/CoverPictures/{fileName}";
-            _unitOfWork.ApplicationUserRepository.Update(user);
-            await _unitOfWork.CompleteAsync();
-
-            return ApiResponseHelper.Success(true, "Cover Picture Updated.");
+            return await _profileService.UpdateCoverPicture(coverPicture, user);
         }
 
         [HttpDelete("{id:int}")]

@@ -8,15 +8,18 @@ global using Fit4Job.Services.Interfaces;
 global using Fit4Job.ViewModels.Responses;
 global using Fit4Job.Repositories.Generic;
 global using Fit4Job.DTOs.AuthorizationDTOs;
+global using Fit4Job.DTOs.CompanyProfileDTOs;
 global using Fit4Job.Repositories.Interfaces;
 global using Fit4Job.DTOs.TrackCategoriesDTOs;
 global using Fit4Job.Services.Implementations;
 global using Fit4Job.ViewModels.AuthViewModels;
+global using Fit4Job.DTOs.JobSeekerProfileDTOs;
 global using Fit4Job.DTOs.CompanyExamAttemptsDTOs;
 global using Fit4Job.Repositories.Implementations;
+global using Fit4Job.ViewModels.CompanyProfileViewModels;
 global using Fit4Job.ViewModels.TrackCategoriesViewModels;
+global using Fit4Job.ViewModels.JobSeekerProfileViewModels;
 global using Fit4Job.ViewModels.CompanyExamAttemptsViewModels;
-
 
 
 global using Microsoft.OpenApi.Models;
