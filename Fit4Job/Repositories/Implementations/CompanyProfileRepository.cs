@@ -11,12 +11,14 @@
         {
             return await _context.CompanyProfiles
                 .Include(cp => cp.User)
+                .Include(cp => cp.Jobs)
                 .FirstOrDefaultAsync(cp => cp.Id == id);
         }
         public override async Task<IEnumerable<CompanyProfile>> GetAllAsync()
         {
             return await _context.CompanyProfiles
                 .Include(cp => cp.User)
+                .Include(cp => cp.Jobs)
                 .OrderBy(cp => cp.CompanyName)
                 .ToListAsync();
         }

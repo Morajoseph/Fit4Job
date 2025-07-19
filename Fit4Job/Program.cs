@@ -1,8 +1,3 @@
-using Fit4Job.Middlewares;
-using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-
-
 namespace Fit4Job
 {
     public class Program

@@ -47,6 +47,11 @@
         [Display(Name = "Status", Description = "Current approval status of the company profile")]
         public CompanyStatus Status { get; set; }
 
+        [Display(Name = "Created At")]
+        public DateTime CreatedAt { get; set; }
+
+        [Display(Name = "Number Of Jobs")]
+        public int NumberOfJobs { get; set; } = 0;
 
         public CompanyProfileViewModel()
         {
@@ -70,6 +75,8 @@
             Bio = companyProfile.User?.Bio;
             Role = companyProfile.User?.Role ?? UserRole.Company; 
             Email = companyProfile.User?.Email ?? string.Empty;
+            NumberOfJobs = companyProfile.Jobs?.Count ?? 0;
+            CreatedAt = companyProfile.CreatedAt;
         }
 
         public static CompanyProfileViewModel GetViewModel(CompanyProfile companyProfile)
