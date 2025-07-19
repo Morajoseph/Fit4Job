@@ -39,6 +39,8 @@
 
             var examAttempt = examAttemptDTO.ToEntity();
             await _unitOfWork.CompanyExamAttemptRepository.AddAsync(examAttempt);
+            await _unitOfWork.CompleteAsync();
+
             jobApplication.ExamAttemptId = examAttempt.Id; // Link the exam attempt to the job application
             jobApplication.Status = JobApplicationStatus.UnderReview; // Update the job application status
             _unitOfWork.JobApplicationRepository.Update(jobApplication);
