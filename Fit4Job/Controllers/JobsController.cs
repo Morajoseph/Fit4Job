@@ -35,7 +35,13 @@ namespace Fit4Job.Controllers
             {
                 return ApiResponseHelper.Error<JobViewModel>(ErrorCode.NotFound, "Not Found or invalid ID");
             }
-            return ApiResponseHelper.Success(new JobViewModel(job));
+            var user = await _userManager.GetUserAsync(User);
+            var isUserApplied = false;
+            if (user != null)
+            {
+                isUserApplied  = await _unitOfWork.JobApplicationRepository.ExistsAsync(user.Id, id);
+            }
+            return ApiResponseHelper.Success(JobViewModel.GetViewModel(job, isUserApplied));
         }
 
         [HttpGet("company/{companyId:int}")]

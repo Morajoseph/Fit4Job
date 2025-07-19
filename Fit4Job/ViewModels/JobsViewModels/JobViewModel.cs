@@ -32,12 +32,15 @@
         [Display(Name = "Years of Experience (Optional)")]
         public string? YearsOfExperience { get; set; }
 
+        [Display(Name = "Is User Applied")]
+        public bool IsUserApplied { get; set; } = false;
+
         public JobViewModel()
         {
 
         }
 
-        public JobViewModel(Job job)
+        public JobViewModel(Job job , bool isUserApplied = false)
         {
             this.Id = job.Id;
             this.CompanyId = job.CompanyId ;
@@ -51,9 +54,9 @@
             this.YearsOfExperience = job.YearsOfExperience;
         }
 
-        public static JobViewModel GetViewModel(Job job)
+        public static JobViewModel GetViewModel(Job job, bool isUserApplied = false)
         {
-            return new JobViewModel(job);
+            return new JobViewModel(job, isUserApplied);
         }
     }
 }
